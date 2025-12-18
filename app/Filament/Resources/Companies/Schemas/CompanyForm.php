@@ -12,10 +12,10 @@ class CompanyForm
         return $schema
             ->columns(1)
             ->schema([
-                Forms\Components\TextInput::make('name')->required()->label('Име на фирма'),
-                Forms\Components\TextInput::make('sector')->label('Сектор'),
-                Forms\Components\TextInput::make('city')->label('Град'),
-                Forms\Components\TextInput::make('email')->email()->label('Е-маил'),
+                Forms\Components\TextInput::make('name')->required()->label('Company Name'),
+                Forms\Components\TextInput::make('sector')->label('Sector'),
+                Forms\Components\TextInput::make('city')->label('City'),
+                Forms\Components\TextInput::make('email')->email()->label('E-mail'),
             ]);
     }
 }
