@@ -9,7 +9,7 @@ Route::get('/', function () {
 
 Route::get('/openai-test', function () {
     $response = OpenAI::responses()->create([
-        'model' => 'gpt-5',
+        'model' => 'gpt-4o-mini',
         'input' => 'Hello!',
     ]);
 
