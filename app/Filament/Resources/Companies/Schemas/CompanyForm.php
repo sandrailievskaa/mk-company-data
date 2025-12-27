@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Companies\Schemas;
 
-use Filament\Schemas\Schema;
 use Filament\Forms;
+use Filament\Schemas\Schema;
 
 class CompanyForm
 {
