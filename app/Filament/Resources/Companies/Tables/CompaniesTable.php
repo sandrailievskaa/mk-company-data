@@ -16,6 +16,7 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('sector'),
                 Tables\Columns\TextColumn::make('city'),
                 Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('phone'),
             ])
             ->filters([
                 //

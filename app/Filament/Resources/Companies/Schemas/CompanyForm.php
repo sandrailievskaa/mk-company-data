@@ -16,6 +16,7 @@ class CompanyForm
                 Forms\Components\TextInput::make('sector')->label('Sector'),
                 Forms\Components\TextInput::make('city')->label('City'),
                 Forms\Components\TextInput::make('email')->email()->label('E-mail'),
+                Forms\Components\TextInput::make('phone')->tel()->label('Phone'),
             ]);
     }
 }
