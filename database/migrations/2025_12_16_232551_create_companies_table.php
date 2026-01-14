@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('sector')->nullable();
             $table->string('city')->nullable();
+            $table->string('address')->nullable();
             $table->string('email')->nullable()->unique();
-            $table->string('phone')->nullable()->unique();
+            $table->string('phone')->nullable();
             $table->timestamps();
         });
     }
