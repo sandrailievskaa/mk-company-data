@@ -3,8 +3,6 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Company;
-use App\Models\Offer;
-use App\Models\SentOffer;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -22,16 +20,6 @@ class StatsOverview extends BaseWidget
                 ->description('Компании со валиден email')
                 ->descriptionIcon('heroicon-m-envelope')
                 ->color('info'),
-
-            Stat::make('Активни понуди', Offer::where('is_active', true)->count())
-                ->description('Понуди подготвени за испраќање')
-                ->descriptionIcon('heroicon-m-document-text')
-                ->color('warning'),
-
-            Stat::make('Испратени понуди', SentOffer::count())
-                ->description('Вкупно испратени понуди')
-                ->descriptionIcon('heroicon-m-paper-airplane')
-                ->color('success'),
         ];
     }
 }
