@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use App\Enums\SectorEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Company extends Model
+class Offer extends Model
 {
     protected $casts = [
-        'sector' => SectorEnum::class,
-        'activity_index' => 'integer',
+        'is_active' => 'boolean',
     ];
 
     public function sentOffers(): HasMany

@@ -80,11 +80,53 @@ class CompanyScraperService
         );
         $phone = $phone ? str_replace('tel:', '', $phone) : null;
 
+        // Try to extract email from the result HTML
+        $email = $this->extractEmailFromHtml($result_crawler->html());
+
         return [
             'name' => $name,
             'city' => $city,
             'address' => $address,
             'phone' => $phone,
+            'email' => $email,
         ];
+    }
+
+    private function extractEmailFromHtml(string $html): ?string
+    {
+        // Email regex pattern
+        $pattern = '/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/';
+
+        if (preg_match_all($pattern, $html, $matches)) {
+            foreach ($matches[0] as $email) {
+                $email = strtolower(trim($email));
+
+                // Skip common non-company emails and invalid patterns
+                if (
+                    str_contains($email, 'example.com') ||
+                    str_contains($email, 'test.com') ||
+                    str_contains($email, 'noreply') ||
+                    str_contains($email, 'no-reply') ||
+                    str_contains($email, 'donotreply') ||
+                    str_contains($email, 'cdn77.org') ||
+                    str_contains($email, 'zk.mk')
+                ) {
+                    continue;
+                }
+
+                // Prefer .mk domains for Macedonian companies
+                if (str_ends_with($email, '.mk')) {
+                    return $email;
+                }
+            }
+
+            // Return first valid email if no .mk domain found
+            $email = strtolower(trim($matches[0][0]));
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return $email;
+            }
+        }
+
+        return null;
     }
 }

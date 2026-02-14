@@ -9,6 +9,8 @@ class ListCompanies extends ListRecords
 {
     protected static string $resource = CompanyResource::class;
 
+    protected static ?string $title = 'Компании';
+
     protected function getHeaderActions(): array
     {
         return [];

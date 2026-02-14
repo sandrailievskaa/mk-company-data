@@ -10,23 +10,10 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ScrapeCompaniesCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'app:scrape-companies-command';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Scraping the companies from ZK';
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $service = resolve(CompanyScraperService::class);
@@ -35,6 +22,13 @@ class ScrapeCompaniesCommand extends Command
             SectorEnum::CONSTRUCTION->value,
             SectorEnum::PROGRAMMING->value,
             SectorEnum::HEALTHCARE->value,
+            SectorEnum::TRAVELAGENCIES->value,
+            SectorEnum::BANKS->value,
+            SectorEnum::MUNICIPALITIES->value,
+            SectorEnum::EDUCATION->value,
+            SectorEnum::AIRPLANE->value,
+            SectorEnum::INSURANCE->value,
+            SectorEnum::FINANCE->value,
         ];
 
         $output = new ConsoleOutput;
