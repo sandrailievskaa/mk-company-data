@@ -13,13 +13,14 @@ class OfferForm
         return $schema
             ->components([
                 Select::make('company_id')
+                    ->label('Компанија')
                     ->relationship(name: 'company', titleAttribute: 'name')
                     ->searchable()
                     ->preload()
                     ->required(),
                 Textarea::make('additional_information')
-                    ->label('Additional Information')
-                    ->helperText('Provide additional information about the offer. This will be used to generate the offer content.')
+                    ->label('Дополнителни информации')
+                    ->helperText('Внесете дополнителни информации за понудата. Ова ќе се користи за генерирање на содржината на понудата.')
                     ->rows(5)
                     ->columnSpanFull()
             ]);

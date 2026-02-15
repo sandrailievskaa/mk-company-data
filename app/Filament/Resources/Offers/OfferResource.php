@@ -22,6 +22,12 @@ class OfferResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
+    protected static ?string $navigationLabel = 'Понуди';
+
+    protected static ?string $label = 'Понуда';
+
+    protected static ?string $pluralLabel = 'Понуди';
+
     protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema

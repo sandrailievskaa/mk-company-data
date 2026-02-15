@@ -11,6 +11,11 @@ class EditOffer extends EditRecord
 {
     protected static string $resource = OfferResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Уреди понуда';
+    }
+
     protected function getHeaderActions(): array
     {
         return [

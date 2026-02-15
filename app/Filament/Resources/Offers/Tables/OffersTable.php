@@ -16,8 +16,10 @@ class OffersTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label('Наслов')
                     ->searchable(),
                 TextColumn::make('company.name')
+                    ->label('Компанија')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

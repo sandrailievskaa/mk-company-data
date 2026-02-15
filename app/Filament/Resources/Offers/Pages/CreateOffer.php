@@ -11,6 +11,11 @@ class CreateOffer extends CreateRecord
 {
     protected static string $resource = OfferResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Нова понуда';
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $additionalInformation = $data['additional_information'] ?? '';

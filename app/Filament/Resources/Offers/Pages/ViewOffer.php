@@ -10,6 +10,11 @@ class ViewOffer extends ViewRecord
 {
     protected static string $resource = OfferResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Детали';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
