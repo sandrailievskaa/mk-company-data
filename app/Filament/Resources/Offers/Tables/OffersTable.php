@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\Offers\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -34,13 +32,10 @@ class OffersTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                ViewAction::make()
+                    ->label('Преглед'),
+                EditAction::make()
+                    ->label('Уреди'),
             ]);
     }
 }

@@ -9,6 +9,11 @@ class EditCompany extends EditRecord
 {
     protected static string $resource = CompanyResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Уреди компанија';
+    }
+
     protected function getHeaderActions(): array
     {
         return [];

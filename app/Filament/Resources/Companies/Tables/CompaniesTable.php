@@ -42,7 +42,8 @@ class CompaniesTable
                     }),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->label('Уреди'),
             ])
             ->toolbarActions([]);
     }
