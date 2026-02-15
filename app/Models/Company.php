@@ -11,4 +11,9 @@ class Company extends Model
         'sector' => SectorEnum::class,
         'activity_index' => 'integer',
     ];
+
+    public function offers(): HasMany
+    {
+        return $this->hasMany(Offer::class);
+    }
 }
