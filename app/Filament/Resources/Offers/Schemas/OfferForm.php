@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Offers\Schemas;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 
 class OfferForm
 {
@@ -17,12 +18,14 @@ class OfferForm
                     ->relationship(name: 'company', titleAttribute: 'name')
                     ->searchable()
                     ->preload()
-                    ->required(),
+                    ->required()
+                    ->prefixIcon(Heroicon::OutlinedBuildingOffice),
                 Textarea::make('additional_information')
                     ->label('Дополнителни информации')
                     ->helperText('Внесете дополнителни информации за понудата. Ова ќе се користи за генерирање на содржината на понудата.')
                     ->rows(5)
                     ->columnSpanFull()
+                    ->prefixIcon(Heroicon::OutlinedDocumentText)
             ]);
     }
 }

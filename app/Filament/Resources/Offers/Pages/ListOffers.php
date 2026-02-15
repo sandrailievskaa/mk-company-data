@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Offers\Pages;
 use App\Filament\Resources\Offers\OfferResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Icons\Heroicon;
 
 class ListOffers extends ListRecords
 {
@@ -14,7 +15,8 @@ class ListOffers extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Нова понуда'),
+                ->label('Нова понуда')
+                ->icon(Heroicon::OutlinedPlus),
         ];
     }
 }
