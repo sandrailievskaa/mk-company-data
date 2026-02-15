@@ -25,7 +25,6 @@ class OfferForm
                     ->helperText('Внесете дополнителни информации за понудата. Ова ќе се користи за генерирање на содржината на понудата.')
                     ->rows(5)
                     ->columnSpanFull()
-                    ->prefixIcon(Heroicon::OutlinedDocumentText)
             ]);
     }
 }
