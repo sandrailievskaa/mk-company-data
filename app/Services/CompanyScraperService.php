@@ -5,23 +5,34 @@ namespace App\Services;
 use App\Models\Company;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpClient\Exception\TimeoutException;
+use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\HttpClient\HttpClient;
 
 class CompanyScraperService
 {
     public function scrapeCompanies(string $sector): void
     {
-        $browser = new HttpBrowser(HttpClient::create());
+        $browser = new HttpBrowser(HttpClient::create([
+            // `timeout` is the max idle time while transferring; `max_duration` caps total request time.
+            'timeout' => 60,
+            'max_duration' => 90,
+            'connect_timeout' => 10,
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language' => 'mk-MK,mk;q=0.9,en-US;q=0.8,en;q=0.7',
+            ],
+        ]));
 
         $url = 'https://zk.mk/'.$sector;
 
         do {
-            $crawler = $browser->request('GET', $url);
+            $crawler = $this->requestWithRetry($browser, $url);
             $results = $crawler->filter('.result');
 
             foreach ($results as $result) {
                 $company = $this->parseResult($result);
-                Company::query()->updateOrCreate([
+                $model = Company::query()->updateOrCreate([
                     'name' => $company['name'],
                 ], [
                     'city' => $company['city'],
@@ -29,13 +40,52 @@ class CompanyScraperService
                     'phone' => $company['phone'],
                     'sector' => $sector,
                 ]);
+
+                // Count how often we see this company across scraping runs.
+                // This is used later to compute the normalized frequency score (F).
+                if (! $model->wasRecentlyCreated) {
+                    $model->increment('scrape_count');
+                }
+
+                // If scraping found an email, only set it when we don't already have one.
+                // This avoids overwriting enriched / manually set emails with null.
+                if (! empty($company['email']) && empty($model->email)) {
+                    $model->update(['email' => $company['email']]);
+                }
             }
 
             $url = $crawler->filter('.pagination a[rel="next"]')->count()
                 ? $crawler->filter('.pagination a[rel="next"]')->attr('href')
                 : null;
 
+            // Be polite and reduce the chance of rate limiting / connection resets.
+            if ($url) {
+                usleep(250000); // 0.25s
+            }
         } while ($url);
+    }
+
+    private function requestWithRetry(HttpBrowser $browser, string $url): Crawler
+    {
+        $attempts = 5;
+        $delayMs = 500;
+
+        for ($i = 1; $i <= $attempts; $i++) {
+            try {
+                return $browser->request('GET', $url);
+            } catch (TransportException|TimeoutException $e) {
+                if ($i === $attempts) {
+                    throw $e;
+                }
+
+                // Exponential backoff (0.5s, 1s, 2s, 4s...)
+                usleep($delayMs * 1000);
+                $delayMs *= 2;
+            }
+        }
+
+        // Unreachable, but keeps static analyzers happy.
+        return $browser->request('GET', $url);
     }
 
     private function getText(Crawler $crawler, string $selector): ?string

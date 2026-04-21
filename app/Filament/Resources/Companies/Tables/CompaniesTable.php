@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class CompaniesTable
 {
@@ -20,6 +21,22 @@ class CompaniesTable
                     ->icon(Heroicon::OutlinedBuildingOffice)
                     ->iconColor('primary')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('data_quality_flag')
+                    ->label('Квалитет')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state) => match ($state) {
+                        'duplicate' => 'Дупликат',
+                        'inactive' => 'Неактивна',
+                        'inconsistent' => 'Неконзистентна',
+                        default => 'OK',
+                    })
+                    ->color(fn (?string $state) => match ($state) {
+                        'duplicate' => 'warning',
+                        'inactive' => 'danger',
+                        'inconsistent' => 'info',
+                        default => 'success',
+                    })
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Сектор')
                     ->icon(Heroicon::OutlinedBriefcase)
@@ -51,6 +68,11 @@ class CompaniesTable
                     ->iconColor('success')
                     ->sortable()
                     ->default(0),
+                Tables\Columns\TextColumn::make('data_quality_note')
+                    ->label('Забелешка (AI)')
+                    ->wrap()
+                    ->limit(120)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('sector')
@@ -67,6 +89,9 @@ class CompaniesTable
                             ->pluck('city', 'city')
                             ->toArray();
                     }),
+                Tables\Filters\Filter::make('flagged')
+                    ->label('Само означени')
+                    ->query(fn (Builder $query) => $query->where('data_quality_flag', '!=', 'ok')),
             ])
             ->recordActions([
                 EditAction::make(),

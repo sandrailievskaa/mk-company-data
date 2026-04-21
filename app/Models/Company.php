@@ -10,11 +10,18 @@ class Company extends Model
 {
     protected $casts = [
         'sector' => SectorEnum::class,
-        'activity_index' => 'integer',
+        'activity_index' => 'float',
+        'scrape_count' => 'integer',
+        'data_quality_flag' => 'string',
     ];
 
     public function offers(): HasMany
     {
         return $this->hasMany(Offer::class);
+    }
+
+    public function offerTargets(): HasMany
+    {
+        return $this->hasMany(OfferTarget::class);
     }
 }
