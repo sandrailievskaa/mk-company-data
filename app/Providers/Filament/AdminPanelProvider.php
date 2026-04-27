@@ -2,13 +2,16 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Livewire\AppTopbar;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Assets\Css;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -24,7 +27,19 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('MK Company Data')
             ->login()
+            ->assets([
+                Css::make('filament-core', asset('css/filament/filament/app.css')),
+            ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->topbarLivewireComponent(AppTopbar::class)
+            ->breadcrumbs(false)
+            ->globalSearch(false)
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_NAV_END,
+                fn (): string => view('filament.sidebar.ai-credits')->render(),
+            )
             ->colors([
                 'primary' => Color::Indigo,
             ])

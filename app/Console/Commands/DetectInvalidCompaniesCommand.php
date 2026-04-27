@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Ai\Agents\ValidationAgent;
 use App\Models\Company;
+use App\Services\AiUsage\AiUsageLogSource;
+use App\Services\AiUsage\AiUsageRecorder;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
@@ -23,6 +25,7 @@ class DetectInvalidCompaniesCommand extends Command
         $total = Company::count();
         if ($total === 0) {
             $this->warn('No companies found.');
+
             return Command::SUCCESS;
         }
 
@@ -55,11 +58,18 @@ class DetectInvalidCompaniesCommand extends Command
                     $agent = ValidationAgent::make();
                     $response = $agent->prompt($prompt);
 
+                    app(AiUsageRecorder::class)->record(
+                        $response,
+                        AiUsageLogSource::VALIDATION,
+                        null
+                    );
+
                     $raw = (string) ($response['issues_json'] ?? '');
                     $issues = json_decode($raw, true);
 
                     if (! is_array($issues)) {
                         $this->warn('AI returned invalid JSON; skipping this batch.');
+
                         return;
                     }
 
@@ -122,6 +132,7 @@ class DetectInvalidCompaniesCommand extends Command
                     'data_quality_flag' => $flag,
                     'data_quality_note' => $note,
                 ]);
+
                 return;
             } catch (QueryException $e) {
                 if (! str_contains(strtolower($e->getMessage()), 'database is locked') || $i === $attempts) {
@@ -148,4 +159,3 @@ class DetectInvalidCompaniesCommand extends Command
         }
     }
 }
-

@@ -4,16 +4,36 @@ namespace App\Filament\Resources\Offers\Pages;
 
 use App\Ai\Agents\OfferAgent;
 use App\Ai\Agents\RecommendationAgent;
+use App\Enums\OfferStatus;
 use App\Filament\Resources\Offers\OfferResource;
 use App\Models\Company;
 use App\Models\OfferTarget;
+use App\Services\AiUsage\AiUsageLogSource;
+use App\Services\AiUsage\AiUsageRecorder;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Enums\Width;
 use Illuminate\Support\Arr;
 use Throwable;
 
 class CreateOffer extends CreateRecord
 {
     protected static string $resource = OfferResource::class;
+
+    protected static bool $canCreateAnother = false;
+
+    protected function fillForm(): void
+    {
+        parent::fillForm();
+
+        $companyId = (int) request()->query('company_id', 0);
+        if ($companyId > 0 && Company::query()->whereKey($companyId)->exists()) {
+            $state = $this->form->getState();
+            $state['company_id'] = $companyId;
+            $this->form->fill($state);
+        }
+    }
 
     public array $aiRecommendations = [];
 
@@ -24,9 +44,50 @@ class CreateOffer extends CreateRecord
 
     public ?string $aiRecommendationError = null;
 
+    protected Width|string|null $maxContentWidth = Width::SevenExtraLarge;
+
     public function getTitle(): string
     {
-        return 'Нова понуда';
+        return 'Креирај понуда';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'НОВА ПОНУДА · НАЦРТ';
+    }
+
+    public function getPageClasses(): array
+    {
+        return array_merge(parent::getPageClasses(), [
+            'mk-offer-create',
+        ]);
+    }
+
+    protected function getCreateFormAction(): Action
+    {
+        return parent::getCreateFormAction()
+            ->label('Зачувај нацрт')
+            ->extraAttributes(['class' => 'mk-offer-create-submit mk-offer-create-save']);
+    }
+
+    protected function getCancelFormAction(): Action
+    {
+        return Action::make('cancel')
+            ->label('Откажи')
+            ->url(OfferResource::getUrl('index'))
+            ->color('gray')
+            ->outlined();
+    }
+
+    /**
+     * @return array<\Filament\Actions\Action | \Filament\Actions\ActionGroup>
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getCreateFormAction(),
+            $this->getCancelFormAction(),
+        ];
     }
 
     public function generateCompanyRecommendations(): void
@@ -48,12 +109,14 @@ class CreateOffer extends CreateRecord
             }
 
             if ($title === '' && $description === '') {
-                $this->aiRecommendationError = 'Внеси барем наслов или опис за да се генерираат препораки.';
+                $this->aiRecommendationError = 'Внеси барем наслов или дополнителен опис за да се генерираат препораки.';
+
                 return;
             }
 
             if (empty($sector)) {
-                $this->aiRecommendationError = 'Избери сектор за препораки (или избери компанија со сектор).';
+                $this->aiRecommendationError = 'Избери сектор (или прво избери компанија со сектор).';
+
                 return;
             }
 
@@ -79,6 +142,7 @@ class CreateOffer extends CreateRecord
 
             if (count($candidates) === 0) {
                 $this->aiRecommendationError = 'Нема компании за избраниот сектор.';
+
                 return;
             }
 
@@ -92,11 +156,18 @@ class CreateOffer extends CreateRecord
             $agent = RecommendationAgent::make();
             $response = $agent->prompt($prompt);
 
+            app(AiUsageRecorder::class)->record(
+                $response,
+                AiUsageLogSource::RECOMMENDATION,
+                auth()->id()
+            );
+
             $rawJson = (string) ($response['recommendations_json'] ?? '');
             $decoded = json_decode($rawJson, true);
 
             if (! is_array($decoded)) {
                 $this->aiRecommendationError = 'AI врати невалиден JSON за препораките. Пробај повторно.';
+
                 return;
             }
 
@@ -119,7 +190,7 @@ class CreateOffer extends CreateRecord
                 $c = $candidateById->get($companyId);
                 $final[] = [
                     'company_id' => $companyId,
-                    'name' => $c['name'] ?? ('#' . $companyId),
+                    'name' => $c['name'] ?? ('#'.$companyId),
                     'sector' => $c['sector'] ?? null,
                     'sector_label' => $c['sector_label'] ?? null,
                     'city' => $c['city'] ?? null,
@@ -135,6 +206,7 @@ class CreateOffer extends CreateRecord
 
             if (count($final) === 0) {
                 $this->aiRecommendationError = 'AI не врати валидни препораки за кандидатите. Пробај повторно.';
+
                 return;
             }
 
@@ -142,8 +214,70 @@ class CreateOffer extends CreateRecord
             foreach ($final as $rec) {
                 $this->aiRecommendationSelections[(string) $rec['company_id']] = false;
             }
-        } catch (Throwable $e) {
-            $this->aiRecommendationError = 'Неуспешно генерирање препораки. Провери API клуч и пробај повторно.';
+        } catch (Throwable) {
+            $this->aiRecommendationError = 'Неуспешно генерирање на препораки. Провери API клуч и пробај повторно.';
+        }
+    }
+
+    public function generateOfferContent(): void
+    {
+        try {
+            $state = $this->form->getState();
+            $companyId = $state['company_id'] ?? null;
+            $additionalInformation = trim((string) ($state['additional_information'] ?? ''));
+
+            if ($companyId === null && $additionalInformation === '') {
+                Notification::make()
+                    ->title('Пополни податоци')
+                    ->body('Одбери компанија и/или дополнителен опис за AI.')
+                    ->warning()
+                    ->send();
+
+                return;
+            }
+
+            $company = $companyId ? Company::find($companyId) : null;
+            $companyContext = $company ? "Company: {$company->name}" : '';
+            $prompt = trim("{$companyContext}\n\n{$additionalInformation}");
+
+            if ($prompt === '') {
+                Notification::make()
+                    ->title('Нема влез')
+                    ->body('Пополни барем едно поле за AI.')
+                    ->warning()
+                    ->send();
+
+                return;
+            }
+
+            $agent = OfferAgent::make();
+            $response = $agent->prompt($prompt);
+
+            app(AiUsageRecorder::class)->record(
+                $response,
+                AiUsageLogSource::OFFER,
+                auth()->id()
+            );
+
+            $this->form->fill(array_merge(
+                $this->form->getState(),
+                [
+                    'title' => $response['title'],
+                    'content' => $response['content'],
+                ]
+            ));
+
+            Notification::make()
+                ->title('Содржината е генерирана')
+                ->body('Проверете го текстот и прилагодете го по потреба.')
+                ->success()
+                ->send();
+        } catch (Throwable) {
+            Notification::make()
+                ->title('Генерирањето не успеа')
+                ->body('Проверете ја врската / API поставките и пробајте повторно.')
+                ->danger()
+                ->send();
         }
     }
 
@@ -192,28 +326,14 @@ class CreateOffer extends CreateRecord
         );
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $additionalInformation = $data['additional_information'] ?? '';
-        $companyId = $data['company_id'] ?? null;
+        $data['status'] = OfferStatus::Pending->value;
 
-        // Get company information for context
-        $company = $companyId ? Company::find($companyId) : null;
-        $companyContext = $company ? "Company: {$company->name}" : '';
-
-        // Build the prompt with additional information
-        $prompt = trim("{$companyContext}\n\n{$additionalInformation}");
-
-        // Generate offer using AI agent
-        $agent = OfferAgent::make();
-        $response = $agent->prompt($prompt);
-
-        // Get structured output from the response (array access works for StructuredAgentResponse)
-        // Replace form data with AI-generated content
-        return [
-            'company_id' => $data['company_id'],
-            'title' => $response['title'],
-            'content' => $response['content'],
-        ];
+        return $data;
     }
 }
