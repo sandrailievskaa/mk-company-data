@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\EmailEnrichment\SiteEmailFinder;
 use App\Services\EmailEnrichment\Strategies\SearchStrategy;
-use App\Services\EmailEnrichment\Strategies\WebsiteStrategy;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->when([WebsiteStrategy::class, SearchStrategy::class])
+        $this->app->when([SiteEmailFinder::class, SearchStrategy::class])
             ->needs(ClientInterface::class)
             ->give(fn () => new Client([
                 'timeout' => (int) config('enrichment.timeouts.default'),

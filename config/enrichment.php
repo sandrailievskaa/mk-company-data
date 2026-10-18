@@ -9,6 +9,20 @@ return [
     'search_enabled' => (bool) env('ENRICHMENT_SEARCH_ENABLED', true),
 
     /*
+    | Guessing a company's domain from its name is an assumption, so it is off:
+    | websites come from the company's zk.mk profile or from a search result whose
+    | domain matches the name. Turn it on only for experiments.
+    */
+    'guess_domains' => (bool) env('ENRICHMENT_GUESS_DOMAINS', false),
+
+    /*
+    | Strategy 3 (pattern-based info@domain). The paper describes it as a fallback
+    | that is marked as inferred; it is disabled by default because the address is
+    | a guess. An inferred address is only kept when its domain has an MX record.
+    */
+    'inferred_enabled' => (bool) env('ENRICHMENT_INFERRED_ENABLED', false),
+
+    /*
     | TLS verification for company websites. Provide a CA bundle path when the
     | PHP installation has none configured (e.g. Herd: ~/.config/herd/config/php/cacert.pem).
     */

@@ -8,6 +8,11 @@ return [
     'base_url' => env('SCRAPER_BASE_URL', 'https://zk.mk'),
 
     /*
+    | CompanyWall public company profiles (registry identifiers).
+    */
+    'companywall_url' => env('COMPANYWALL_BASE_URL', 'https://www.companywall.com.mk'),
+
+    /*
     | Delay between two HTTP requests, in milliseconds (the paper uses ~0.3 s).
     | Note: zk.mk/robots.txt advertises "Crawl-delay: 5". Raise this value to honour
     | it fully (SCRAPER_DELAY_MS=5000); each run logs a warning when it is lower.

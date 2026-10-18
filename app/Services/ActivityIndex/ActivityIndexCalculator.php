@@ -49,14 +49,15 @@ class ActivityIndexCalculator
     }
 
     /**
-     * Number of distinct public sources the company was observed in.
+     * Number of distinct public sources the company is present in:
+     * the zk.mk registry listing (always), its own website, and CompanyWall.
      */
     public function sourcesCount(Company $company): int
     {
-        $source = $company->email_source;
+        $hasWebsite = filled($company->website)
+            || in_array($company->email_source, [EmailSource::Website, EmailSource::Search], true);
 
-        // The registry listing is always a source; a website/search hit adds one more.
-        return 1 + (in_array($source, [EmailSource::Website, EmailSource::Search], true) ? 1 : 0);
+        return 1 + ($hasWebsite ? 1 : 0) + (filled($company->companywall_url) ? 1 : 0);
     }
 
     /**
@@ -73,7 +74,7 @@ class ActivityIndexCalculator
         $max = null;
 
         Company::query()
-            ->select(['id', 'email', 'email_source', 'scrape_count'])
+            ->select(['id', 'email', 'email_source', 'scrape_count', 'website', 'companywall_url'])
             ->orderBy('id')
             ->chunkById(500, function ($companies) use ($scale, &$count, &$sum, &$min, &$max) {
                 DB::transaction(function () use ($companies, $scale, &$count, &$sum, &$min, &$max) {

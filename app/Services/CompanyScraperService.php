@@ -6,20 +6,17 @@ use App\Enums\EmailSource;
 use App\Enums\ScrapeRunStatus;
 use App\Models\Company;
 use App\Models\ScrapeRun;
+use App\Services\Scraping\PoliteBrowser;
 use App\Support\CompanyNameNormalizer;
-use App\Support\RobotsTxt;
-use Illuminate\Support\Facades\Log;
 use RuntimeException;
-use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\HttpClient\Exception\TimeoutException;
-use Symfony\Component\HttpClient\Exception\TransportException;
-use Symfony\Component\HttpClient\HttpClient;
-use Throwable;
 
 class CompanyScraperService
 {
-    public function __construct(private readonly CompanyNameNormalizer $normalizer) {}
+    public function __construct(
+        private readonly CompanyNameNormalizer $normalizer,
+        private readonly PoliteBrowser $http,
+    ) {}
 
     /**
      * Scrape one sector, paginating to the end, and record metrics on the run.
@@ -32,16 +29,16 @@ class CompanyScraperService
             'started_at' => now(),
         ]);
 
-        $browser = $this->makeBrowser();
-        $this->assertAllowedByRobots($browser, $sector);
-
-        $delayMicros = max(0, (int) config('scraping.delay_ms')) * 1000;
         $url = rtrim((string) config('scraping.base_url'), '/').'/'.$sector;
+        if (! $this->http->isAllowed($url)) {
+            throw new RuntimeException("robots.txt disallows scraping /{$sector}");
+        }
+
         $pages = $seen = $created = $updated = $emails = $duplicates = 0;
         $seenInRun = [];
 
         do {
-            $crawler = $this->requestWithRetry($browser, $url);
+            $crawler = $this->http->get($url);
             $pages++;
 
             foreach ($crawler->filter('.result') as $result) {
@@ -63,6 +60,7 @@ class CompanyScraperService
                     ?? new Company(['name' => $company['name']]);
 
                 $model->fill([
+                    'profile_url' => $company['profile_url'] ?? $model->profile_url,
                     'city' => $company['city'],
                     'address' => $company['address'],
                     'phone' => $company['phone'],
@@ -95,7 +93,7 @@ class CompanyScraperService
 
             // Be polite and reduce the chance of rate limiting / connection resets.
             if ($url) {
-                usleep($delayMicros);
+                $this->http->pause();
             }
         } while ($url);
 
@@ -109,73 +107,6 @@ class CompanyScraperService
         ]);
 
         return $run;
-    }
-
-    private function makeBrowser(): HttpBrowser
-    {
-        return new HttpBrowser(HttpClient::create([
-            // `timeout` is the max idle time while transferring; `max_duration` caps total request time.
-            'timeout' => config('scraping.timeout'),
-            'max_duration' => config('scraping.max_duration'),
-            'headers' => [
-                'User-Agent' => config('scraping.user_agent'),
-                'Accept-Language' => 'mk-MK,mk;q=0.9,en-US;q=0.8,en;q=0.7',
-            ],
-        ]));
-    }
-
-    private function assertAllowedByRobots(HttpBrowser $browser, string $sector): void
-    {
-        if (! config('scraping.respect_robots')) {
-            return;
-        }
-
-        $base = rtrim((string) config('scraping.base_url'), '/');
-
-        try {
-            $browser->request('GET', $base.'/robots.txt');
-            $robots = new RobotsTxt($browser->getResponse()->getContent(false));
-        } catch (Throwable $e) {
-            Log::warning('Could not read robots.txt, continuing: '.$e->getMessage());
-
-            return;
-        }
-
-        if (! $robots->isAllowed('/'.$sector)) {
-            throw new RuntimeException("robots.txt disallows scraping /{$sector}");
-        }
-
-        $crawlDelay = $robots->crawlDelaySeconds();
-        if ($crawlDelay !== null && $crawlDelay * 1000 > (int) config('scraping.delay_ms')) {
-            Log::warning(sprintf(
-                'robots.txt asks for Crawl-delay %ss but SCRAPER_DELAY_MS is %dms.',
-                $crawlDelay,
-                (int) config('scraping.delay_ms')
-            ));
-        }
-    }
-
-    private function requestWithRetry(HttpBrowser $browser, string $url): Crawler
-    {
-        $attempts = max(1, (int) config('scraping.retries'));
-        $delayMs = 500;
-
-        for ($i = 1; $i <= $attempts; $i++) {
-            try {
-                return $browser->request('GET', $url);
-            } catch (TransportException|TimeoutException $e) {
-                if ($i === $attempts) {
-                    throw $e;
-                }
-
-                // Exponential backoff (0.5s, 1s, 2s, 4s...)
-                usleep($delayMs * 1000);
-                $delayMs *= 2;
-            }
-        }
-
-        // Unreachable, but keeps static analyzers happy.
-        return $browser->request('GET', $url);
     }
 
     private function getText(Crawler $crawler, string $selector): ?string
@@ -223,8 +154,11 @@ class CompanyScraperService
         // Try to extract email from the result HTML
         $email = $this->extractEmailFromHtml($result_crawler->html());
 
+        $profileUrl = $this->getAttr($result_crawler, 'a.companyname', 'href');
+
         return [
             'name' => $name,
+            'profile_url' => $profileUrl ? trim($profileUrl) : null,
             'city' => $city,
             'address' => $address,
             'phone' => $phone,

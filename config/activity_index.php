@@ -25,15 +25,15 @@ return [
     ],
 
     /*
-    | Public sources a company can be observed in: the registry listing (always),
-    | its own website, and search results. P = distinct sources / max_sources.
+    | Public sources a company can be observed in: the zk.mk listing (always),
+    | its own website, and CompanyWall. P = distinct sources / max_sources.
     */
     'max_sources' => (int) env('ACTIVITY_MAX_SOURCES', 3),
 
     /*
     | Whether a pattern-generated (inferred) address counts as "email available".
-    | The paper's coverage figure includes them; set to false to rank only on
-    | addresses that were actually found.
+    | Off by default: a guessed address is not a found contact, so E only rewards
+    | addresses that were actually read from a public source.
     */
-    'inferred_email_counts' => (bool) env('ACTIVITY_INFERRED_EMAIL_COUNTS', true),
+    'inferred_email_counts' => (bool) env('ACTIVITY_INFERRED_EMAIL_COUNTS', false),
 ];

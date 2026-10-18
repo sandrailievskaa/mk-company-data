@@ -18,6 +18,11 @@ class Company extends Model
         'email_source' => EmailSource::class,
         'email_found_at' => 'datetime',
         'sources_count' => 'integer',
+        'profile_scraped_at' => 'datetime',
+        'companywall_scraped_at' => 'datetime',
+        'founded_on' => 'date',
+        'employees' => 'integer',
+        'email_domain_has_mx' => 'boolean',
     ];
 
     protected static function booted(): void

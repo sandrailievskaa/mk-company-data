@@ -77,9 +77,19 @@ class CompaniesTable
                     ->badge()
                     ->placeholder('—')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('website')
+                    ->label('Веб-сајт')
+                    ->url(fn (Company $record): ?string => $record->website, shouldOpenInNewTab: true)
+                    ->formatStateUsing(fn (?string $state): string => $state ? preg_replace('#^https?://(www\.)?#i', '', rtrim($state, '/')) : '—')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Телефон')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('edb')
+                    ->label('ЕДБ')
+                    ->searchable()
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('activity_index')
                     ->label('Индекс на активност')
                     ->sortable()
@@ -177,6 +187,17 @@ class CompaniesTable
                     ->queries(
                         true: fn ($query) => $query->whereNotNull('email'),
                         false: fn ($query) => $query->whereNull('email'),
+                        blank: fn ($query) => $query,
+                    )
+                    ->native(false),
+                Tables\Filters\TernaryFilter::make('has_website')
+                    ->label('Веб-сајт')
+                    ->placeholder('Веб-сајт: сите')
+                    ->trueLabel('Со веб-сајт')
+                    ->falseLabel('Без веб-сајт')
+                    ->queries(
+                        true: fn ($query) => $query->whereNotNull('website'),
+                        false: fn ($query) => $query->whereNull('website'),
                         blank: fn ($query) => $query,
                     )
                     ->native(false),

@@ -16,6 +16,8 @@ beforeEach(function () {
     $this->company = Company::create([
         'name' => 'Нова Градба', 'sector' => 'gradezhni-kompanii', 'city' => 'Скопје',
         'email' => 'info@novagradba.mk', 'email_source' => EmailSource::Inferred,
+        'website' => 'http://novagradba.mk', 'facebook_url' => 'https://facebook.com/novagradba', 'edb' => '4030000000000',
+        'companywall_url' => '/kompanija/x/Y', 'email_domain_has_mx' => true,
     ]);
     $this->offer = Offer::create(['title' => 'Понуда', 'content' => 'Текст', 'company_id' => $this->company->id]);
 });
@@ -30,10 +32,11 @@ it('renders the admin pages without errors', function (string $page) {
         'offer view' => OfferResource::getUrl('view', ['record' => $this->offer]),
         'offer create' => OfferResource::getUrl('create'),
         'scrape runs' => ScrapeRunResource::getUrl('index'),
+        'pipeline' => '/admin/pipeline',
     };
 
     $this->get($url)->assertOk();
-})->with(['dashboard', 'companies list', 'company view', 'company edit', 'offers list', 'offer view', 'offer create', 'scrape runs']);
+})->with(['dashboard', 'companies list', 'company view', 'company edit', 'offers list', 'offer view', 'offer create', 'scrape runs', 'pipeline']);
 
 it('filters companies by email presence and quality flag', function () {
     $with = Company::create(['name' => 'Со пошта', 'email' => 'a@b.mk', 'email_source' => EmailSource::Website]);

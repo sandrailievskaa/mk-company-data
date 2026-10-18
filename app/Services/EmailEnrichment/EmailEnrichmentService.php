@@ -12,38 +12,47 @@ use Throwable;
 
 /**
  * Finds a contact e-mail for a company by trying the strategies in order of
- * reliability: company website, search engine, pattern-based generation.
- * Every stored address records which strategy produced it.
+ * reliability: the company website, a search-engine lookup and (only when enabled)
+ * pattern-based generation. Every stored address records which strategy produced it
+ * and whether its domain can receive mail.
  */
 class EmailEnrichmentService
 {
-    /** @var list<EmailStrategy> */
-    private array $strategies;
-
     /** Source of the e-mail returned by the most recent findEmail() call. */
     private ?EmailSource $lastSource = null;
 
+    /** Website discovered by the last successful search, if any. */
+    private ?string $lastWebsite = null;
+
     public function __construct(
-        WebsiteStrategy $website,
-        SearchStrategy $search,
+        private readonly WebsiteStrategy $website,
+        private readonly SearchStrategy $search,
         private readonly PatternStrategy $pattern,
         private readonly EmailExtractor $extractor,
-    ) {
-        $this->strategies = [$website, $search, $pattern];
-    }
+        private readonly EmailDomainChecker $domains,
+    ) {}
 
     public function findEmail(Company $company): ?string
     {
         $this->lastSource = null;
+        $this->lastWebsite = null;
 
-        foreach ($this->strategies as $strategy) {
+        foreach ($this->strategies() as $strategy) {
             $email = $strategy->find($company);
 
-            if ($email !== null && $this->extractor->isUsable($email)) {
-                $this->lastSource = $strategy->source();
-
-                return $email;
+            if ($email === null || ! $this->extractor->isUsable($email)) {
+                continue;
             }
+
+            // A generated guess is only worth keeping if its domain can receive mail.
+            if ($strategy->source() === EmailSource::Inferred && ! $this->domains->hasMx($email)) {
+                continue;
+            }
+
+            $this->lastSource = $strategy->source();
+            $this->lastWebsite = $strategy === $this->search ? $this->search->discoveredWebsite : null;
+
+            return $email;
         }
 
         return null;
@@ -96,7 +105,8 @@ class EmailEnrichmentService
             $query->whereNull('email');
         }
 
-        $companies = $query->limit($limit)->get();
+        // Companies with a known website first: they are the ones that can succeed.
+        $companies = $query->orderByRaw('website IS NULL')->limit($limit)->get();
         $results = ['total' => $companies->count(), 'enriched' => 0, 'failed' => 0];
 
         foreach ($companies as $company) {
@@ -135,10 +145,31 @@ class EmailEnrichmentService
 
     private function storeEmail(Company $company, string $email): void
     {
-        $company->update([
+        $attributes = [
             'email' => $email,
             'email_source' => $this->lastSource ?? EmailSource::Observed,
             'email_found_at' => now(),
-        ]);
+            'email_domain_has_mx' => $this->domains->hasMx($email),
+        ];
+
+        if ($this->lastWebsite !== null && blank($company->website)) {
+            $attributes['website'] = $this->lastWebsite;
+        }
+
+        $company->update($attributes);
+    }
+
+    /**
+     * @return list<EmailStrategy>
+     */
+    private function strategies(): array
+    {
+        $strategies = [$this->website, $this->search];
+
+        if (config('enrichment.inferred_enabled')) {
+            $strategies[] = $this->pattern;
+        }
+
+        return $strategies;
     }
 }

@@ -31,15 +31,16 @@ it('scores E, P and F with the 0.5 / 0.3 / 0.2 weights', function () {
         ->and($calculator->score($none, $scale))->toBe(0.1);
 });
 
-it('can exclude inferred addresses from E', function () {
+it('counts inferred addresses for E only when enabled', function () {
     $calculator = app(ActivityIndexCalculator::class);
     $company = new Company(['email' => 'info@firma.mk', 'email_source' => EmailSource::Inferred, 'scrape_count' => 1]);
 
-    expect($calculator->components($company, new FrequencyScale(1, 1))['email'])->toBe(1.0);
-
-    config(['activity_index.inferred_email_counts' => false]);
-
+    // Off by default: a guess is not a found contact.
     expect($calculator->components($company, new FrequencyScale(1, 1))['email'])->toBe(0.0);
+
+    config(['activity_index.inferred_email_counts' => true]);
+
+    expect($calculator->components($company, new FrequencyScale(1, 1))['email'])->toBe(1.0);
 });
 
 it('ignores junk addresses for E', function () {
@@ -61,4 +62,12 @@ it('persists the index and sources_count for every company', function () {
         ->and($a->sources_count)->toBe(2)
         ->and($b->activity_index)->toBe(0.1)
         ->and($b->sources_count)->toBe(1);
+});
+
+it('counts the registry, the own website and CompanyWall as sources', function () {
+    $calculator = app(ActivityIndexCalculator::class);
+
+    expect($calculator->sourcesCount(new Company))->toBe(1)
+        ->and($calculator->sourcesCount(new Company(['website' => 'http://firma.mk'])))->toBe(2)
+        ->and($calculator->sourcesCount(new Company(['website' => 'http://firma.mk', 'companywall_url' => '/kompanija/x'])))->toBe(3);
 });
