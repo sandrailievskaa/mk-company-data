@@ -15,8 +15,6 @@ class ListOffers extends ListRecords
 {
     protected static string $resource = OfferResource::class;
 
-    protected static ?string $title = 'Понуди';
-
     public function getPageClasses(): array
     {
         return array_merge(parent::getPageClasses(), [
@@ -26,7 +24,7 @@ class ListOffers extends ListRecords
 
     public function getHeading(): string|\Illuminate\Contracts\Support\Htmlable|null
     {
-        return 'Понуди';
+        return __('Понуди');
     }
 
     /**
@@ -44,7 +42,7 @@ class ListOffers extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Нова понуда')
+                ->label(__('Нова понуда'))
                 ->icon(Heroicon::OutlinedPlus)
                 ->color('gray')
                 ->outlined(),
@@ -60,5 +58,10 @@ class ListOffers extends ListRecords
                 SchemaView::make('filament.resources.offers.list-offers-grid'),
                 RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER),
             ]);
+    }
+
+    public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
+    {
+        return __('Понуди');
     }
 }

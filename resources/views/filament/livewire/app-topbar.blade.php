@@ -140,12 +140,12 @@
                         x-ref="mkTopbarSearch"
                         type="search"
                         class="mk-app-topbar__search-input"
-                        placeholder="Search companies, offers, signals…"
+                        placeholder="{{ __('Пребарај компании, понуди…') }}"
                         autocomplete="off"
                         wire:model.live.debounce.250ms="search"
                         wire:input="openSearchIfNeeded"
                     />
-                    <span class="mk-app-topbar__kbd" title="Пребарај (Ctrl/⌘ + K)">
+                    <span class="mk-app-topbar__kbd" title="{{ __('Пребарај (Ctrl/⌘ + K)') }}">
                         <span
                             x-cloak
                             x-text="(navigator && navigator.platform && (navigator.platform.includes('Mac') || (navigator.userAgentData && navigator.userAgentData.platform === 'macOS'))) ? '⌘K' : 'Ctrl+K'"
@@ -178,13 +178,14 @@
                             @endforeach
                         </ul>
                     @elseif (trim($search) !== '' && $this->companySearchResults->isEmpty())
-                        <p class="mk-app-topbar__results-empty">Нема совпаѓања за компании.</p>
+                        <p class="mk-app-topbar__results-empty">{{ __('Нема совпаѓања за компании.') }}</p>
                     @endif
                 </div>
             </div>
 
             @if (filament()->auth()->check())
                 @include('filament.components.mk-theme-switcher')
+                @include('filament.components.mk-language-switcher')
 
                 @if (filament()->hasUserMenu() && filament()->getUserMenuPosition() === UserMenuPosition::Topbar)
                     <x-filament-panels::user-menu />

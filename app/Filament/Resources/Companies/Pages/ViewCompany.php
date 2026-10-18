@@ -26,7 +26,7 @@ class ViewCompany extends ViewRecord
 
     public function getContentTabLabel(): ?string
     {
-        return 'Преглед';
+        return __('Преглед');
     }
 
     public function mount(int|string $record): void
@@ -43,7 +43,7 @@ class ViewCompany extends ViewRecord
     {
         return [
             EditAction::make()
-                ->label('Уреди')
+                ->label(__('Уреди'))
                 ->icon(Heroicon::OutlinedPencilSquare),
         ];
     }

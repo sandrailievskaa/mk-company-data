@@ -15,8 +15,6 @@ class SentOffersRelationManager extends RelationManager
 {
     protected static string $relationship = 'sentOffers';
 
-    protected static ?string $title = 'Испраќања';
-
     public function table(Table $table): Table
     {
         return $table
@@ -24,29 +22,29 @@ class SentOffersRelationManager extends RelationManager
             ->poll('15s')
             ->columns([
                 TextColumn::make('company.name')
-                    ->label('Компанија')
+                    ->label(__('Компанија'))
                     ->wrap()
                     ->searchable(),
                 TextColumn::make('recipient_email')
-                    ->label('Е-пошта')
+                    ->label(__('Е-пошта'))
                     ->visibleFrom('md')
                     ->wrap()
                     ->placeholder('—'),
                 TextColumn::make('status')
-                    ->label('Статус')
+                    ->label(__('Статус'))
                     ->badge(),
                 TextColumn::make('sent_at')
-                    ->label('Испратена')
+                    ->label(__('Испратена'))
                     ->visibleFrom('sm')
                     ->dateTime('d.m.Y H:i')
                     ->placeholder('—'),
                 TextColumn::make('opened_at')
-                    ->label('Отворена')
+                    ->label(__('Отворена'))
                     ->visibleFrom('lg')
                     ->dateTime('d.m.Y H:i')
                     ->placeholder('—'),
                 TextColumn::make('error_message')
-                    ->label('Грешка')
+                    ->label(__('Грешка'))
                     ->visibleFrom('lg')
                     ->limit(60)
                     ->tooltip(fn (SentOffer $record): ?string => $record->error_message)
@@ -54,20 +52,25 @@ class SentOffersRelationManager extends RelationManager
             ])
             ->recordActions([
                 Action::make('retry')
-                    ->label('Повтори')
+                    ->label(__('Повтори'))
                     ->visible(fn (SentOffer $record): bool => $record->status === OfferStatus::Failed)
                     ->requiresConfirmation()
                     ->action(function (SentOffer $record): void {
                         $ok = app(SendOfferService::class)->retry($record);
 
                         Notification::make()
-                            ->title($ok ? 'Понудата е испратена' : 'Испраќањето повторно не успеа')
+                            ->title($ok ? __('Понудата е испратена') : __('Испраќањето повторно не успеа'))
                             ->{$ok ? 'success' : 'danger'}()
                             ->send();
                     }),
             ])
-            ->emptyStateHeading('Сè уште нема испраќања')
-            ->emptyStateDescription('Користете „Испрати понуда“ на страницата на понудата.')
+            ->emptyStateHeading(__('Сè уште нема испраќања'))
+            ->emptyStateDescription(__('Користете „Испрати понуда“ на страницата на понудата.'))
             ->paginated([10, 25, 50]);
+    }
+
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('Испраќања');
     }
 }

@@ -17,12 +17,6 @@ class ScrapeRunResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowPath;
 
-    protected static ?string $navigationLabel = 'Скрејпања';
-
-    protected static ?string $label = 'Скрејпање';
-
-    protected static ?string $pluralLabel = 'Скрејпања';
-
     protected static ?int $navigationSort = 40;
 
     public static function canCreate(): bool
@@ -37,20 +31,20 @@ class ScrapeRunResource extends Resource
             ->poll('10s')
             ->columns([
                 Tables\Columns\TextColumn::make('started_at')
-                    ->label('Почеток')
+                    ->label(__('Почеток'))
                     ->dateTime('d.m.Y H:i')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sector')
-                    ->label('Сектор')
+                    ->label(__('Сектор'))
                     ->placeholder('—')
                     ->wrap(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Статус')
+                    ->label(__('Статус'))
                     ->badge()
                     ->formatStateUsing(fn (ScrapeRunStatus $state): string => match ($state) {
-                        ScrapeRunStatus::Running => 'Во тек',
-                        ScrapeRunStatus::Completed => 'Завршено',
-                        ScrapeRunStatus::Failed => 'Неуспешно',
+                        ScrapeRunStatus::Running => __('Во тек'),
+                        ScrapeRunStatus::Completed => __('Завршено'),
+                        ScrapeRunStatus::Failed => __('Неуспешно'),
                     })
                     ->color(fn (ScrapeRunStatus $state): string => match ($state) {
                         ScrapeRunStatus::Running => 'warning',
@@ -58,16 +52,16 @@ class ScrapeRunResource extends Resource
                         ScrapeRunStatus::Failed => 'danger',
                     }),
                 Tables\Columns\TextColumn::make('duration_seconds')
-                    ->label('Траење')
+                    ->label(__('Траење'))
                     ->visibleFrom('sm')
-                    ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : sprintf('%d:%02d мин', intdiv($state, 60), $state % 60)),
-                Tables\Columns\TextColumn::make('pages_fetched')->label('Страници')->visibleFrom('lg'),
-                Tables\Columns\TextColumn::make('records_seen')->label('Видени')->visibleFrom('md'),
-                Tables\Columns\TextColumn::make('records_created')->label('Нови')->visibleFrom('md'),
-                Tables\Columns\TextColumn::make('records_updated')->label('Ажурирани')->visibleFrom('xl'),
-                Tables\Columns\TextColumn::make('emails_found')->label('Е-пошти')->visibleFrom('xl'),
+                    ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : sprintf(__('%d:%02d мин'), intdiv($state, 60), $state % 60)),
+                Tables\Columns\TextColumn::make('pages_fetched')->label(__('Страници'))->visibleFrom('lg'),
+                Tables\Columns\TextColumn::make('records_seen')->label(__('Видени'))->visibleFrom('md'),
+                Tables\Columns\TextColumn::make('records_created')->label(__('Нови'))->visibleFrom('md'),
+                Tables\Columns\TextColumn::make('records_updated')->label(__('Ажурирани'))->visibleFrom('xl'),
+                Tables\Columns\TextColumn::make('emails_found')->label(__('Е-пошти'))->visibleFrom('xl'),
                 Tables\Columns\TextColumn::make('error_message')
-                    ->label('Грешка')
+                    ->label(__('Грешка'))
                     ->visibleFrom('lg')
                     ->limit(60)
                     ->tooltip(fn (ScrapeRun $record): ?string => $record->error_message)
@@ -80,5 +74,20 @@ class ScrapeRunResource extends Resource
         return [
             'index' => ListScrapeRuns::route('/'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Скрејпања');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Скрејпање');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Скрејпања');
     }
 }

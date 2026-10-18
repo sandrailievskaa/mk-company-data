@@ -21,16 +21,16 @@ enum SectorEnum: string implements HasLabel
     public function getLabel(): string|Htmlable|null
     {
         return match ($this) {
-            self::CONSTRUCTION => 'Градежен',
-            self::PROGRAMMING => 'ИТ',
-            self::HEALTHCARE => 'Здравство',
-            self::TRAVELAGENCIES => 'Туризам',
-            self::BANKS => 'Банкарство',
-            self::MUNICIPALITIES => 'Општини',
-            self::EDUCATION => 'Образование',
-            self::AIRPLANE => 'Авионски',
-            self::INSURANCE => 'Осигурување',
-            self::FINANCE => 'Финансии',
+            self::CONSTRUCTION => __('Градежен'),
+            self::PROGRAMMING => __('ИТ'),
+            self::HEALTHCARE => __('Здравство'),
+            self::TRAVELAGENCIES => __('Туризам'),
+            self::BANKS => __('Банкарство'),
+            self::MUNICIPALITIES => __('Општини'),
+            self::EDUCATION => __('Образование'),
+            self::AIRPLANE => __('Авионски'),
+            self::INSURANCE => __('Осигурување'),
+            self::FINANCE => __('Финансии'),
         };
     }
 }

@@ -13,7 +13,7 @@ return [
             ],
 
             'reset' => [
-                'label' => 'Ресетирај',
+                'label' => 'Reset',
             ],
 
         ],
@@ -157,7 +157,7 @@ return [
             ],
 
             'reset' => [
-                'label' => 'Ресетирај',
+                'label' => 'Reset',
             ],
 
         ],

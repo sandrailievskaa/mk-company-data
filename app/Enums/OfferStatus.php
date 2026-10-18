@@ -16,10 +16,10 @@ enum OfferStatus: string implements HasColor, HasLabel
     public function getLabel(): string|Htmlable|null
     {
         return match ($this) {
-            self::Pending => 'Чека',
-            self::Sent => 'Испратена',
-            self::Failed => 'Неуспешна',
-            self::Opened => 'Отворена',
+            self::Pending => __('Чека'),
+            self::Sent => __('Испратена'),
+            self::Failed => __('Неуспешна'),
+            self::Opened => __('Отворена'),
         };
     }
 

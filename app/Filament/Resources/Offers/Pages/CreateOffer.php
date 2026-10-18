@@ -49,12 +49,12 @@ class CreateOffer extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Креирај понуда';
+        return __('Креирај понуда');
     }
 
     public function getSubheading(): ?string
     {
-        return 'НОВА ПОНУДА · НАЦРТ';
+        return __('НОВА ПОНУДА · НАЦРТ');
     }
 
     public function getPageClasses(): array
@@ -67,14 +67,14 @@ class CreateOffer extends CreateRecord
     protected function getCreateFormAction(): Action
     {
         return parent::getCreateFormAction()
-            ->label('Зачувај нацрт')
+            ->label(__('Зачувај нацрт'))
             ->extraAttributes(['class' => 'mk-offer-create-submit mk-offer-create-save']);
     }
 
     protected function getCancelFormAction(): Action
     {
         return Action::make('cancel')
-            ->label('Откажи')
+            ->label(__('Откажи'))
             ->url(OfferResource::getUrl('index'))
             ->color('gray')
             ->outlined();
@@ -111,13 +111,13 @@ class CreateOffer extends CreateRecord
             }
 
             if ($title === '' && $description === '') {
-                $this->aiRecommendationError = 'Внеси барем наслов или дополнителен опис за да се генерираат препораки.';
+                $this->aiRecommendationError = __('Внеси барем наслов или дополнителен опис за да се генерираат препораки.');
 
                 return;
             }
 
             if (empty($sector)) {
-                $this->aiRecommendationError = 'Избери сектор (или прво избери компанија со сектор).';
+                $this->aiRecommendationError = __('Избери сектор (или прво избери компанија со сектор).');
 
                 return;
             }
@@ -147,7 +147,7 @@ class CreateOffer extends CreateRecord
                 ->all();
 
             if (count($candidates) === 0) {
-                $this->aiRecommendationError = 'Нема компании за избраниот сектор.';
+                $this->aiRecommendationError = __('Нема компании за избраниот сектор.');
 
                 return;
             }
@@ -172,7 +172,7 @@ class CreateOffer extends CreateRecord
             $decoded = json_decode($rawJson, true);
 
             if (! is_array($decoded)) {
-                $this->aiRecommendationError = 'AI врати невалиден JSON за препораките. Пробај повторно.';
+                $this->aiRecommendationError = __('AI врати невалиден JSON за препораките. Пробај повторно.');
 
                 return;
             }
@@ -211,7 +211,7 @@ class CreateOffer extends CreateRecord
             }
 
             if (count($final) === 0) {
-                $this->aiRecommendationError = 'AI не врати валидни препораки за кандидатите. Пробај повторно.';
+                $this->aiRecommendationError = __('AI не врати валидни препораки за кандидатите. Пробај повторно.');
 
                 return;
             }
@@ -221,7 +221,7 @@ class CreateOffer extends CreateRecord
                 $this->aiRecommendationSelections[(string) $rec['company_id']] = false;
             }
         } catch (Throwable) {
-            $this->aiRecommendationError = 'Неуспешно генерирање на препораки. Провери API клуч и пробај повторно.';
+            $this->aiRecommendationError = __('Неуспешно генерирање на препораки. Провери API клуч и пробај повторно.');
         }
     }
 
@@ -234,8 +234,8 @@ class CreateOffer extends CreateRecord
 
             if ($companyId === null && $additionalInformation === '') {
                 Notification::make()
-                    ->title('Пополни податоци')
-                    ->body('Одбери компанија и/или дополнителен опис за AI.')
+                    ->title(__('Пополни податоци'))
+                    ->body(__('Одбери компанија и/или дополнителен опис за AI.'))
                     ->warning()
                     ->send();
 
@@ -247,8 +247,8 @@ class CreateOffer extends CreateRecord
 
             if ($prompt === '') {
                 Notification::make()
-                    ->title('Нема влез')
-                    ->body('Пополни барем едно поле за AI.')
+                    ->title(__('Нема влез'))
+                    ->body(__('Пополни барем едно поле за AI.'))
                     ->warning()
                     ->send();
 
@@ -273,14 +273,14 @@ class CreateOffer extends CreateRecord
             ));
 
             Notification::make()
-                ->title('Содржината е генерирана')
-                ->body('Проверете го текстот и прилагодете го по потреба.')
+                ->title(__('Содржината е генерирана'))
+                ->body(__('Проверете го текстот и прилагодете го по потреба.'))
                 ->success()
                 ->send();
         } catch (Throwable) {
             Notification::make()
-                ->title('Генерирањето не успеа')
-                ->body('Проверете ја врската / API поставките и пробајте повторно.')
+                ->title(__('Генерирањето не успеа'))
+                ->body(__('Проверете ја врската / API поставките и пробајте повторно.'))
                 ->danger()
                 ->send();
         }

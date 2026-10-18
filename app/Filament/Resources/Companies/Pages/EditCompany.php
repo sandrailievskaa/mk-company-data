@@ -30,7 +30,7 @@ class EditCompany extends EditRecord
 
     public function getTitle(): string
     {
-        return 'Уреди компанија';
+        return __('Уреди компанија');
     }
 
     protected function getHeaderActions(): array

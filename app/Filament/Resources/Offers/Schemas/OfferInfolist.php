@@ -36,7 +36,7 @@ class OfferInfolist
                         Flex::make([
                             TextEntry::make('id')
                                 ->hiddenLabel()
-                                ->formatStateUsing(fn ($state): string => 'ПОН-'.str_pad((string) $state, 3, '0', STR_PAD_LEFT))
+                                ->formatStateUsing(fn ($state): string => __('ПОН-').str_pad((string) $state, 3, '0', STR_PAD_LEFT))
                                 ->badge()
                                 ->color(Color::Zinc),
                             TextEntry::make('company.sector')
@@ -59,7 +59,7 @@ class OfferInfolist
                                 ->placeholder('—'),
                             TextEntry::make('ai_chip')
                                 ->hiddenLabel()
-                                ->state(fn (Offer $record): string => '✦ AI содржина')
+                                ->state(fn (Offer $record): string => __('✦ AI содржина'))
                                 ->icon(Heroicon::OutlinedSparkles)
                                 ->badge()
                                 ->color(Color::Violet),
@@ -85,13 +85,13 @@ class OfferInfolist
                             ->extraAttributes(['class' => 'mk-offer-view-hero__metrics'])
                             ->schema([
                                 TextEntry::make('target_count')
-                                    ->label('Таргети')
+                                    ->label(__('Таргети'))
                                     ->state(fn (Offer $record): int => $record->targets()->count()),
                                 TextEntry::make('company.name')
-                                    ->label('Компанија')
+                                    ->label(__('Компанија'))
                                     ->placeholder('—'),
                                 TextEntry::make('status')
-                                    ->label('Статус')
+                                    ->label(__('Статус'))
                                     ->formatStateUsing(function ($state): string {
                                         if ($state instanceof OfferStatus) {
                                             return (string) $state->getLabel();
@@ -111,18 +111,18 @@ class OfferInfolist
                                         };
                                     }),
                                 TextEntry::make('created_at')
-                                    ->label('Креирано')
+                                    ->label(__('Креирано'))
                                     ->dateTime('d.m.Y H:i')
                                     ->placeholder('—'),
                                 TextEntry::make('updated_at')
-                                    ->label('Ажурирано')
+                                    ->label(__('Ажурирано'))
                                     ->dateTime('d.m.Y H:i')
                                     ->placeholder('—'),
                             ]),
                     ]),
 
-                Section::make('Содржина')
-                    ->description('Целосен текст на понудата')
+                Section::make(__('Содржина'))
+                    ->description(__('Целосен текст на понудата'))
                     ->columnSpanFull()
                     ->extraAttributes(['class' => 'mk-offer-view-narrative'])
                     ->components([

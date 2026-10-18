@@ -17,20 +17,18 @@ class TargetsRelationManager extends RelationManager
 {
     protected static string $relationship = 'targets';
 
-    protected static ?string $title = 'Target компании';
-
     public function form(Schema $schema): Schema
     {
         return $schema->components([
             Select::make('company_id')
-                ->label('Компанија')
+                ->label(__('Компанија'))
                 ->relationship('company', 'name')
                 ->searchable()
                 ->preload()
                 ->required(),
 
             Textarea::make('reason')
-                ->label('Причина (од AI)')
+                ->label(__('Причина (од AI)'))
                 ->rows(4)
                 ->columnSpanFull(),
         ]);
@@ -41,58 +39,63 @@ class TargetsRelationManager extends RelationManager
         return $table
             ->columns([
                 TextColumn::make('company.name')
-                    ->label('Компанија')
+                    ->label(__('Компанија'))
                     ->searchable(),
 
                 TextColumn::make('company.city')
-                    ->label('Град')
+                    ->label(__('Град'))
                     ->visibleFrom('md')
                     ->toggleable(),
 
                 TextColumn::make('company.email')
-                    ->label('Е-пошта')
+                    ->label(__('Е-пошта'))
                     ->visibleFrom('sm')
                     ->wrap()
                     ->toggleable(),
 
                 TextColumn::make('reason')
-                    ->label('Причина')
+                    ->label(__('Причина'))
                     ->wrap()
                     ->limit(140),
 
                 TextColumn::make('created_at')
-                    ->label('Додадено')
+                    ->label(__('Додадено'))
                     ->dateTime()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Додај таргет')
-                    ->modalHeading('Додај таргет компанија')
-                    ->modalSubmitActionLabel('Зачувај')
-                    ->modalCancelActionLabel('Откажи'),
+                    ->label(__('Додај таргет'))
+                    ->modalHeading(__('Додај таргет компанија'))
+                    ->modalSubmitActionLabel(__('Зачувај'))
+                    ->modalCancelActionLabel(__('Откажи')),
             ])
             ->actions([
                 EditAction::make()
-                    ->label('Уреди')
-                    ->modalHeading('Уреди таргет')
-                    ->modalSubmitActionLabel('Зачувај промени')
-                    ->modalCancelActionLabel('Откажи'),
+                    ->label(__('Уреди'))
+                    ->modalHeading(__('Уреди таргет'))
+                    ->modalSubmitActionLabel(__('Зачувај промени'))
+                    ->modalCancelActionLabel(__('Откажи')),
                 DeleteAction::make()
-                    ->label('Избриши')
-                    ->modalHeading('Избриши таргет')
-                    ->modalSubmitActionLabel('Избриши')
-                    ->modalCancelActionLabel('Откажи'),
+                    ->label(__('Избриши'))
+                    ->modalHeading(__('Избриши таргет'))
+                    ->modalSubmitActionLabel(__('Избриши'))
+                    ->modalCancelActionLabel(__('Откажи')),
             ])
             ->bulkActions([
                 DeleteBulkAction::make()
-                    ->label('Избриши избрани')
-                    ->modalHeading('Избриши избрани таргети')
-                    ->modalSubmitActionLabel('Избриши')
-                    ->modalCancelActionLabel('Откажи'),
+                    ->label(__('Избриши избрани'))
+                    ->modalHeading(__('Избриши избрани таргети'))
+                    ->modalSubmitActionLabel(__('Избриши'))
+                    ->modalCancelActionLabel(__('Откажи')),
             ])
             ->defaultPaginationPageOption(10)
             ->paginated([10, 25, 50])
             ->striped();
+    }
+
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('Target компании');
     }
 }

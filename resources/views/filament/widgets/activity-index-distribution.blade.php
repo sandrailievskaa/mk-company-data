@@ -7,17 +7,17 @@
 <div class="mk-panel mk-activity-distribution mk-dash-spec--activity">
     <header class="mk-panel__head">
         <div>
-            <h2 class="mk-dash-activity__title">Индекс на активност</h2>
+            <h2 class="mk-dash-activity__title">{{ __('Индекс на активност') }}</h2>
             <p class="mk-panel__sub mk-dash-activity__sub">{{ $subtitle }}</p>
         </div>
         <div class="mk-panel__legend" aria-hidden="true">
             <span class="mk-panel__dot"></span>
-            <span>Број</span>
+            <span>{{ __('Број') }}</span>
         </div>
     </header>
 
     <div class="mk-activity-distribution__plot">
-        <div class="mk-activity-distribution__chart" role="img" aria-label="Број на компании по опсег на индекс на активност">
+        <div class="mk-activity-distribution__chart" role="img" aria-label="{{ __('Број на компании по опсег на индекс на активност') }}">
             <div class="mk-activity-distribution__y" aria-hidden="true">
                 <span>{{ number_format($maxCount) }}</span>
                 <span>{{ (int) round($maxCount / 2) }}</span>
@@ -30,7 +30,7 @@
                         $barPx = max(2, min($barTrackPx, $barPx));
                     @endphp
                     <div class="mk-activity-distribution__col">
-                        <div class="mk-activity-distribution__bar-outer" title="{{ number_format((int) $b['count']) }} компании" style="height: {{ $barTrackPx }}px;">
+                        <div class="mk-activity-distribution__bar-outer" title="{{ __(':count компании', ['count' => number_format((int) $b['count'])]) }}" style="height: {{ $barTrackPx }}px;">
                             <div class="mk-activity-distribution__bar" style="height: {{ $barPx }}px;"></div>
                         </div>
                         <div class="mk-activity-distribution__xlabel">{{ $b['xlabel'] }}</div>

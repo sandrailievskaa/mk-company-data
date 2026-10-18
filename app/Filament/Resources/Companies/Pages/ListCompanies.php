@@ -15,40 +15,43 @@ class ListCompanies extends ListRecords
 {
     protected static string $resource = CompanyResource::class;
 
-    protected static ?string $title = 'Компании';
-
     protected function getHeaderActions(): array
     {
         return [
             CreateAction::make()
-                ->label('Нова компанија')
+                ->label(__('Нова компанија'))
                 ->icon(Heroicon::OutlinedPlus)
                 ->color('gray')
                 ->outlined(),
             Action::make('runCompanyScraper')
                 ->visible(fn (): bool => (bool) auth()->user()?->isAdmin())
-                ->label('✦ Скрејпај компании')
+                ->label(__('✦ Скрејпај компании'))
                 ->color('primary')
                 ->requiresConfirmation()
-                ->modalHeading('Скрејпај компании')
-                ->modalDescription('Се извршува автоматско собирање на податоци за компании. Процесот работи во позадина и може да потрае неколку минути.')
+                ->modalHeading(__('Скрејпај компании'))
+                ->modalDescription(__('Се извршува автоматско собирање на податоци за компании. Процесот работи во позадина и може да потрае неколку минути.'))
                 ->action(function (): void {
                     try {
                         $batch = app(ScrapeDispatcher::class)->dispatch();
 
                         Notification::make()
-                            ->title('Скрејпањето е стартувано')
-                            ->body($batch->totalJobs.' сектори се ставени во ред. Прогресот е под „Скрејпања“ (потребен е активен queue worker).')
+                            ->title(__('Скрејпањето е стартувано'))
+                            ->body(__(':count сектори се ставени во ред. Прогресот е под „Скрејпања“ (потребен е активен queue worker).', ['count' => $batch->totalJobs]))
                             ->success()
                             ->send();
                     } catch (Throwable $e) {
                         Notification::make()
-                            ->title('Грешка при стартување')
+                            ->title(__('Грешка при стартување'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
                     }
                 }),
         ];
+    }
+
+    public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
+    {
+        return __('Компании');
     }
 }

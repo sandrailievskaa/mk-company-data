@@ -10,7 +10,7 @@
 @if ($record instanceof Company)
     @php
         $initial = Str::upper(Str::substr($record->name, 0, 1));
-        $ref = 'КП-'.str_pad((string) $record->id, 4, '0', STR_PAD_LEFT);
+        $ref = __('КП-').str_pad((string) $record->id, 4, '0', STR_PAD_LEFT);
         $editUrl = CompanyResource::getUrl('edit', ['record' => $record]);
         $newOfferUrl = OfferResource::getUrl('create').'?company_id='.$record->id;
         $location = collect([$record->city, $record->address])
@@ -53,9 +53,9 @@
             </div>
         </div>
         <div class="mk-cv-hero__actions">
-            <a href="{{ $editUrl }}" wire:navigate class="mk-cv-btn mk-cv-btn--outline">Уреди</a>
+            <a href="{{ $editUrl }}" wire:navigate class="mk-cv-btn mk-cv-btn--outline">{{ __('Уреди') }}</a>
             <a href="{{ $newOfferUrl }}" wire:navigate class="mk-cv-btn mk-cv-btn--primary">
-                <span class="mk-cv-btn__spark" aria-hidden="true">✦</span> Нова понуда
+                <span class="mk-cv-btn__spark" aria-hidden="true">✦</span> {{ __('Нова понуда') }}
             </a>
         </div>
     </div>

@@ -37,20 +37,20 @@ class OfferForm
                                 ->view('filament.offers.create-back-link')
                                 ->columnSpanFull(),
 
-                            Section::make('Чекор 1 · Детали за понудата')
-                                ->description('Примарна компанија и краток контекст за AI.')
+                            Section::make(__('Чекор 1 · Детали за понудата'))
+                                ->description(__('Примарна компанија и краток контекст за AI.'))
                                 ->icon(Heroicon::OutlinedDocumentText)
                                 ->components([
                                     Select::make('company_id')
-                                        ->label('Компанија')
+                                        ->label(__('Компанија'))
                                         ->relationship(name: 'company', titleAttribute: 'name')
                                         ->searchable()
                                         ->preload()
                                         ->required()
                                         ->prefixIcon(Heroicon::OutlinedBuildingOffice),
                                     Textarea::make('additional_information')
-                                        ->label('Краток опис / контекст')
-                                        ->helperText('Се користи за AI; не се зачувува како посебно поле.')
+                                        ->label(__('Краток опис / контекст'))
+                                        ->helperText(__('Се користи за AI; не се зачувува како посебно поле.'))
                                         ->rows(5)
                                         ->dehydrated(false)
                                         ->columnSpanFull(),
@@ -58,19 +58,19 @@ class OfferForm
                                 ->columnSpanFull()
                                 ->extraAttributes(['class' => 'mk-offer-form-section mk-offer-create__card']),
 
-                            Section::make('✦ AI препорачани компании')
-                                ->description('Кандидати по сектор и по избор град (топ 50 по активност).')
+                            Section::make(__('✦ AI препорачани компании'))
+                                ->description(__('Кандидати по сектор и по избор град (топ 50 по активност).'))
                                 ->icon(Heroicon::OutlinedSparkles)
                                 ->components([
                                     TextInput::make('recommendation_title')
-                                        ->label('Наслов (за препораки)')
-                                        ->helperText('Не се зачувува; само за AI пребарување.')
+                                        ->label(__('Наслов (за препораки)'))
+                                        ->helperText(__('Не се зачувува; само за AI пребарување.'))
                                         ->dehydrated(false)
                                         ->columnSpanFull(),
                                     Select::make('recommendation_sector')
-                                        ->label('Сектор (за кандидати)')
+                                        ->label(__('Сектор (за кандидати)'))
                                         ->options(SectorEnum::class)
-                                        ->helperText('Ако празно — се користи секторот на избраната компанија.')
+                                        ->helperText(__('Ако празно — се користи секторот на избраната компанија.'))
                                         ->dehydrated(false)
                                         ->searchable()
                                         ->preload()
@@ -78,11 +78,11 @@ class OfferForm
                                         ->columnSpanFull()
                                         ->prefixIcon(Heroicon::OutlinedBriefcase),
                                     Select::make('recommendation_city')
-                                        ->label('Град (по избор)')
+                                        ->label(__('Град (по избор)'))
                                         ->options(fn () => Company::query()
                                             ->whereNotNull('city')->where('city', '!=', '')
                                             ->distinct()->orderBy('city')->pluck('city', 'city')->all())
-                                        ->helperText('Ограничи ги кандидатите на еден град.')
+                                        ->helperText(__('Ограничи ги кандидатите на еден град.'))
                                         ->dehydrated(false)
                                         ->searchable()
                                         ->native(false)
@@ -95,15 +95,15 @@ class OfferForm
                                 ])
                                 ->headerActions([
                                     Action::make('ai_recommend_companies')
-                                        ->label('Препорачај')
+                                        ->label(__('Препорачај'))
                                         ->icon(Heroicon::OutlinedPlay)
                                         ->action(fn ($livewire) => $livewire->generateCompanyRecommendations()),
                                 ])
                                 ->columnSpanFull()
                                 ->extraAttributes(['class' => 'mk-offer-form-section mk-offer-form-section--ai mk-offer-create__card']),
 
-                            Section::make('Наслов')
-                                ->description('Краток наслов на понудата; AI може да го предложи.')
+                            Section::make(__('Наслов'))
+                                ->description(__('Краток наслов на понудата; AI може да го предложи.'))
                                 ->icon(Heroicon::OutlinedHashtag)
                                 ->components([
                                     TextInput::make('title')
@@ -113,7 +113,7 @@ class OfferForm
                                         ->columnSpanFull(),
                                     SchemaActions::make([
                                         Action::make('generate_offer_content')
-                                            ->label('✦ Генерирај со AI')
+                                            ->label(__('✦ Генерирај со AI'))
                                             ->icon(Heroicon::OutlinedSparkles)
                                             ->action(fn ($livewire) => $livewire->generateOfferContent()),
                                     ])
@@ -130,8 +130,8 @@ class OfferForm
                             ->extraAttributes(['class' => 'mk-offer-create__col mk-offer-create__col--left']),
 
                         Group::make([
-                            Section::make('AI излез')
-                                ->description('Содржина на понудата (HTML). Генерирај или уреди рачно.')
+                            Section::make(__('AI излез'))
+                                ->description(__('Содржина на понудата (HTML). Генерирај или уреди рачно.'))
                                 ->icon(Heroicon::OutlinedCpuChip)
                                 ->components([
                                     ViewField::make('offer_content_loading')
@@ -143,7 +143,7 @@ class OfferForm
                                         ->dehydrated(false)
                                         ->columnSpanFull(),
                                     RichEditor::make('content')
-                                        ->label('Содржина')
+                                        ->label(__('Содржина'))
                                         ->required()
                                         ->columnSpanFull()
                                         ->toolbarButtons([
@@ -168,24 +168,24 @@ class OfferForm
                             ->extraAttributes(['class' => 'mk-offer-create__col mk-offer-create__col--right']),
                     ]),
 
-                Section::make('Понудата')
+                Section::make(__('Понудата'))
                     ->icon(Heroicon::OutlinedDocumentText)
                     ->visibleOn('edit')
                     ->components([
                         Select::make('company_id')
-                            ->label('Компанија')
+                            ->label(__('Компанија'))
                             ->relationship(name: 'company', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
                             ->required()
                             ->prefixIcon(Heroicon::OutlinedBuildingOffice),
                         TextInput::make('title')
-                            ->label('Наслов')
+                            ->label(__('Наслов'))
                             ->required()
                             ->maxLength(500)
                             ->columnSpanFull(),
                         RichEditor::make('content')
-                            ->label('Содржина')
+                            ->label(__('Содржина'))
                             ->required()
                             ->columnSpanFull()
                             ->toolbarButtons([
@@ -202,7 +202,7 @@ class OfferForm
                             ])
                             ->extraInputAttributes(['class' => 'mk-offer-richtext']),
                         Select::make('status')
-                            ->label('Статус')
+                            ->label(__('Статус'))
                             ->options(OfferStatus::class)
                             ->required()
                             ->default(OfferStatus::Pending)

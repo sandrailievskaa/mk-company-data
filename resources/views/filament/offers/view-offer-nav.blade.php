@@ -7,5 +7,5 @@
     wire:navigate
     class="mk-offer-view__back"
 >
-    ← Сите понуди
+    {{ __('← Сите понуди') }}
 </a>

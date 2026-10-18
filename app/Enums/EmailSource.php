@@ -30,12 +30,12 @@ enum EmailSource: string implements HasColor, HasLabel
     public function getLabel(): string|Htmlable|null
     {
         return match ($this) {
-            self::Registry => 'Регистар',
-            self::Website => 'Веб-сајт',
-            self::Search => 'Пребарување',
-            self::Inferred => 'Претпоставена',
-            self::Manual => 'Рачно',
-            self::Observed => 'Пронајдена',
+            self::Registry => __('Регистар'),
+            self::Website => __('Веб-сајт'),
+            self::Search => __('Пребарување'),
+            self::Inferred => __('Претпоставена'),
+            self::Manual => __('Рачно'),
+            self::Observed => __('Пронајдена'),
         };
     }
 

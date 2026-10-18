@@ -26,12 +26,6 @@ class OfferResource extends Resource
 
     protected static ?int $navigationSort = 20;
 
-    protected static ?string $navigationLabel = 'Понуди';
-
-    protected static ?string $label = 'Понуда';
-
-    protected static ?string $pluralLabel = 'Понуди';
-
     protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema
@@ -65,5 +59,20 @@ class OfferResource extends Resource
             'view' => ViewOffer::route('/{record}'),
             'edit' => EditOffer::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Понуди');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Понуда');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Понуди');
     }
 }

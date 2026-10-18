@@ -12,12 +12,12 @@
         wire:target="ai_recommend_companies,generateCompanyRecommendations"
     >
         <span class="mk-offer-reco-loading__spinner" aria-hidden="true"></span>
-        <p class="mk-offer-reco-loading__text">Се анализираат најдобрите компании по индекс на активност...</p>
+        <p class="mk-offer-reco-loading__text">{{ __('Се анализираат најдобрите компании по индекс на активност...') }}</p>
     </div>
 
     @if (empty($this->aiRecommendations))
         <p class="mk-offer-reco-hint">
-            Сè уште нема препораки. Кликни <strong>„Препорачај“</strong> за AI предлози.
+            {!! __('Сè уште нема препораки. Кликни :button за AI предлози.', ['button' => '<strong>'.e(__('Препорачај')).'</strong>']) !!}
         </p>
     @endif
 
@@ -26,11 +26,11 @@
             <table class="mk-offer-reco-table">
                 <thead>
                     <tr>
-                        <th scope="col">Компанија</th>
-                        <th scope="col">Сектор</th>
-                        <th scope="col">Активност (индекс)</th>
-                        <th scope="col">Образложение</th>
-                        <th scope="col">Одбери</th>
+                        <th scope="col">{{ __('Компанија') }}</th>
+                        <th scope="col">{{ __('Сектор') }}</th>
+                        <th scope="col">{{ __('Активност (индекс)') }}</th>
+                        <th scope="col">{{ __('Образложение') }}</th>
+                        <th scope="col">{{ __('Одбери') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,7 +66,7 @@
         </div>
 
         <p class="mk-offer-reco-footnote">
-            Означените цели ќе бидат зачувани откако ќе ја <strong>креираш понудата</strong> (листа во <em>offer_targets</em>).
+            {!! __('Означените цели ќе бидат зачувани откако ќе ја :action (листа во :table).', ['action' => '<strong>'.e(__('креираш понудата')).'</strong>', 'table' => '<em>offer_targets</em>']) !!}
         </p>
     @endif
 </div>

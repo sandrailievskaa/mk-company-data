@@ -15,10 +15,10 @@
         $weights = config('activity_index.weights');
     @endphp
     <div class="mk-cv-card mk-cv-activity">
-        <div class="mk-cv-card__kicker">скор</div>
-        <h2 class="mk-cv-card__title">Индекс на активност</h2>
+        <div class="mk-cv-card__kicker">{{ __('скор') }}</div>
+        <h2 class="mk-cv-card__title">{{ __('Индекс на активност') }}</h2>
         <div class="mk-cv-activity__body">
-            <div class="mk-cv-activity__chart" style="--mk-p: {{ $pct }};" role="img" aria-label="Индекс на активност {{ $pct }} од 100">
+            <div class="mk-cv-activity__chart" style="--mk-p: {{ $pct }};" role="img" aria-label="{{ __('Индекс на активност :pct од 100', ['pct' => $pct]) }}">
                 <div class="mk-cv-activity__ring" aria-hidden="true"></div>
                 <div class="mk-cv-activity__hole" aria-hidden="true"></div>
                 <div class="mk-cv-activity__score">
@@ -28,27 +28,27 @@
             </div>
             <div class="mk-cv-activity__grid">
                 <div class="mk-cv-activity__stat">
-                    <div class="mk-cv-activity__stat-k">Нормиран индекс</div>
+                    <div class="mk-cv-activity__stat-k">{{ __('Нормиран индекс') }}</div>
                     <div class="mk-cv-activity__stat-v">{{ number_format($v, 2, ',', '') }}</div>
                 </div>
                 <div class="mk-cv-activity__stat">
-                    <div class="mk-cv-activity__stat-k">Скрапирања</div>
+                    <div class="mk-cv-activity__stat-k">{{ __('Скрапирања') }}</div>
                     <div class="mk-cv-activity__stat-v">{{ (int) $record->scrape_count }}</div>
                 </div>
                 <div class="mk-cv-activity__stat">
-                    <div class="mk-cv-activity__stat-k">Понуди</div>
+                    <div class="mk-cv-activity__stat-k">{{ __('Понуди') }}</div>
                     <div class="mk-cv-activity__stat-v">{{ $offers }}</div>
                 </div>
                 <div class="mk-cv-activity__stat">
-                    <div class="mk-cv-activity__stat-k">Статус на запис</div>
+                    <div class="mk-cv-activity__stat-k">{{ __('Статус на запис') }}</div>
                     <div class="mk-cv-activity__stat-v">
                         @php
                             $q = $record->data_quality_flag !== null ? strtolower(trim($record->data_quality_flag)) : '';
                             $qLabel = match (true) {
                                 $q === '' || $q === 'ok' => 'OK',
-                                $q === 'duplicate' => 'Дупликат',
-                                $q === 'inactive' => 'Неактивна',
-                                $q === 'inconsistent' => 'Неконзистентна',
+                                $q === 'duplicate' => __('Дупликат'),
+                                $q === 'inactive' => __('Неактивна'),
+                                $q === 'inconsistent' => __('Неконзистентна'),
                                 default => $record->data_quality_flag,
                             };
                         @endphp
@@ -57,22 +57,22 @@
                 </div>
             </div>
         </div>
-        <div class="mk-cv-activity__grid" aria-label="Составни делови на индексот">
+        <div class="mk-cv-activity__grid" aria-label="{{ __('Составни делови на индексот') }}">
             <div class="mk-cv-activity__stat">
-                <div class="mk-cv-activity__stat-k">E · е-пошта (тежина {{ number_format($weights['email'], 1, ',', '') }})</div>
+                <div class="mk-cv-activity__stat-k">{{ __('E · е-пошта (тежина :w)', ['w' => number_format($weights['email'], 1, ',', '')]) }}</div>
                 <div class="mk-cv-activity__stat-v">{{ number_format($parts['email'], 2, ',', '') }}</div>
             </div>
             <div class="mk-cv-activity__stat">
-                <div class="mk-cv-activity__stat-k">P · јавни извори (тежина {{ number_format($weights['presence'], 1, ',', '') }})</div>
+                <div class="mk-cv-activity__stat-k">{{ __('P · јавни извори (тежина :w)', ['w' => number_format($weights['presence'], 1, ',', '')]) }}</div>
                 <div class="mk-cv-activity__stat-v">{{ number_format($parts['presence'], 2, ',', '') }}</div>
             </div>
             <div class="mk-cv-activity__stat">
-                <div class="mk-cv-activity__stat-k">F · фреквенција (тежина {{ number_format($weights['frequency'], 1, ',', '') }})</div>
+                <div class="mk-cv-activity__stat-k">{{ __('F · фреквенција (тежина :w)', ['w' => number_format($weights['frequency'], 1, ',', '')]) }}</div>
                 <div class="mk-cv-activity__stat-v">{{ number_format($parts['frequency'], 2, ',', '') }}</div>
             </div>
         </div>
         <p class="mk-cv-activity__foot">
-            Индекс = {{ number_format($weights['email'], 1, ',', '') }}·E + {{ number_format($weights['presence'], 1, ',', '') }}·P + {{ number_format($weights['frequency'], 1, ',', '') }}·F. Вредноста е од 0 до 1 и се нормира на 0–100 за приказ. Се ажурира при скрапирање и обработка на податоци.
+            {{ __('Индекс = :e·E + :p·P + :f·F. Вредноста е од 0 до 1 и се нормира на 0–100 за приказ. Се ажурира при скрапирање и обработка на податоци.', ['e' => number_format($weights['email'], 1, ',', ''), 'p' => number_format($weights['presence'], 1, ',', ''), 'f' => number_format($weights['frequency'], 1, ',', '')]) }}
         </p>
     </div>
 @endif

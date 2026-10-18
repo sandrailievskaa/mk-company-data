@@ -8,9 +8,9 @@
     $bySource = $c['by_source'];
 
     $sourceLabels = [
-        \App\Services\AiUsage\AiUsageLogSource::RECOMMENDATION => 'AI препораки',
-        \App\Services\AiUsage\AiUsageLogSource::OFFER => 'Ген. понуди',
-        \App\Services\AiUsage\AiUsageLogSource::VALIDATION => 'Валид. на податоци',
+        \App\Services\AiUsage\AiUsageLogSource::RECOMMENDATION => __('AI препораки'),
+        \App\Services\AiUsage\AiUsageLogSource::OFFER => __('Ген. понуди'),
+        \App\Services\AiUsage\AiUsageLogSource::VALIDATION => __('Валид. на податоци'),
     ];
 
     arsort($bySource, SORT_NUMERIC);
@@ -20,18 +20,18 @@
     $fmt = static fn (int $n): string => number_format($n, 0, ',', ' ');
 @endphp
 
-<div class="mk-sidebar-credits" aria-label="AI кредити">
+<div class="mk-sidebar-credits" aria-label="{{ __('AI кредити') }}">
     <div class="mk-sidebar-credits-head">
         <span class="mk-sidebar-credits-icon" aria-hidden="true">✦</span>
         <div class="mk-sidebar-credits-head-titles">
-            <div class="mk-sidebar-credits-name">AI кредити</div>
+            <div class="mk-sidebar-credits-name">{{ __('AI кредити') }}</div>
         </div>
     </div>
 
     <div
         class="mk-sidebar-credits-meter"
         role="progressbar"
-        aria-label="Искористени кредити"
+        aria-label="{{ __('Искористени кредити') }}"
         aria-valuenow="{{ $used }}"
         aria-valuemin="0"
         aria-valuemax="{{ $total }}"
@@ -52,8 +52,8 @@
 
     <p class="mk-sidebar-credits-hint">
         {{ $periodLabel }} ·
-        ≈ {{ $fmt($usedTokens) }} / {{ $fmt($totalTokens) }} токени
-        (1 кред. = {{ $fmt($tokensPerCredit) }} ток.)
+        {{ __('≈ :used / :total токени', ['used' => $fmt($usedTokens), 'total' => $fmt($totalTokens)]) }}
+        {{ __('(1 кред. = :tok ток.)', ['tok' => $fmt($tokensPerCredit)]) }}
     </p>
 
     @if (count($bySource) > 0)
@@ -71,15 +71,15 @@
                             $creditsForSource = (int) floor($tok / $tokensPerCredit);
                         @endphp
                         @if ($creditsForSource > 0)
-                            ~{{ $creditsForSource }} кред.
+                            {{ __('~:n кред.', ['n' => $creditsForSource]) }}
                         @else
-                            ~{{ $fmt((int) $tok) }} ток.
+                            {{ __('~:n ток.', ['n' => $fmt((int) $tok)]) }}
                         @endif
                     </span>
                 </li>
             @endforeach
         </ul>
     @elseif ($usedTokens === 0)
-        <p class="mk-sidebar-credits-empty">Нема AI повици снимени за овој месец.</p>
+        <p class="mk-sidebar-credits-empty">{{ __('Нема AI повици снимени за овој месец.') }}</p>
     @endif
 </div>

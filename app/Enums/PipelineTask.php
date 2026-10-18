@@ -14,9 +14,9 @@ enum PipelineTask: string
     public function label(): string
     {
         return match ($this) {
-            self::Profiles => 'zk.mk профили (веб-сајт, социјални мрежи)',
-            self::CompanyWall => 'CompanyWall (ЕДБ, ЕМБС, големина)',
-            self::Emails => 'Е-пошти (веб-сајт, пребарување)',
+            self::Profiles => __('zk.mk профили (веб-сајт, социјални мрежи)'),
+            self::CompanyWall => __('CompanyWall (ЕДБ, ЕМБС, големина)'),
+            self::Emails => __('Е-пошти (веб-сајт, пребарување)'),
         };
     }
 }

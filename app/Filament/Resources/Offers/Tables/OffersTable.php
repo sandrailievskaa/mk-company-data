@@ -15,12 +15,12 @@ class OffersTable
         return $table
             ->columns([
                 TextColumn::make('title')
-                    ->label('Наслов')
+                    ->label(__('Наслов'))
                     ->icon(Heroicon::OutlinedDocumentText)
                     ->iconColor('primary')
                     ->searchable(),
                 TextColumn::make('company.name')
-                    ->label('Компанија')
+                    ->label(__('Компанија'))
                     ->icon(Heroicon::OutlinedBuildingOffice)
                     ->iconColor('primary')
                     ->searchable(),
@@ -42,14 +42,14 @@ class OffersTable
             ])
             ->recordActions([
                 ViewAction::make()
-                    ->label('Преглед')
+                    ->label(__('Преглед'))
                     ->icon(Heroicon::OutlinedEye),
                 EditAction::make()
-                    ->label('Уреди')
+                    ->label(__('Уреди'))
                     ->icon(Heroicon::OutlinedPencil),
             ])
-            ->emptyStateHeading('Нема понуди')
-            ->emptyStateDescription('Креирајте понуда и прегледајте ги препорачаните компании.')
+            ->emptyStateHeading(__('Нема понуди'))
+            ->emptyStateDescription(__('Креирајте понуда и прегледајте ги препорачаните компании.'))
             ->defaultPaginationPageOption(10)
             ->paginated([10, 25, 50, 100])
             ->striped();

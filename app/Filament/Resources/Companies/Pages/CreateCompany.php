@@ -26,6 +26,6 @@ class CreateCompany extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Нова компанија';
+        return __('Нова компанија');
     }
 }

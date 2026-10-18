@@ -7,5 +7,5 @@
     wire:navigate
     class="mk-offer-view__back"
 >
-    ← Сите компании
+    {{ __('← Сите компании') }}
 </a>

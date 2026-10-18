@@ -16,33 +16,33 @@ class CompanyForm
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->label('Име на компанија')
+                    ->label(__('Име на компанија'))
                     ->prefixIcon(Heroicon::OutlinedBuildingOffice),
                 Forms\Components\Select::make('sector')
                     ->options(SectorEnum::class)
-                    ->label('Сектор')
+                    ->label(__('Сектор'))
                     ->prefixIcon(Heroicon::OutlinedBriefcase),
                 Forms\Components\TextInput::make('city')
-                    ->label('Град')
+                    ->label(__('Град'))
                     ->prefixIcon(Heroicon::OutlinedMapPin),
                 Forms\Components\TextInput::make('address')
-                    ->label('Адреса')
+                    ->label(__('Адреса'))
                     ->prefixIcon(Heroicon::OutlinedHome),
                 Forms\Components\TextInput::make('email')
                     ->email()
-                    ->label('Е-пошта')
+                    ->label(__('Е-пошта'))
                     ->prefixIcon(Heroicon::OutlinedEnvelope),
                 Forms\Components\TextInput::make('phone')
                     ->tel()
-                    ->label('Телефонски број')
+                    ->label(__('Телефонски број'))
                     ->prefixIcon(Heroicon::OutlinedPhone),
                 Forms\Components\TextInput::make('activity_index')
-                    ->label('Индекс на активност')
+                    ->label(__('Индекс на активност'))
                     ->numeric()
                     ->default(0)
                     ->disabled()
                     ->prefixIcon(Heroicon::OutlinedChartBar)
-                    ->helperText('Автоматски се ажурира врз основа на активност'),
+                    ->helperText(__('Автоматски се ажурира врз основа на активност')),
             ]);
     }
 }

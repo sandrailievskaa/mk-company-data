@@ -23,16 +23,16 @@ class EditOffer extends EditRecord
 
     public function getTitle(): string
     {
-        return 'Уреди понуда';
+        return __('Уреди понуда');
     }
 
     protected function getHeaderActions(): array
     {
         return [
             ViewAction::make()
-                ->label('Преглед'),
+                ->label(__('Преглед')),
             DeleteAction::make()
-                ->label('Избриши'),
+                ->label(__('Избриши')),
         ];
     }
 }

@@ -1,8 +1,7 @@
 <x-filament-panels::page>
     <div wire:poll.15s class="fi-section-content-ctn">
         <p class="text-sm text-gray-500 dark:text-gray-400">
-            Целиот тек од јавни податоци до подготвена понуда. Секоја фаза покажува колку компании се обработени.
-            Задачите работат во позадина (queue: <strong>{{ $queue }}</strong>).
+            {!! __('Целиот тек од јавни податоци до подготвена понуда. Секоја фаза покажува колку компании се обработени. Задачите работат во позадина (queue: :queue).', ['queue' => '<strong>'.e($queue).'</strong>']) !!}
         </p>
 
         <div style="display: grid; gap: 1rem; margin-top: 1rem;">
@@ -19,7 +18,7 @@
                         </div>
                         <strong>{{ number_format($stage['done']) }} / {{ number_format($stage['total']) }} ({{ $pct }}%)</strong>
                         @if ($stage['pending'] !== null)
-                            <span class="text-sm text-gray-500 dark:text-gray-400">на чекање: {{ number_format($stage['pending']) }}</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('на чекање: :count', ['count' => number_format($stage['pending'])]) }}</span>
                         @endif
                     </div>
                     @if (count($stage['details']) > 0)

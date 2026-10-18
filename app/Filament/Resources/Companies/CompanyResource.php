@@ -24,12 +24,6 @@ class CompanyResource extends Resource
 
     protected static ?int $navigationSort = 10;
 
-    protected static ?string $navigationLabel = 'Компании';
-
-    protected static ?string $label = 'Компании';
-
-    protected static ?string $pluralLabel = 'Компании';
-
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
@@ -60,5 +54,20 @@ class CompanyResource extends Resource
             'view' => ViewCompany::route('/{record}'),
             'edit' => EditCompany::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Компании');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Компании');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Компании');
     }
 }

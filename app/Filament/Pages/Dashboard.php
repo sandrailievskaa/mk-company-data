@@ -12,10 +12,6 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class Dashboard extends BaseDashboard
 {
-    protected static ?string $navigationLabel = 'Контролна табла';
-
-    protected static ?string $title = 'Контролна табла';
-
     protected Width|string|null $maxContentWidth = Width::Full;
 
     /**
@@ -50,5 +46,15 @@ class Dashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         return [];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Контролна табла');
+    }
+
+    public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
+    {
+        return __('Контролна табла');
     }
 }

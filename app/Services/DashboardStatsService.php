@@ -91,16 +91,16 @@ class DashboardStatsService
 
         $displayName = $user?->name
             ? trim((string) $user->name)
-            : (string) (str($user?->email ?? 'корисник')->before('@')->value() ?: 'корисник');
+            : (string) (str($user?->email ?? __('корисник'))->before('@')->value() ?: __('корисник'));
 
-        $greeting = 'Здраво';
+        $greeting = __('Здраво');
 
         $companiesPhrase = $totalCompanies === 1
-            ? '1 компанија'
-            : number_format($totalCompanies, 0, ',', ' ').' компании';
+            ? __('1 компанија')
+            : __(':count компании', ['count' => number_format($totalCompanies, 0, ',', ' ')]);
         $sectorsPhrase = $sectorCount === 1
-            ? '1 сектор'
-            : number_format($sectorCount, 0, ',', ' ').' сектори';
+            ? __('1 сектор')
+            : __(':count сектори', ['count' => number_format($sectorCount, 0, ',', ' ')]);
 
         return [
             'greeting' => $greeting,

@@ -21,7 +21,7 @@
         "
         class="fi-theme-switcher mk-topbar-theme-switcher"
         role="group"
-        aria-label="Тема (светла / темна / систем)"
+        aria-label="{{ __('Тема (светла / темна / систем)') }}"
     >
         @foreach ($modes as $mode => $icon)
             @php

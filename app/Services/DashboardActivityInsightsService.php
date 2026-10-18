@@ -52,7 +52,7 @@ class DashboardActivityInsightsService
         $maxCount = max($counts) ?: 1;
 
         $xlabels = ['0–0.2', '0.2–0.4', '0.4–0.6', '0.6–0.8', '0.8–1.0'];
-        $tiers = ['Ниско', 'Умерено', 'Средно', 'Високо', 'Елитно'];
+        $tiers = [__('Ниско'), __('Умерено'), __('Средно'), __('Високо'), __('Елитно')];
 
         $buckets = [];
         for ($i = 0; $i < 5; $i++) {
@@ -95,7 +95,7 @@ class DashboardActivityInsightsService
             $blurbParts = array_filter([$secLabel, $city !== '' ? $city : null]);
             $blurb = count($blurbParts) > 0
                 ? implode(' · ', $blurbParts)
-                : 'Секторска погодност · збогатете контакти';
+                : __('Секторска погодност · збогатете контакти');
 
             $out[] = [
                 'id' => (int) $c->id,
@@ -112,7 +112,7 @@ class DashboardActivityInsightsService
 
     public function getActivityChartSubtitle(): string
     {
-        return 'Сегментирано низ целата база на податоци.';
+        return __('Сегментирано низ целата база на податоци.');
     }
 
     /**
@@ -121,7 +121,7 @@ class DashboardActivityInsightsService
     private function emptyBuckets(): array
     {
         $xlabels = ['0–0.2', '0.2–0.4', '0.4–0.6', '0.6–0.8', '0.8–1.0'];
-        $tiers = ['Ниско', 'Умерено', 'Средно', 'Високо', 'Елитно'];
+        $tiers = [__('Ниско'), __('Умерено'), __('Средно'), __('Високо'), __('Елитно')];
         $buckets = [];
         for ($i = 0; $i < 5; $i++) {
             $buckets[] = [

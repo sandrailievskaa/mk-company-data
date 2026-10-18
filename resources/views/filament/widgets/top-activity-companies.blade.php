@@ -1,9 +1,9 @@
 <div class="mk-panel mk-reco mk-dash-spec--reco">
     <header class="mk-panel__head">
         <div>
-            <p class="mk-dash-reco__kicker">✦ AI препораки</p>
-            <h2 class="mk-dash-reco__title">Најпогодни оваа недела</h2>
-            <p class="mk-panel__sub mk-dash-reco__sub">Оценето според вашите активни понуди.</p>
+            <p class="mk-dash-reco__kicker">{{ __('✦ AI препораки') }}</p>
+            <h2 class="mk-dash-reco__title">{{ __('Најпогодни оваа недела') }}</h2>
+            <p class="mk-panel__sub mk-dash-reco__sub">{{ __('Оценето според вашите активни понуди.') }}</p>
         </div>
     </header>
 
@@ -23,9 +23,9 @@
                 </a>
             </li>
         @empty
-            <li class="mk-reco__empty">Нема компании во базата.</li>
+            <li class="mk-reco__empty">{{ __('Нема компании во базата.') }}</li>
         @endforelse
     </ul>
 
-    <a class="mk-reco__all" href="{{ $allUrl }}">Сите компании →</a>
+    <a class="mk-reco__all" href="{{ $allUrl }}">{{ __('Сите компании →') }}</a>
 </div>

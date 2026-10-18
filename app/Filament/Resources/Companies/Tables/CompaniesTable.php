@@ -29,12 +29,12 @@ class CompaniesTable
             ->extraAttributes(['class' => 'mk-companies-ta'])
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Име на компанија')
+                    ->label(__('Име на компанија'))
                     ->weight(FontWeight::Bold)
                     ->wrap()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector')
-                    ->label('Сектор')
+                    ->label(__('Сектор'))
                     ->searchable()
                     ->visibleFrom('lg')
                     ->html()
@@ -51,16 +51,16 @@ class CompaniesTable
                         );
                     }),
                 Tables\Columns\TextColumn::make('city')
-                    ->label('Град')
+                    ->label(__('Град'))
                     ->wrap()
                     ->searchable()
                     ->visibleFrom('md'),
                 Tables\Columns\TextColumn::make('address')
-                    ->label('Адреса')
+                    ->label(__('Адреса'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Е-пошта')
+                    ->label(__('Е-пошта'))
                     ->searchable()
                     ->html()
                     ->formatStateUsing(function (?string $state, Company $record): HtmlString {
@@ -70,7 +70,7 @@ class CompaniesTable
 
                         $safe = e($state);
                         $guess = $record->email_source?->isInferred()
-                            ? '<span class="mk-companies-email__guess" title="Генерирана адреса, непроверена">претпоставена</span>'
+                            ? '<span class="mk-companies-email__guess" title="'.e(__('Генерирана адреса, непроверена')).'">'.e(__('претпоставена')).'</span>'
                             : '';
 
                         return new HtmlString(
@@ -82,27 +82,27 @@ class CompaniesTable
                         );
                     }),
                 Tables\Columns\TextColumn::make('email_source')
-                    ->label('Извор на е-пошта')
+                    ->label(__('Извор на е-пошта'))
                     ->badge()
                     ->placeholder('—')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('website')
-                    ->label('Веб-сајт')
+                    ->label(__('Веб-сајт'))
                     ->url(fn (Company $record): ?string => $record->website, shouldOpenInNewTab: true)
                     ->formatStateUsing(fn (?string $state): string => $state ? preg_replace('#^https?://(www\.)?#i', '', rtrim($state, '/')) : '—')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Телефон')
+                    ->label(__('Телефон'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('edb')
-                    ->label('ЕДБ')
+                    ->label(__('ЕДБ'))
                     ->searchable()
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('activity_index')
-                    ->label('Индекс на активност')
+                    ->label(__('Индекс на активност'))
                     ->sortable()
                     ->visibleFrom('md')
                     ->default(0)
@@ -123,7 +123,7 @@ class CompaniesTable
                         );
                     }),
                 Tables\Columns\TextColumn::make('data_quality_flag')
-                    ->label('Квалитет')
+                    ->label(__('Квалитет'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->html()
                     ->formatStateUsing(function (?string $state): HtmlString {
@@ -134,9 +134,9 @@ class CompaniesTable
                         }
 
                         $label = match ($s) {
-                            'duplicate' => '⚠ Дупликат',
-                            'inactive' => '⚠ Неактивна',
-                            'inconsistent' => '⚠ Неконзистентна',
+                            'duplicate' => __('⚠ Дупликат'),
+                            'inactive' => __('⚠ Неактивна'),
+                            'inconsistent' => __('⚠ Неконзистентна'),
                             default => '⚠ '.e($s),
                         };
 
@@ -145,7 +145,7 @@ class CompaniesTable
                         );
                     }),
                 Tables\Columns\TextColumn::make('data_quality_note')
-                    ->label('Забелешка (AI)')
+                    ->label(__('Забелешка (AI)'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->html()
                     ->formatStateUsing(function (?string $state): HtmlString {
@@ -167,8 +167,8 @@ class CompaniesTable
                             '<details class="mk-ai-note mk-ai-note--long">'.
                             '<summary class="mk-ai-note__summary" onclick="event.stopPropagation()">'.
                             '<span class="mk-ai-note__preview">'.e($preview).'</span>'.
-                            '<span class="mk-ai-note__cta"><span class="mk-ai-note__cta-more">Прикажи повеќе</span>'.
-                            '<span class="mk-ai-note__cta-less">Прикажи помалку</span></span>'.
+                            '<span class="mk-ai-note__cta"><span class="mk-ai-note__cta-more">'.e(__('Прикажи повеќе')).'</span>'.
+                            '<span class="mk-ai-note__cta-less">'.e(__('Прикажи помалку')).'</span></span>'.
                             '</summary>'.
                             '<div class="mk-ai-note__body" onclick="event.stopPropagation()">'.e($text).'</div>'.
                             '</details>'
@@ -177,28 +177,28 @@ class CompaniesTable
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('sector')
-                    ->label('Сектор')
+                    ->label(__('Сектор'))
                     ->options(SectorEnum::class)
                     ->native(false)
                     ->searchable()
                     ->preload()
-                    ->placeholder('Сектор')
+                    ->placeholder(__('Сектор'))
                     ->modifyFormFieldUsing(function (Select $field): void {
                         $field->hiddenLabel();
                     }),
                 Tables\Filters\SelectFilter::make('email_source')
-                    ->label('Извор на е-пошта')
+                    ->label(__('Извор на е-пошта'))
                     ->options(EmailSource::class)
                     ->native(false)
-                    ->placeholder('Извор')
+                    ->placeholder(__('Извор'))
                     ->modifyFormFieldUsing(function (Select $field): void {
                         $field->hiddenLabel();
                     }),
                 Tables\Filters\TernaryFilter::make('has_email')
-                    ->label('Е-пошта')
-                    ->placeholder('Е-пошта: сите')
-                    ->trueLabel('Со е-пошта')
-                    ->falseLabel('Без е-пошта')
+                    ->label(__('Е-пошта'))
+                    ->placeholder(__('Е-пошта: сите'))
+                    ->trueLabel(__('Со е-пошта'))
+                    ->falseLabel(__('Без е-пошта'))
                     ->queries(
                         true: fn ($query) => $query->whereNotNull('email'),
                         false: fn ($query) => $query->whereNull('email'),
@@ -209,10 +209,10 @@ class CompaniesTable
                         $field->hiddenLabel();
                     }),
                 Tables\Filters\TernaryFilter::make('has_website')
-                    ->label('Веб-сајт')
-                    ->placeholder('Веб-сајт: сите')
-                    ->trueLabel('Со веб-сајт')
-                    ->falseLabel('Без веб-сајт')
+                    ->label(__('Веб-сајт'))
+                    ->placeholder(__('Веб-сајт: сите'))
+                    ->trueLabel(__('Со веб-сајт'))
+                    ->falseLabel(__('Без веб-сајт'))
                     ->queries(
                         true: fn ($query) => $query->whereNotNull('website'),
                         false: fn ($query) => $query->whereNull('website'),
@@ -223,20 +223,20 @@ class CompaniesTable
                         $field->hiddenLabel();
                     }),
                 Tables\Filters\SelectFilter::make('data_quality_flag')
-                    ->label('Квалитет')
+                    ->label(__('Квалитет'))
                     ->options([
                         'ok' => 'OK',
-                        'duplicate' => 'Дупликат',
-                        'inactive' => 'Неактивна',
-                        'inconsistent' => 'Неконзистентна',
+                        'duplicate' => __('Дупликат'),
+                        'inactive' => __('Неактивна'),
+                        'inconsistent' => __('Неконзистентна'),
                     ])
                     ->native(false)
-                    ->placeholder('Квалитет')
+                    ->placeholder(__('Квалитет'))
                     ->modifyFormFieldUsing(function (Select $field): void {
                         $field->hiddenLabel();
                     }),
                 Tables\Filters\SelectFilter::make('city')
-                    ->label('Град')
+                    ->label(__('Град'))
                     ->options(function () {
                         return Company::query()
                             ->whereNotNull('city')
@@ -249,43 +249,43 @@ class CompaniesTable
                     ->native(false)
                     ->searchable()
                     ->preload()
-                    ->placeholder('Град')
+                    ->placeholder(__('Град'))
                     ->modifyFormFieldUsing(function (Select $field): void {
                         $field->hiddenLabel();
                     }),
             ], layout: FiltersLayout::AboveContent)
-            ->emptyStateHeading('Нема компании за овие филтри')
-            ->emptyStateDescription('Променете ги филтрите или собери нови компании од „Пајплајн“.')
+            ->emptyStateHeading(__('Нема компании за овие филтри'))
+            ->emptyStateDescription(__('Променете ги филтрите или собери нови компании од „Пајплајн“.'))
             ->emptyStateIcon(Heroicon::OutlinedBuildingOffice)
             ->deferFilters(false)
             ->filtersFormColumns(['default' => 2, 'lg' => 3, 'xl' => 6])
-            ->searchPlaceholder('Пребарај компании, сектори, градови...')
+            ->searchPlaceholder(__('Пребарај компании, сектори, градови...'))
             ->recordUrl(fn (Company $record): string => CompanyResource::getUrl('view', ['record' => $record]))
             ->recordActions([
                 ViewAction::make()
-                    ->label('Преглед'),
+                    ->label(__('Преглед')),
                 EditAction::make()
-                    ->label('Уреди'),
+                    ->label(__('Уреди')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('markQualityOk')
-                        ->label('Означи како OK')
+                        ->label(__('Означи како OK'))
                         ->icon(Heroicon::OutlinedCheckCircle)
                         ->requiresConfirmation()
-                        ->modalDescription('Го отстранува AI-знамето за квалитет од избраните записи.')
+                        ->modalDescription(__('Го отстранува AI-знамето за квалитет од избраните записи.'))
                         ->action(fn (Collection $records) => $records->each->update([
                             'data_quality_flag' => 'ok',
                             'data_quality_note' => null,
                         ]))
                         ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()
-                        ->label('Отстрани избрани')
-                        ->modalHeading('Отстрани избрани компании')
-                        ->modalDescription('Записите се бришат трајно заедно со нивните таргети и испраќања. Прво прегледајте ги означените како дупликат/неактивни.')
-                        ->modalSubmitActionLabel('Отстрани')
-                        ->modalCancelActionLabel('Откажи'),
-                ])->label('Квалитет на податоци'),
+                        ->label(__('Отстрани избрани'))
+                        ->modalHeading(__('Отстрани избрани компании'))
+                        ->modalDescription(__('Записите се бришат трајно заедно со нивните таргети и испраќања. Прво прегледајте ги означените како дупликат/неактивни.'))
+                        ->modalSubmitActionLabel(__('Отстрани'))
+                        ->modalCancelActionLabel(__('Откажи')),
+                ])->label(__('Квалитет на податоци')),
             ]);
     }
 

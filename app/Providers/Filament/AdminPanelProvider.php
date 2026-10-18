@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Livewire\AppTopbar;
+use App\Http\Middleware\SetLocale;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -26,6 +27,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
+            ->font('Inter')
             ->path('admin')
             ->brandName('MK Company Data')
             ->login()
@@ -36,6 +38,10 @@ class AdminPanelProvider extends PanelProvider
             ->topbarLivewireComponent(AppTopbar::class)
             ->breadcrumbs(false)
             ->globalSearch(false)
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
+                fn (): string => '<div style="display:flex;justify-content:flex-end;margin-bottom:.75rem">'.view('filament.components.mk-language-switcher')->render().'</div>',
+            )
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_NAV_END,
                 fn (): string => view('filament.sidebar.ai-credits')->render(),
@@ -53,6 +59,7 @@ class AdminPanelProvider extends PanelProvider
                 StartSession::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
+                SetLocale::class,
                 VerifyCsrfToken::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,

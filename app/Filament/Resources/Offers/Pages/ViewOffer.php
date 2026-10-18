@@ -31,7 +31,7 @@ class ViewOffer extends ViewRecord
 
     public function getContentTabLabel(): ?string
     {
-        return 'Преглед';
+        return __('Преглед');
     }
 
     protected function getHeaderActions(): array
@@ -41,7 +41,7 @@ class ViewOffer extends ViewRecord
             $this->scheduleAction(),
             $this->cancelScheduleAction(),
             EditAction::make()
-                ->label('Уреди')
+                ->label(__('Уреди'))
                 ->icon(Heroicon::OutlinedPencilSquare),
         ];
     }
@@ -51,26 +51,26 @@ class ViewOffer extends ViewRecord
         $offer = $this->getRecord();
 
         if ($offer->isScheduled()) {
-            return 'Закажана за испраќање: '.$offer->scheduled_at->timezone(config('app.timezone'))->format('d.m.Y H:i');
+            return __('Закажана за испраќање: :time', ['time' => $offer->scheduled_at->timezone(config('app.timezone'))->format('d.m.Y H:i')]);
         }
 
-        return $offer->schedule_dispatched_at ? 'Испратена по распоред: '.$offer->schedule_dispatched_at->format('d.m.Y H:i') : null;
+        return $offer->schedule_dispatched_at ? __('Испратена по распоред: :time', ['time' => $offer->schedule_dispatched_at->format('d.m.Y H:i')]) : null;
     }
 
     private function scheduleAction(): Action
     {
         return Action::make('schedule')
-            ->label('Закажи испраќање')
+            ->label(__('Закажи испраќање'))
             ->icon(Heroicon::OutlinedClock)
             ->color('gray')
             ->visible(fn (): bool => ! $this->getRecord()->isScheduled())
-            ->modalHeading('Закажи испраќање')
-            ->modalDescription('Понудата ќе се испрати автоматски во избраното време (потребен е активен scheduler: php artisan schedule:work). Претпоставените е-пошти се прескокнуваат.')
-            ->modalSubmitActionLabel('Закажи')
-            ->modalCancelActionLabel('Откажи')
+            ->modalHeading(__('Закажи испраќање'))
+            ->modalDescription(__('Понудата ќе се испрати автоматски во избраното време (потребен е активен scheduler: php artisan schedule:work). Претпоставените е-пошти се прескокнуваат.'))
+            ->modalSubmitActionLabel(__('Закажи'))
+            ->modalCancelActionLabel(__('Откажи'))
             ->schema([
                 DateTimePicker::make('scheduled_at')
-                    ->label('Време на испраќање')
+                    ->label(__('Време на испраќање'))
                     ->required()
                     ->seconds(false)
                     ->minDate(now())
@@ -82,7 +82,7 @@ class ViewOffer extends ViewRecord
                     'schedule_dispatched_at' => null,
                 ]);
 
-                Notification::make()->title('Испраќањето е закажано')->success()->send();
+                Notification::make()->title(__('Испраќањето е закажано'))->success()->send();
                 $this->refreshFormData(['scheduled_at']);
             });
     }
@@ -90,7 +90,7 @@ class ViewOffer extends ViewRecord
     private function cancelScheduleAction(): Action
     {
         return Action::make('cancelSchedule')
-            ->label('Откажи закажување')
+            ->label(__('Откажи закажување'))
             ->icon(Heroicon::OutlinedXCircle)
             ->color('danger')
             ->visible(fn (): bool => $this->getRecord()->isScheduled())
@@ -98,7 +98,7 @@ class ViewOffer extends ViewRecord
             ->action(function (): void {
                 $this->getRecord()->update(['scheduled_at' => null]);
 
-                Notification::make()->title('Закажувањето е откажано')->send();
+                Notification::make()->title(__('Закажувањето е откажано'))->send();
                 $this->refreshFormData(['scheduled_at']);
             });
     }
@@ -106,40 +106,49 @@ class ViewOffer extends ViewRecord
     private function sendAction(): Action
     {
         return Action::make('send')
-            ->label('Испрати понуда')
+            ->label(__('Испрати понуда'))
             ->icon(Heroicon::OutlinedPaperAirplane)
             ->color('primary')
-            ->modalHeading('Испрати понуда')
-            ->modalSubmitActionLabel('Испрати')
-            ->modalCancelActionLabel('Откажи')
+            ->modalHeading(__('Испрати понуда'))
+            ->modalSubmitActionLabel(__('Испрати'))
+            ->modalCancelActionLabel(__('Откажи'))
             ->modalDescription(function (): HtmlString {
                 $plan = app(SendOfferService::class)->plan($this->getRecord());
                 $mailer = (string) config('mail.default');
                 $testMode = in_array($mailer, ['log', 'array'], true);
 
                 return new HtmlString(
-                    '<p>Примачи: <strong>'.$plan->recipients.'</strong> · ќе се испратат: <strong>'.$plan->deliverable().'</strong></p>'.
-                    '<p>Веќе испратени (се прескокнуваат): '.$plan->alreadySent.' · без е-пошта: '.$plan->skippedNoEmail.
-                    ' · со претпоставена (непроверена) е-пошта: '.$plan->skippedInferred.'</p>'.
+                    '<p>'.e(__('Примачи: :recipients · ќе се испратат: :deliverable', [
+                        'recipients' => $plan->recipients,
+                        'deliverable' => $plan->deliverable(),
+                    ])).'</p>'.
+                    '<p>'.e(__('Веќе испратени (се прескокнуваат): :sent · без е-пошта: :noEmail · со претпоставена (непроверена) е-пошта: :inferred', [
+                        'sent' => $plan->alreadySent,
+                        'noEmail' => $plan->skippedNoEmail,
+                        'inferred' => $plan->skippedInferred,
+                    ])).'</p>'.
                     ($testMode
-                        ? '<p><strong>Тест-режим:</strong> пораките не се доставуваат на вистински адреси (mailer: '.e($mailer).'), туку се запишуваат во storage/logs/laravel.log.</p>'
+                        ? '<p><strong>'.e(__('Тест-режим:')).'</strong> '.e(__('пораките не се доставуваат на вистински адреси (mailer: :mailer), туку се запишуваат во storage/logs/laravel.log.', ['mailer' => $mailer])).'</p>'
                         : '')
                 );
             })
             ->schema([
                 Toggle::make('include_inferred')
-                    ->label('Вклучи и претпоставени (непроверени) е-пошти')
+                    ->label(__('Вклучи и претпоставени (непроверени) е-пошти'))
                     ->default(false),
             ])
             ->action(function (array $data): void {
                 $report = app(SendOfferService::class)->send($this->getRecord(), (bool) ($data['include_inferred'] ?? false));
 
                 Notification::make()
-                    ->title('Испраќањето заврши')
-                    ->body(sprintf(
-                        'Испратени: %d · неуспешни: %d · веќе испратени: %d · без е-пошта: %d · претпоставени (прескокнати): %d',
-                        $report->sent, $report->failed, $report->alreadySent, $report->skippedNoEmail, $report->skippedInferred
-                    ))
+                    ->title(__('Испраќањето заврши'))
+                    ->body(__('Испратени: :sent · неуспешни: :failed · веќе испратени: :already · без е-пошта: :noEmail · претпоставени (прескокнати): :inferred', [
+                        'sent' => $report->sent,
+                        'failed' => $report->failed,
+                        'already' => $report->alreadySent,
+                        'noEmail' => $report->skippedNoEmail,
+                        'inferred' => $report->skippedInferred,
+                    ]))
                     ->color($report->failed > 0 ? 'warning' : 'success')
                     ->send();
 

@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\SetLocale;
 use App\Services\EmailEnrichment\SiteEmailFinder;
 use App\Services\EmailEnrichment\Strategies\SearchStrategy;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,5 +33,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::unguard();
+
+        // Livewire updates are separate requests: keep the chosen language there too.
+        Livewire::addPersistentMiddleware([SetLocale::class]);
     }
 }

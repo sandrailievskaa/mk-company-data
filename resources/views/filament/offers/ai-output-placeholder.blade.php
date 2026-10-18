@@ -3,7 +3,6 @@
         <span class="mk-offer-ai-output-placeholder__icon">✦</span>
     </div>
     <p class="mk-offer-ai-output-placeholder__text">
-        Овде ќе се појави AI нацртот. Пополни контекст и наслов, па кликни
-        <strong>Генерирај со AI</strong>. Потоа можеш да уредуваш пред зачувување.
+        {!! __('Овде ќе се појави AI нацртот. Пополни контекст и наслов, па кликни :button. Потоа можеш да уредуваш пред зачувување.', ['button' => '<strong>'.e(__('Генерирај со AI')).'</strong>']) !!}
     </p>
 </div>

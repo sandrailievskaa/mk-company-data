@@ -9,5 +9,8 @@ class ListScrapeRuns extends ListRecords
 {
     protected static string $resource = ScrapeRunResource::class;
 
-    protected static ?string $title = 'Скрејпања';
+    public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
+    {
+        return __('Скрејпања');
+    }
 }

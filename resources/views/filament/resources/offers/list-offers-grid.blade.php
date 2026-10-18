@@ -11,7 +11,7 @@
 <div class="mk-offers-list-inner">
     @if ($paginator->isEmpty())
         <div class="mk-offers-empty">
-            <p>Нема креирани понуди.</p>
+            <p>{{ __('Нема креирани понуди.') }}</p>
         </div>
     @else
         <div class="mk-offers-grid">
@@ -24,7 +24,7 @@
                     $company = $offer->company;
                     $preview = Str::of(strip_tags((string) $offer->content))->squish();
                     if ($preview->isEmpty()) {
-                        $previewText = 'Нема преглед…';
+                        $previewText = __('Нема преглед…');
                     } else {
                         $previewText = (string) $preview->limit(180, '…', true);
                     }
