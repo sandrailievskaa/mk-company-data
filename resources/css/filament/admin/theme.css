@@ -2948,3 +2948,168 @@ a.mk-cv-kv__link:hover {
 .fi-ta.mk-companies-ta .mk-activity-cell__track {
   flex-basis: 3rem;
 }
+
+/* ==========================================================================
+   Респонзивен полиш: лаптоп (>1024px), таблет (641–1024px), телефон (≤640px)
+   ========================================================================== */
+
+/* Индекс на активност: лентата стои над бројката и не зафаќа ширина. */
+.mk-activity-cell--stacked {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-width: 3.5rem;
+  width: 3.5rem;
+}
+
+.mk-activity-cell--stacked .mk-activity-cell__track {
+  flex: none;
+  width: 100%;
+  height: 5px;
+}
+
+.mk-activity-cell--stacked .mk-activity-cell__val {
+  min-width: 0;
+  font-size: 0.8125rem;
+  line-height: 1;
+}
+
+/* Таблет */
+@media (max-width: 1024px) {
+  .fi-main {
+    padding-inline: 1rem !important;
+  }
+
+  .mk-dashboard__h1 {
+    font-size: 2rem;
+  }
+
+  .mk-dashboard__value {
+    font-size: 2.5rem;
+  }
+
+  .mk-dashboard__grid--compact .mk-dashboard__value {
+    font-size: 1.75rem;
+  }
+
+  /* Преглед на компанија: херо и акции едни под други. */
+  .mk-company-view .mk-cv-hero {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .mk-cv-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+/* Телефон */
+@media (max-width: 640px) {
+  .fi-main {
+    padding-inline: 0.625rem !important;
+  }
+
+  .fi-header {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.75rem;
+  }
+
+  .fi-header-heading {
+    font-size: 1.5rem !important;
+    line-height: 1.2;
+  }
+
+  .fi-header .fi-ac {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  /* Дашборд */
+  .mk-dashboard__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .mk-dashboard__card {
+    padding: 16px;
+  }
+
+  .mk-dashboard__value {
+    font-size: 2.25rem;
+  }
+
+  .mk-dashboard__grid--compact .mk-dashboard__value {
+    font-size: 1.5rem;
+  }
+
+  .mk-dashboard__delta {
+    font-size: 0.6875rem;
+  }
+
+  .mk-panel {
+    padding: 1rem;
+  }
+
+  /* Преглед на компанија */
+  .mk-cv-activity__body {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mk-cv-activity__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mk-cv-hero__actions > * {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+
+  /* Табела: реден клик отвора преглед, па „Преглед“ копчето се крие. */
+  .fi-ta.mk-companies-ta .fi-ta-actions > *:first-child {
+    display: none;
+  }
+
+  .fi-ta.mk-companies-ta .fi-ta-header-ctn {
+    padding: 0.75rem 0.75rem 0.65rem;
+  }
+
+  .fi-ta.mk-companies-ta .fi-ta-header-toolbar {
+    padding-right: 5rem !important;
+  }
+
+  /* Пајплајн: прогресот и бројките една под друга. */
+  .fi-section-content-ctn [style*='display: flex'] {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  /* Топбар: само иконата за пребарување. */
+  .mk-app-topbar__search kbd,
+  .mk-app-topbar__search .fi-badge {
+    display: none;
+  }
+
+  .mk-app-topbar__search-ctn {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+}
+
+/* Многу тесни телефони */
+@media (max-width: 380px) {
+  .mk-dashboard__grid,
+  .mk-dashboard__grid--compact {
+    grid-template-columns: 1fr;
+  }
+
+  .mk-activity-distribution__footer {
+    grid-template-columns: 1fr 1fr;
+  }
+}

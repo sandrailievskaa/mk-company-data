@@ -36,6 +36,7 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Сектор')
                     ->searchable()
+                    ->visibleFrom('md')
                     ->html()
                     ->formatStateUsing(function ($state): HtmlString {
                         if (! $state instanceof SectorEnum) {
@@ -52,7 +53,8 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('city')
                     ->label('Град')
                     ->wrap()
-                    ->searchable(),
+                    ->searchable()
+                    ->visibleFrom('sm'),
                 Tables\Columns\TextColumn::make('address')
                     ->label('Адреса')
                     ->searchable()
@@ -102,6 +104,7 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('activity_index')
                     ->label('Индекс на активност')
                     ->sortable()
+                    ->visibleFrom('md')
                     ->default(0)
                     ->html()
                     ->formatStateUsing(function ($state): HtmlString {
@@ -110,7 +113,7 @@ class CompaniesTable
                         $pct = (int) round($v * 100);
 
                         return new HtmlString(
-                            '<span class="mk-activity-cell">'.
+                            '<span class="mk-activity-cell mk-activity-cell--stacked">'.
                             '<span class="mk-activity-cell__track" role="presentation">'.
                             '<span class="mk-activity-cell__fill" style="width: '.$pct.'%;"></span>'.
                             '</span>'.
