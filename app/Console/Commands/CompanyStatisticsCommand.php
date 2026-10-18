@@ -58,4 +58,3 @@ class CompanyStatisticsCommand extends Command
         return Command::SUCCESS;
     }
 }
-

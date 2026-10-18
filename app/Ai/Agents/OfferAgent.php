@@ -53,7 +53,6 @@ VERIFICATION: Before returning, count your paragraphs. You must have 5–7 parag
 Generate the response now.
 PROMPT;
     }
-        
 
     /**
      * Get the list of messages comprising the conversation so far.
