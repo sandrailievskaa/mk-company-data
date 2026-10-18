@@ -33,7 +33,18 @@ See [docs/PAPER_ALIGNMENT.md](docs/PAPER_ALIGNMENT.md) for what is implemented, 
 - `php artisan app:calculate-activity-index` — recompute the index
 - `php artisan app:detect-invalid-companies` — AI data-quality flags (batches of 20)
 - `php artisan app:company-statistics [--csv=table2.csv]` — Table II metrics computed from the database
+- `php artisan app:send-scheduled-offers` — send offers whose scheduled time has come (the scheduler runs it every minute: `php artisan schedule:work`)
+- `php artisan app:set-user-role user@example.com operator` — roles: `admin` (everything) or `operator` (companies and offers, no pipeline, no deletions)
 - `php artisan app:add-company-email "Name" "info@domain.mk"` — set an e-mail manually
+
+## Read-only API
+
+Set `API_TOKEN` in `.env`, then send `Authorization: Bearer <token>`:
+
+- `GET /api/companies` — filters: `sector`, `city`, `has_email`, `has_website`, `min_index`, `q`, `sort` (`index`|`name`), `per_page` (max 100)
+- `GET /api/companies/{id}`
+
+Every e-mail carries `email_source` and `email_is_inferred`, so a client never treats a guessed address as a found contact. Without a token the API answers 503.
 
 ## Setup
 

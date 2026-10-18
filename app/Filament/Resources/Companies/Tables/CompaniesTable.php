@@ -230,6 +230,9 @@ class CompaniesTable
                         $field->hiddenLabel();
                     }),
             ], layout: FiltersLayout::AboveContent)
+            ->emptyStateHeading('Нема компании за овие филтри')
+            ->emptyStateDescription('Променете ги филтрите или собери нови компании од „Пајплајн“.')
+            ->emptyStateIcon(Heroicon::OutlinedBuildingOffice)
             ->deferFilters(false)
             ->filtersFormColumns(['default' => 1, 'md' => 3, 'xl' => 5])
             ->searchPlaceholder('Пребарај компании, сектори, градови...')

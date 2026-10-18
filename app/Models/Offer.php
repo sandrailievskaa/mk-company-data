@@ -19,7 +19,15 @@ class Offer extends Model
 
     protected $casts = [
         'status' => OfferStatus::class,
+        'scheduled_at' => 'datetime',
+        'schedule_dispatched_at' => 'datetime',
     ];
+
+    /** Waiting for the scheduler to send it. */
+    public function isScheduled(): bool
+    {
+        return $this->scheduled_at !== null && $this->schedule_dispatched_at === null;
+    }
 
     public function company(): BelongsTo
     {

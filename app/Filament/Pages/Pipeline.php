@@ -22,9 +22,15 @@ class Pipeline extends Page
 
     protected static ?string $title = 'Пајплајн за податоци';
 
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 30;
 
     protected string $view = 'filament.pages.pipeline';
+
+    /** The data pipeline is operated by administrators only. */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->isAdmin();
+    }
 
     /**
      * @return array<string, mixed>

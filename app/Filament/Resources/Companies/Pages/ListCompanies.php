@@ -26,6 +26,7 @@ class ListCompanies extends ListRecords
                 ->color('gray')
                 ->outlined(),
             Action::make('runCompanyScraper')
+                ->visible(fn (): bool => (bool) auth()->user()?->isAdmin())
                 ->label('✦ Скрејпај компании')
                 ->color('primary')
                 ->requiresConfirmation()

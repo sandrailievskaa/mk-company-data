@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    // Shared bearer token for the read-only /api endpoints (the API is disabled while empty).
+    'api' => [
+        'token' => env('API_TOKEN'),
+    ],
+
 ];

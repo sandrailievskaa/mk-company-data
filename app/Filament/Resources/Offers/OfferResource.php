@@ -24,6 +24,8 @@ class OfferResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
+    protected static ?int $navigationSort = 20;
+
     protected static ?string $navigationLabel = 'Понуди';
 
     protected static ?string $label = 'Понуда';

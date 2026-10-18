@@ -6,6 +6,7 @@ use App\Filament\Resources\Offers\OfferResource;
 use App\Services\Offers\SendOfferService;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
@@ -37,10 +38,69 @@ class ViewOffer extends ViewRecord
     {
         return [
             $this->sendAction(),
+            $this->scheduleAction(),
+            $this->cancelScheduleAction(),
             EditAction::make()
                 ->label('Уреди')
                 ->icon(Heroicon::OutlinedPencilSquare),
         ];
+    }
+
+    public function getSubheading(): string|\Illuminate\Contracts\Support\Htmlable|null
+    {
+        $offer = $this->getRecord();
+
+        if ($offer->isScheduled()) {
+            return 'Закажана за испраќање: '.$offer->scheduled_at->timezone(config('app.timezone'))->format('d.m.Y H:i');
+        }
+
+        return $offer->schedule_dispatched_at ? 'Испратена по распоред: '.$offer->schedule_dispatched_at->format('d.m.Y H:i') : null;
+    }
+
+    private function scheduleAction(): Action
+    {
+        return Action::make('schedule')
+            ->label('Закажи испраќање')
+            ->icon(Heroicon::OutlinedClock)
+            ->color('gray')
+            ->visible(fn (): bool => ! $this->getRecord()->isScheduled())
+            ->modalHeading('Закажи испраќање')
+            ->modalDescription('Понудата ќе се испрати автоматски во избраното време (потребен е активен scheduler: php artisan schedule:work). Претпоставените е-пошти се прескокнуваат.')
+            ->modalSubmitActionLabel('Закажи')
+            ->modalCancelActionLabel('Откажи')
+            ->schema([
+                DateTimePicker::make('scheduled_at')
+                    ->label('Време на испраќање')
+                    ->required()
+                    ->seconds(false)
+                    ->minDate(now())
+                    ->native(false),
+            ])
+            ->action(function (array $data): void {
+                $this->getRecord()->update([
+                    'scheduled_at' => $data['scheduled_at'],
+                    'schedule_dispatched_at' => null,
+                ]);
+
+                Notification::make()->title('Испраќањето е закажано')->success()->send();
+                $this->refreshFormData(['scheduled_at']);
+            });
+    }
+
+    private function cancelScheduleAction(): Action
+    {
+        return Action::make('cancelSchedule')
+            ->label('Откажи закажување')
+            ->icon(Heroicon::OutlinedXCircle)
+            ->color('danger')
+            ->visible(fn (): bool => $this->getRecord()->isScheduled())
+            ->requiresConfirmation()
+            ->action(function (): void {
+                $this->getRecord()->update(['scheduled_at' => null]);
+
+                Notification::make()->title('Закажувањето е откажано')->send();
+                $this->refreshFormData(['scheduled_at']);
+            });
     }
 
     private function sendAction(): Action
