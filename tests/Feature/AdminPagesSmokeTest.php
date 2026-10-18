@@ -34,3 +34,18 @@ it('renders the admin pages without errors', function (string $page) {
 
     $this->get($url)->assertOk();
 })->with(['dashboard', 'companies list', 'company view', 'company edit', 'offers list', 'offer view', 'offer create', 'scrape runs']);
+
+it('filters companies by email presence and quality flag', function () {
+    $with = Company::create(['name' => 'Со пошта', 'email' => 'a@b.mk', 'email_source' => EmailSource::Website]);
+    $without = Company::create(['name' => 'Без пошта', 'data_quality_flag' => 'duplicate']);
+
+    $list = Livewire\Livewire::test(App\Filament\Resources\Companies\Pages\ListCompanies::class);
+
+    $list->filterTable('has_email', true)->assertCanSeeTableRecords([$with])->assertCanNotSeeTableRecords([$without]);
+    $list->filterTable('has_email', false)->assertCanSeeTableRecords([$without])->assertCanNotSeeTableRecords([$with]);
+    $list->removeTableFilters()->filterTable('data_quality_flag', 'duplicate')->assertCanSeeTableRecords([$without]);
+});
+
+it('shows offer campaign statistics on the dashboard', function () {
+    $this->get('/admin')->assertOk()->assertSee('Понуди и испраќања');
+});

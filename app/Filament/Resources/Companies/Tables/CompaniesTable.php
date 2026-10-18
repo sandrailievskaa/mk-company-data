@@ -25,6 +25,7 @@ class CompaniesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('activity_index', 'desc')
             ->extraAttributes(['class' => 'mk-companies-ta'])
             ->columns([
                 Tables\Columns\TextColumn::make('name')
@@ -168,6 +169,27 @@ class CompaniesTable
                     ->modifyFormFieldUsing(function (Select $field): void {
                         $field->hiddenLabel();
                     }),
+                Tables\Filters\TernaryFilter::make('has_email')
+                    ->label('Е-пошта')
+                    ->placeholder('Е-пошта: сите')
+                    ->trueLabel('Со е-пошта')
+                    ->falseLabel('Без е-пошта')
+                    ->queries(
+                        true: fn ($query) => $query->whereNotNull('email'),
+                        false: fn ($query) => $query->whereNull('email'),
+                        blank: fn ($query) => $query,
+                    )
+                    ->native(false),
+                Tables\Filters\SelectFilter::make('data_quality_flag')
+                    ->label('Квалитет')
+                    ->options([
+                        'ok' => 'OK',
+                        'duplicate' => 'Дупликат',
+                        'inactive' => 'Неактивна',
+                        'inconsistent' => 'Неконзистентна',
+                    ])
+                    ->native(false)
+                    ->placeholder('Квалитет'),
                 Tables\Filters\SelectFilter::make('city')
                     ->label('Град')
                     ->options(function () {
@@ -188,7 +210,7 @@ class CompaniesTable
                     }),
             ], layout: FiltersLayout::AboveContent)
             ->deferFilters(false)
-            ->filtersFormColumns(3)
+            ->filtersFormColumns(['default' => 1, 'md' => 3, 'xl' => 5])
             ->searchPlaceholder('Пребарај компании, сектори, градови...')
             ->recordUrl(fn (Company $record): string => CompanyResource::getUrl('view', ['record' => $record]))
             ->recordActions([
