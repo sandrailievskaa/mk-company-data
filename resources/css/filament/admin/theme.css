@@ -2932,95 +2932,19 @@ a.mk-cv-kv__link:hover {
   white-space: nowrap;
 }
 
-/* Компании: потесна колона за име (се прелама во два реда) и акции една под друга. */
-.fi-ta.mk-companies-ta .mk-col-name {
-  width: 11rem;
-  min-width: 8rem;
-  max-width: 11rem;
-}
-
-.fi-ta.mk-companies-ta .mk-col-name,
-.fi-ta.mk-companies-ta .mk-col-name * {
+/* Компании: табелата ги користи истите стандардни стилови како „Скрејпања“.
+   Само долгите вредности смеат да се прелеваат во нов ред, за да нема хоризонтално лизгање. */
+.fi-ta.mk-companies-ta .mk-companies-email__addr {
+  display: inline;
+  max-width: 100%;
   white-space: normal;
   overflow-wrap: anywhere;
 }
 
-.fi-ta.mk-companies-ta .fi-ta-actions {
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  gap: 0.25rem !important;
-}
-
-.fi-ta.mk-companies-ta .fi-ta-actions-cell,
-.fi-ta.mk-companies-ta .fi-ta-cell:has(> .fi-ta-actions) {
-  width: 1%;
-  white-space: nowrap;
-}
-
-/* Компании: табелата да собира во ширина без хоризонтално лизгање. */
-.fi-ta.mk-companies-ta .fi-ta-table {
-  width: 100%;
-  min-width: 0;
-}
-
-.fi-ta.mk-companies-ta .fi-ta-header-cell,
-.fi-ta.mk-companies-ta .fi-ta-cell {
-  padding-inline: 0.75rem !important;
-}
-
-.fi-ta.mk-companies-ta .fi-ta-header-cell:first-child,
-.fi-ta.mk-companies-ta .fi-ta-cell:first-child {
-  padding-inline-start: 1rem !important;
-}
-
-.fi-ta.mk-companies-ta .fi-ta-cell .fi-ta-col,
-.fi-ta.mk-companies-ta .fi-ta-cell .fi-ta-text {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.fi-ta.mk-companies-ta .mk-companies-email__addr {
-  max-width: 18rem;
-}
-
 .fi-ta.mk-companies-ta .mk-activity-cell {
-  min-width: 5.5rem;
+  min-width: 0;
 }
 
-.fi-ta.mk-companies-ta .fi-ta-content {
-  overflow-x: auto;
-}
-
-/* Компании: потесна табела (помали падинзи), без хоризонтално лизгање. */
-.fi-ta.mk-companies-ta .fi-ta-header-cell {
-  padding: 0.6rem 0.5rem !important;
-  font-size: 11px !important;
-  letter-spacing: 0.04em !important;
-}
-
-.fi-ta.mk-companies-ta .fi-ta-header-cell:first-child,
-.fi-ta.mk-companies-ta .fi-ta-cell:first-child {
-  padding-inline-start: 0.75rem !important;
-}
-
-.fi-ta.mk-companies-ta .fi-ta-cell > * {
-  padding: 0.55rem 0.5rem !important;
-}
-
-.fi-ta.mk-companies-ta .fi-ta-cell {
-  font-size: 0.8125rem;
-}
-
-.fi-ta.mk-companies-ta .fi-ta-actions-cell,
-.fi-ta.mk-companies-ta .fi-ta-actions-header-cell {
-  padding-inline: 0.25rem !important;
-}
-
-.fi-ta.mk-companies-ta .mk-companies-email__addr {
-  display: inline-block;
-  max-width: 15rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: bottom;
-  white-space: nowrap;
+.fi-ta.mk-companies-ta .mk-activity-cell__track {
+  flex-basis: 3rem;
 }

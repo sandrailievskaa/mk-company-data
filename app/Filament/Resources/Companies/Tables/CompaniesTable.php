@@ -31,13 +31,11 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('name')
                     ->label('Име на компанија')
                     ->weight(FontWeight::Bold)
-                    ->extraHeaderAttributes(['class' => 'mk-col-name'])
-                    ->extraCellAttributes(['class' => 'mk-col-name'])
+                    ->wrap()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Сектор')
                     ->searchable()
-                    ->visibleFrom('sm')
                     ->html()
                     ->formatStateUsing(function ($state): HtmlString {
                         if (! $state instanceof SectorEnum) {
@@ -53,8 +51,8 @@ class CompaniesTable
                     }),
                 Tables\Columns\TextColumn::make('city')
                     ->label('Град')
-                    ->searchable()
-                    ->visibleFrom('md'),
+                    ->wrap()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('address')
                     ->label('Адреса')
                     ->searchable()
@@ -62,7 +60,6 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('email')
                     ->label('Е-пошта')
                     ->searchable()
-                    ->visibleFrom('sm')
                     ->html()
                     ->formatStateUsing(function (?string $state, Company $record): HtmlString {
                         if (blank($state)) {
@@ -105,7 +102,6 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('activity_index')
                     ->label('Индекс на активност')
                     ->sortable()
-                    ->visibleFrom('lg')
                     ->default(0)
                     ->html()
                     ->formatStateUsing(function ($state): HtmlString {
@@ -262,15 +258,10 @@ class CompaniesTable
             ->searchPlaceholder('Пребарај компании, сектори, градови...')
             ->recordUrl(fn (Company $record): string => CompanyResource::getUrl('view', ['record' => $record]))
             ->recordActions([
-                // Икони: целиот ред е веќе кликабилен кон прегледот, па текстот само троши простор.
                 ViewAction::make()
-                    ->label('Преглед')
-                    ->iconButton()
-                    ->tooltip('Преглед'),
+                    ->label('Преглед'),
                 EditAction::make()
-                    ->label('Уреди')
-                    ->iconButton()
-                    ->tooltip('Уреди'),
+                    ->label('Уреди'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
