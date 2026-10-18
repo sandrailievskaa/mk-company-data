@@ -1,0 +1,10 @@
+Metric,Value
+"Total Collected Companies","6,017"
+"Tested Sectors",10
+"Initial Email Coverage % (registry listing)",0.00%
+"Email Coverage After Enrichment %",13.69%
+"Companies with Email (Final)",824
+"of which discovered (website/search/registry/manual)","824 (13.69%)"
+"of which inferred (pattern-generated, unverified)",0
+"Duplicate Reduction Rate %",14.95%
+"Average Scraping Time per Sector","0.36 min"
