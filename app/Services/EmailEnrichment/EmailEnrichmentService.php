@@ -4,319 +4,49 @@ namespace App\Services\EmailEnrichment;
 
 use App\Enums\EmailSource;
 use App\Models\Company;
-use App\Support\CompanyNameNormalizer;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use App\Services\EmailEnrichment\Strategies\EmailStrategy;
+use App\Services\EmailEnrichment\Strategies\PatternStrategy;
+use App\Services\EmailEnrichment\Strategies\SearchStrategy;
+use App\Services\EmailEnrichment\Strategies\WebsiteStrategy;
+use Throwable;
 
+/**
+ * Finds a contact e-mail for a company by trying the strategies in order of
+ * reliability: company website, search engine, pattern-based generation.
+ * Every stored address records which strategy produced it.
+ */
 class EmailEnrichmentService
 {
-    private Client $httpClient;
+    /** @var list<EmailStrategy> */
+    private array $strategies;
 
     /** Source of the e-mail returned by the most recent findEmail() call. */
     private ?EmailSource $lastSource = null;
 
-    public function __construct(private readonly CompanyNameNormalizer $nameNormalizer)
-    {
-        $this->httpClient = new Client([
-            'timeout' => 15,
-            'verify' => false,
-            'allow_redirects' => true,
-            'headers' => [
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language' => 'mk-MK,mk;q=0.9,en-US;q=0.8,en;q=0.7',
-            ],
-        ]);
+    public function __construct(
+        WebsiteStrategy $website,
+        SearchStrategy $search,
+        private readonly PatternStrategy $pattern,
+        private readonly EmailExtractor $extractor,
+    ) {
+        $this->strategies = [$website, $search, $pattern];
     }
 
-    /**
-     * Try to find email for a company using multiple aggressive strategies
-     */
     public function findEmail(Company $company): ?string
     {
         $this->lastSource = null;
 
-        // Strategy 1: Try to find and scrape from company website
-        $email = $this->getEmailFromCompanyWebsite($company);
-        if ($email && $this->isValidEmail($email)) {
-            $this->lastSource = EmailSource::Website;
+        foreach ($this->strategies as $strategy) {
+            $email = $strategy->find($company);
 
-            return $email;
-        }
+            if ($email !== null && $this->extractor->isUsable($email)) {
+                $this->lastSource = $strategy->source();
 
-        // Strategy 2: Try Google search for company email
-        $email = $this->getEmailFromGoogleSearch($company);
-        if ($email && $this->isValidEmail($email)) {
-            $this->lastSource = EmailSource::Search;
-
-            return $email;
-        }
-
-        // Strategy 3: Try pattern-based email generation with multiple domains
-        $email = $this->generateEmailPatterns($company);
-        if ($email && $this->isValidEmail($email)) {
-            $this->lastSource = EmailSource::Inferred;
-
-            return $email;
-        }
-
-        return null;
-    }
-
-    /**
-     * Aggressively search for company website and extract emails
-     */
-    private function getEmailFromCompanyWebsite(Company $company): ?string
-    {
-        // Try multiple ways to find website
-        $possibleDomains = $this->generatePossibleDomains($company);
-
-        foreach ($possibleDomains as $domain) {
-            // Try common website URLs
-            $urls = [
-                "https://{$domain}",
-                "http://{$domain}",
-                "https://www.{$domain}",
-                "http://www.{$domain}",
-            ];
-
-            foreach ($urls as $url) {
-                try {
-                    $response = $this->httpClient->get($url, ['timeout' => 5]);
-                    if ($response->getStatusCode() === 200) {
-                        // Found website, now extract emails
-                        $html = $response->getBody()->getContents();
-                        $email = $this->extractEmailsFromText($html);
-                        if ($email) {
-                            return $email;
-                        }
-
-                        // Try contact page
-                        $contactEmail = $this->tryContactPage($url);
-                        if ($contactEmail) {
-                            return $contactEmail;
-                        }
-                    }
-                } catch (GuzzleException $e) {
-                    continue;
-                }
+                return $email;
             }
         }
 
         return null;
-    }
-
-    /**
-     * Try to find email from contact/about pages
-     */
-    private function tryContactPage(string $baseUrl): ?string
-    {
-        $contactPages = [
-            '/contact',
-            '/kontakt',
-            '/contact-us',
-            '/kontaktirajte-ne',
-            '/about',
-            '/za-nas',
-            '/info',
-        ];
-
-        foreach ($contactPages as $page) {
-            try {
-                $url = rtrim($baseUrl, '/').$page;
-                $response = $this->httpClient->get($url, ['timeout' => 5]);
-                if ($response->getStatusCode() === 200) {
-                    $html = $response->getBody()->getContents();
-                    $email = $this->extractEmailsFromText($html);
-                    if ($email) {
-                        return $email;
-                    }
-                }
-            } catch (GuzzleException $e) {
-                continue;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Try Google search for company email
-     */
-    private function getEmailFromGoogleSearch(Company $company): ?string
-    {
-        try {
-            // Search for company name + email
-            $searchQuery = urlencode("\"{$company->name}\" email @mk");
-            $searchUrl = "https://www.google.com/search?q={$searchQuery}";
-
-            $response = $this->httpClient->get($searchUrl, [
-                'timeout' => 10,
-                'headers' => [
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                ],
-            ]);
-
-            $html = $response->getBody()->getContents();
-
-            return $this->extractEmailsFromText($html);
-        } catch (GuzzleException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * Generate possible domains for company
-     */
-    private function generatePossibleDomains(Company $company): array
-    {
-        $normalizedName = $this->normalizeCompanyName($company->name);
-        $domains = [];
-
-        // Try .mk first
-        $domains[] = "{$normalizedName}.mk";
-
-        // Try .com.mk
-        $domains[] = "{$normalizedName}.com.mk";
-
-        // Try .com
-        $domains[] = "{$normalizedName}.com";
-
-        // If name is long, try shortened version
-        if (strlen($normalizedName) > 15) {
-            $shortName = substr($normalizedName, 0, 12);
-            $domains[] = "{$shortName}.mk";
-            $domains[] = "{$shortName}.com.mk";
-        }
-
-        // Try without common words
-        $nameWithoutCommon = preg_replace('/\b(doo|ad|llc|mk|mkd)\b/i', '', $normalizedName);
-        $nameWithoutCommon = preg_replace('/\s+/', '', $nameWithoutCommon);
-        if ($nameWithoutCommon && $nameWithoutCommon !== $normalizedName) {
-            $domains[] = "{$nameWithoutCommon}.mk";
-            $domains[] = "{$nameWithoutCommon}.com.mk";
-        }
-
-        return array_unique($domains);
-    }
-
-    /**
-     * Generate email patterns with multiple domains
-     */
-    private function generateEmailPatterns(Company $company): ?string
-    {
-        $normalizedName = $this->normalizeCompanyName($company->name);
-        $domains = $this->generatePossibleDomains($company);
-
-        if (empty($domains)) {
-            return null;
-        }
-
-        // Extended list of email patterns (most common first)
-        $patterns = [
-            'info',
-            'contact',
-            'kontakt',
-            'office',
-            'kancelarija',
-            'sales',
-            'prodazba',
-            'hello',
-            'marketing',
-            'general',
-            'admin',
-            'support',
-            'podrska',
-        ];
-
-        // For .mk domains, return most common pattern immediately
-        // (info@companyname.mk is very common in Macedonia)
-        foreach ($domains as $domain) {
-            if (str_ends_with($domain, '.mk') && ! str_contains($domain, '.com.mk')) {
-                return "info@{$domain}";
-            }
-        }
-
-        // If no .mk domain, try .com.mk
-        foreach ($domains as $domain) {
-            if (str_ends_with($domain, '.com.mk')) {
-                return "info@{$domain}";
-            }
-        }
-
-        // Fallback to first domain with info pattern
-        return "info@{$domains[0]}";
-    }
-
-    /**
-     * Normalize company name for domain generation
-     */
-    private function normalizeCompanyName(string $name): string
-    {
-        return $this->nameNormalizer->compact($name);
-    }
-
-    /**
-     * Extract emails from HTML/text
-     */
-    private function extractEmailsFromText(string $text): ?string
-    {
-        $pattern = '/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/';
-
-        if (preg_match_all($pattern, $text, $matches)) {
-            $foundEmails = [];
-
-            foreach ($matches[0] as $email) {
-                $email = strtolower(trim($email));
-
-                // Skip invalid emails
-                if (
-                    str_contains($email, 'example.com') ||
-                    str_contains($email, 'test.com') ||
-                    str_contains($email, 'noreply') ||
-                    str_contains($email, 'no-reply') ||
-                    str_contains($email, 'donotreply') ||
-                    str_contains($email, 'cdn77.org') ||
-                    str_contains($email, 'zk.mk') ||
-                    str_contains($email, 'facebook.com') ||
-                    str_contains($email, 'twitter.com') ||
-                    str_contains($email, 'linkedin.com') ||
-                    ! filter_var($email, FILTER_VALIDATE_EMAIL)
-                ) {
-                    continue;
-                }
-
-                $foundEmails[] = $email;
-            }
-
-            if (empty($foundEmails)) {
-                return null;
-            }
-
-            // Prefer .mk domains
-            foreach ($foundEmails as $email) {
-                if (str_ends_with($email, '.mk') && ! str_contains($email, '.com.mk')) {
-                    return $email;
-                }
-            }
-
-            // Return first valid email
-            return $foundEmails[0];
-        }
-
-        return null;
-    }
-
-    /**
-     * Validate email format
-     */
-    private function isValidEmail(?string $email): bool
-    {
-        if (empty($email)) {
-            return false;
-        }
-
-        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
     /**
@@ -333,31 +63,9 @@ class EmailEnrichmentService
      */
     public function isGeneratedPattern(Company $company, string $email): bool
     {
-        $email = strtolower(trim($email));
-        if (! str_contains($email, '@')) {
-            return false;
-        }
-
-        [$local, $domain] = explode('@', $email, 2);
-        if ($local !== 'info') {
-            return false;
-        }
-
-        return in_array($domain, $this->generatePossibleDomains($company), true);
+        return $this->pattern->isGenerated($company, $email);
     }
 
-    private function storeEmail(Company $company, string $email): void
-    {
-        $company->update([
-            'email' => $email,
-            'email_source' => $this->lastSource ?? EmailSource::Observed,
-            'email_found_at' => now(),
-        ]);
-    }
-
-    /**
-     * Enrich a single company with email
-     */
     public function enrichCompany(Company $company): bool
     {
         if ($company->email) {
@@ -365,18 +73,20 @@ class EmailEnrichmentService
         }
 
         $email = $this->findEmail($company);
-
-        if ($email) {
-            $this->storeEmail($company, $email);
-
-            return true;
+        if ($email === null) {
+            return false;
         }
 
-        return false;
+        $this->storeEmail($company, $email);
+
+        return true;
     }
 
     /**
-     * Enrich multiple companies
+     * Enrich several companies.
+     *
+     * @param  callable(Company, bool, ?string, bool): void|null  $callback  company, success, email, hadEmailBefore
+     * @return array{total: int, enriched: int, failed: int}
      */
     public function enrichCompanies(int $limit = 100, bool $skipExisting = true, ?callable $callback = null): array
     {
@@ -387,24 +97,18 @@ class EmailEnrichmentService
         }
 
         $companies = $query->limit($limit)->get();
-        $results = [
-            'total' => $companies->count(),
-            'enriched' => 0,
-            'failed' => 0,
-        ];
+        $results = ['total' => $companies->count(), 'enriched' => 0, 'failed' => 0];
 
         foreach ($companies as $company) {
-            try {
-                $email = null;
-                $success = false;
-                $hadEmailBefore = ! empty($company->email);
+            $hadEmailBefore = filled($company->email);
+            $email = $company->email;
+            $success = $hadEmailBefore;
 
-                if ($hadEmailBefore) {
-                    $success = true;
-                    $email = $company->email;
-                } else {
+            try {
+                if (! $hadEmailBefore) {
                     $email = $this->findEmail($company);
-                    if ($email) {
+
+                    if ($email !== null) {
                         $this->storeEmail($company, $email);
                         $success = true;
                         $results['enriched']++;
@@ -412,21 +116,29 @@ class EmailEnrichmentService
                         $results['failed']++;
                     }
                 }
-
-                if ($callback) {
-                    $callback($company, $success, $email, $hadEmailBefore);
-                }
-
-                // Small delay to avoid rate limiting
-                usleep(300000); // 0.3 seconds
-            } catch (\Exception $e) {
+            } catch (Throwable) {
+                $success = false;
+                $email = null;
                 $results['failed']++;
-                if ($callback) {
-                    $callback($company, false, null, false);
-                }
             }
+
+            if ($callback) {
+                $callback($company, $success, $email, $hadEmailBefore);
+            }
+
+            // Small delay to avoid rate limiting.
+            usleep(max(0, (int) config('scraping.delay_ms')) * 1000);
         }
 
         return $results;
+    }
+
+    private function storeEmail(Company $company, string $email): void
+    {
+        $company->update([
+            'email' => $email,
+            'email_source' => $this->lastSource ?? EmailSource::Observed,
+            'email_found_at' => now(),
+        ]);
     }
 }
