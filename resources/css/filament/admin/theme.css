@@ -2931,3 +2931,27 @@ a.mk-cv-kv__link:hover {
   color: #f59e0b;
   white-space: nowrap;
 }
+
+/* Компании: потесна колона за име (се прелама во два реда) и акции една под друга. */
+.fi-ta.mk-companies-ta .mk-col-name {
+  width: 14rem;
+  max-width: 14rem;
+}
+
+.fi-ta.mk-companies-ta .mk-col-name,
+.fi-ta.mk-companies-ta .mk-col-name * {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-actions {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0.25rem !important;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-actions-cell,
+.fi-ta.mk-companies-ta .fi-ta-cell:has(> .fi-ta-actions) {
+  width: 1%;
+  white-space: nowrap;
+}

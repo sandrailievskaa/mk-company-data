@@ -31,6 +31,9 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('name')
                     ->label('Име на компанија')
                     ->weight(FontWeight::Bold)
+                    ->wrap()
+                    ->extraHeaderAttributes(['class' => 'mk-col-name'])
+                    ->extraCellAttributes(['class' => 'mk-col-name'])
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Сектор')
