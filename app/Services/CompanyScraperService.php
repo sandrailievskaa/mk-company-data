@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\EmailSource;
 use App\Models\Company;
+use App\Support\CompanyNameNormalizer;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\Exception\TimeoutException;
@@ -12,6 +13,8 @@ use Symfony\Component\HttpClient\HttpClient;
 
 class CompanyScraperService
 {
+    public function __construct(private readonly CompanyNameNormalizer $normalizer) {}
+
     public function scrapeCompanies(string $sector): void
     {
         $browser = new HttpBrowser(HttpClient::create([
@@ -33,14 +36,21 @@ class CompanyScraperService
 
             foreach ($results as $result) {
                 $company = $this->parseResult($result);
-                $model = Company::query()->updateOrCreate([
-                    'name' => $company['name'],
-                ], [
+                if (blank($company['name'])) {
+                    continue;
+                }
+
+                // Duplicate detection is done on the normalized name, so spelling,
+                // case and legal-form variants map to a single record.
+                $model = Company::query()->firstWhere('normalized_name', $this->normalizer->normalize($company['name']))
+                    ?? new Company(['name' => $company['name']]);
+
+                $model->fill([
                     'city' => $company['city'],
                     'address' => $company['address'],
                     'phone' => $company['phone'],
                     'sector' => $sector,
-                ]);
+                ])->save();
 
                 // Count how often we see this company across scraping runs.
                 // This is used later to compute the normalized frequency score (F).

@@ -4,6 +4,7 @@ namespace App\Services\EmailEnrichment;
 
 use App\Enums\EmailSource;
 use App\Models\Company;
+use App\Support\CompanyNameNormalizer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -14,7 +15,7 @@ class EmailEnrichmentService
     /** Source of the e-mail returned by the most recent findEmail() call. */
     private ?EmailSource $lastSource = null;
 
-    public function __construct()
+    public function __construct(private readonly CompanyNameNormalizer $nameNormalizer)
     {
         $this->httpClient = new Client([
             'timeout' => 15,
@@ -252,38 +253,7 @@ class EmailEnrichmentService
      */
     private function normalizeCompanyName(string $name): string
     {
-        // Remove common suffixes
-        $name = preg_replace('/\s+(DOO|AD|A\.D\.|LLC|Ltd|Inc|Corp|Corporation|МКД|МК)\s*$/i', '', $name);
-
-        // Remove special characters but keep spaces for now
-        $name = preg_replace('/[^a-zA-Zа-яА-Я0-9\s]/u', '', $name);
-
-        // Convert Macedonian Cyrillic to Latin
-        $replacements = [
-            'А' => 'A', 'Б' => 'B', 'В' => 'V', 'Г' => 'G', 'Д' => 'D',
-            'Ђ' => 'Dj', 'Е' => 'E', 'Ж' => 'Z', 'З' => 'Z', 'И' => 'I',
-            'Ј' => 'J', 'К' => 'K', 'Л' => 'L', 'Љ' => 'Lj', 'М' => 'M',
-            'Н' => 'N', 'Њ' => 'Nj', 'О' => 'O', 'П' => 'P', 'Р' => 'R',
-            'С' => 'S', 'Т' => 'T', 'Ћ' => 'C', 'У' => 'U', 'Ф' => 'F',
-            'Х' => 'H', 'Ц' => 'C', 'Ч' => 'C', 'Џ' => 'Dz', 'Ш' => 'S',
-            'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd',
-            'ђ' => 'dj', 'е' => 'e', 'ж' => 'z', 'з' => 'z', 'и' => 'i',
-            'ј' => 'j', 'к' => 'k', 'л' => 'l', 'љ' => 'lj', 'м' => 'm',
-            'н' => 'n', 'њ' => 'nj', 'о' => 'o', 'п' => 'p', 'р' => 'r',
-            'с' => 's', 'т' => 't', 'ћ' => 'c', 'у' => 'u', 'ф' => 'f',
-            'х' => 'h', 'ц' => 'c', 'ч' => 'c', 'џ' => 'dz', 'ш' => 's',
-            'ѕ' => 'dz', 'ѓ' => 'gj', 'ќ' => 'kj',
-        ];
-
-        $name = strtr($name, $replacements);
-
-        // Convert to lowercase
-        $name = strtolower($name);
-
-        // Remove spaces and special characters
-        $name = preg_replace('/[^a-z0-9]/', '', $name);
-
-        return $name;
+        return $this->nameNormalizer->compact($name);
     }
 
     /**

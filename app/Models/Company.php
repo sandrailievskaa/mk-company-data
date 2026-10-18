@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EmailSource;
 use App\Enums\SectorEnum;
+use App\Support\CompanyNameNormalizer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -18,6 +19,15 @@ class Company extends Model
         'email_found_at' => 'datetime',
         'sources_count' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Company $company): void {
+            if ($company->isDirty('name') || blank($company->normalized_name)) {
+                $company->normalized_name = app(CompanyNameNormalizer::class)->normalize($company->name);
+            }
+        });
+    }
 
     public function sentOffers(): HasMany
     {
