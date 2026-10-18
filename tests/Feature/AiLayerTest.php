@@ -102,3 +102,17 @@ it('flags companies reported by the validation agent', function () {
     expect($a->fresh()->data_quality_flag)->toBe('duplicate')
         ->and($a->fresh()->data_quality_note)->toContain('Слично име');
 });
+
+it('adds the engagement history of earlier offers to the prompt', function () {
+    $company = Company::create(['name' => 'Нова Градба', 'sector' => 'gradezhni-kompanii', 'email' => 'a@b.mk']);
+    $builder = app(OfferPromptBuilder::class);
+
+    expect($builder->build($company))->toContain('Previous contact: none (first offer)');
+
+    foreach ([App\Enums\OfferStatus::Sent, App\Enums\OfferStatus::Opened, App\Enums\OfferStatus::Failed] as $i => $status) {
+        $offer = App\Models\Offer::create(['title' => "T{$i}", 'content' => 'C', 'company_id' => $company->id]);
+        App\Models\SentOffer::create(['offer_id' => $offer->id, 'company_id' => $company->id, 'status' => $status]);
+    }
+
+    expect($builder->build($company->fresh()))->toContain('2 earlier offer(s) delivered, 1 opened');
+});

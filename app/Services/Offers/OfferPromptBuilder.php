@@ -2,6 +2,7 @@
 
 namespace App\Services\Offers;
 
+use App\Enums\OfferStatus;
 use App\Models\Company;
 
 /**
@@ -29,6 +30,8 @@ class OfferPromptBuilder
                 $this->activityLabel((float) $company->activity_index),
                 (float) $company->activity_index
             );
+
+            $lines[] = '- Previous contact: '.$this->engagement($company);
         }
 
         $additionalInformation = trim($additionalInformation);
@@ -39,6 +42,27 @@ class OfferPromptBuilder
         }
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * Engagement history from earlier offers sent to this company.
+     */
+    private function engagement(Company $company): string
+    {
+        if (! $company->exists) {
+            return 'none';
+        }
+
+        $delivered = $company->sentOffers()->whereIn('status', [OfferStatus::Sent->value, OfferStatus::Opened->value]);
+        $total = (clone $delivered)->count();
+
+        if ($total === 0) {
+            return 'none (first offer)';
+        }
+
+        $opened = (clone $delivered)->where('status', OfferStatus::Opened->value)->count();
+
+        return sprintf('%d earlier offer(s) delivered, %d opened', $total, $opened);
     }
 
     private function activityLabel(float $index): string
