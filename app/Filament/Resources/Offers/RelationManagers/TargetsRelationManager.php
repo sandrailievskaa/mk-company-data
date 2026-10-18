@@ -46,10 +46,13 @@ class TargetsRelationManager extends RelationManager
 
                 TextColumn::make('company.city')
                     ->label('Град')
+                    ->visibleFrom('md')
                     ->toggleable(),
 
                 TextColumn::make('company.email')
                     ->label('Е-пошта')
+                    ->visibleFrom('sm')
+                    ->wrap()
                     ->toggleable(),
 
                 TextColumn::make('reason')

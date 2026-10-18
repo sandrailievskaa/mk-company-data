@@ -1248,7 +1248,7 @@ a:hover {
   width: 100%;
   max-width: none;
   min-width: 0;
-  padding: 0 !important;
+  padding: 0 6rem 0 0 !important;
   margin: 0 !important;
   border: none !important;
 }
@@ -1283,7 +1283,7 @@ a:hover {
   display: none;
 }
 
-.fi-ta.mk-companies-ta .fi-ta-filters.fi-ta-filters-above-content {
+.fi-ta.mk-companies-ta .fi-ta-filters-above-content-ctn .fi-ta-filters {
   display: flex !important;
   flex-direction: column !important;
   gap: 0.5rem !important;
@@ -1293,7 +1293,7 @@ a:hover {
 }
 
 /* „Ресетирај“ стои на редот на пребарувањето, десно. */
-.fi-ta.mk-companies-ta .fi-ta-filters.fi-ta-filters-above-content > .fi-ta-filters-header {
+.fi-ta.mk-companies-ta .fi-ta-filters-above-content-ctn .fi-ta-filters-header {
   position: absolute;
   top: 1.15rem;
   right: 1rem;
@@ -2934,6 +2934,13 @@ a.mk-cv-kv__link:hover {
 
 /* Компании: табелата ги користи истите стандардни стилови како „Скрејпања“.
    Само долгите вредности смеат да се прелеваат во нов ред, за да нема хоризонтално лизгање. */
+.fi-ta.mk-companies-ta .mk-companies-email {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-width: 9rem;
+}
+
 .fi-ta.mk-companies-ta .mk-companies-email__addr {
   display: inline;
   max-width: 100%;
@@ -2941,37 +2948,64 @@ a.mk-cv-kv__link:hover {
   overflow-wrap: anywhere;
 }
 
+/* Таблет и помало: редот е кликабилен, па „Преглед“ се крие. */
+@media (max-width: 1024px) {
+  .fi-ta.mk-companies-ta .fi-ta-actions > *:first-child {
+    display: none;
+  }
+}
+
 .fi-ta.mk-companies-ta .mk-activity-cell {
   min-width: 0;
 }
 
-.fi-ta.mk-companies-ta .mk-activity-cell__track {
-  flex-basis: 3rem;
-}
 
 /* ==========================================================================
    Респонзивен полиш: лаптоп (>1024px), таблет (641–1024px), телефон (≤640px)
    ========================================================================== */
 
-/* Индекс на активност: лентата стои над бројката и не зафаќа ширина. */
+/* Индекс на активност: мала „progress“ лента над бројката; пополнетоста е според вредноста. */
 .mk-activity-cell--stacked {
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.2rem;
-  min-width: 3.5rem;
-  width: 3.5rem;
+  gap: 0.25rem;
+  min-width: 0;
+  width: 2.75rem;
 }
 
 .mk-activity-cell--stacked .mk-activity-cell__track {
   flex: none;
   width: 100%;
-  height: 5px;
+  height: 4px;
+  border: 0 !important;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--text-muted) 28%, transparent) !important;
+  overflow: hidden;
+}
+
+.mk-activity-cell--stacked .mk-activity-cell__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.4s ease;
+}
+
+.mk-activity-cell--low .mk-activity-cell__fill {
+  background: #f59e0b !important;
+}
+
+.mk-activity-cell--mid .mk-activity-cell__fill {
+  background: #6366f1 !important;
+}
+
+.mk-activity-cell--high .mk-activity-cell__fill {
+  background: #22c55e !important;
 }
 
 .mk-activity-cell--stacked .mk-activity-cell__val {
   min-width: 0;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   line-height: 1;
 }
 
@@ -2998,6 +3032,10 @@ a.mk-cv-kv__link:hover {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
+  }
+
+  .mk-company-view .mk-cv-hero > * {
+    flex: none;
   }
 
   .mk-cv-hero__actions {
@@ -3036,12 +3074,35 @@ a.mk-cv-kv__link:hover {
     gap: 0.75rem;
   }
 
+  /* flex-basis во колонска насока би станал висина. */
+  .mk-dashboard__head-main,
+  .mk-dashboard__head-actions {
+    flex: none;
+    justify-content: flex-start;
+  }
+
+  /* Картичките во 2 колони, без икони, за да не е предолга страницата. */
+  .mk-dashboard__grid,
+  .mk-dashboard__grid--compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .mk-dashboard__icon {
+    display: none;
+  }
+
+  .mk-dashboard__label {
+    max-width: none;
+    font-size: 0.625rem;
+  }
+
   .mk-dashboard__card {
-    padding: 16px;
+    padding: 14px;
   }
 
   .mk-dashboard__value {
-    font-size: 2.25rem;
+    font-size: 1.875rem;
   }
 
   .mk-dashboard__grid--compact .mk-dashboard__value {
@@ -3050,6 +3111,8 @@ a.mk-cv-kv__link:hover {
 
   .mk-dashboard__delta {
     font-size: 0.6875rem;
+    border-radius: 12px;
+    padding: 0.3rem 0.55rem;
   }
 
   .mk-panel {
@@ -3060,6 +3123,10 @@ a.mk-cv-kv__link:hover {
   .mk-cv-activity__body {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .mk-cv-activity__body > * {
+    flex: none;
   }
 
   .mk-cv-activity__grid {
@@ -3084,21 +3151,52 @@ a.mk-cv-kv__link:hover {
     padding-right: 5rem !important;
   }
 
-  /* Пајплајн: прогресот и бројките една под друга. */
-  .fi-section-content-ctn [style*='display: flex'] {
-    flex-direction: column;
+  /* Пајплајн: прогресот и бројките една под друга (flex-basis би станал висина). */
+  .mk-pipeline-row {
+    flex-direction: column !important;
     align-items: stretch !important;
+    gap: 0.5rem !important;
   }
 
-  /* Топбар: само иконата за пребарување. */
-  .mk-app-topbar__search kbd,
-  .mk-app-topbar__search .fi-badge {
+  .mk-pipeline-row > * {
+    flex: none !important;
+    min-width: 0 !important;
+  }
+
+  /* Топбар: без лого-текст и Ctrl+K ознака, за да собере пребарувањето. */
+  .fi-topbar-start .fi-logo,
+  .mk-app-topbar__kbd {
+    display: none !important;
+  }
+
+  .fi-topbar-ctn.mk-app-topbar-ctn .mk-app-topbar__end {
+    flex: 1 1 0;
+    min-width: 0;
+    gap: 0.4rem;
+  }
+
+  .fi-topbar-ctn.mk-app-topbar-ctn .mk-app-topbar__end .mk-app-topbar__search-ctn {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 0;
+    max-width: none;
+  }
+
+  /* Само светла/темна тема; „системска“ се крие за да собере аватарот. */
+  .mk-topbar-theme-switcher .fi-theme-switcher-btn:nth-child(3) {
     display: none;
   }
 
-  .mk-app-topbar__search-ctn {
+  /* Табела „Компании“: на телефон само име и е-пошта; редот е клик кон преглед. */
+  .fi-ta.mk-companies-ta .fi-ta-actions-cell,
+  .fi-ta.mk-companies-ta .fi-ta-actions-header-cell,
+  .fi-ta.mk-companies-ta .fi-ta-cell:has(> .fi-ta-actions) {
+    display: none;
+  }
+
+  .fi-ta.mk-companies-ta .mk-companies-email {
     min-width: 0;
-    flex: 1 1 auto;
+    font-size: 0.8125rem;
   }
 }
 

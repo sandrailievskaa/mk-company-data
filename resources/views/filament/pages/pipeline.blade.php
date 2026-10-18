@@ -11,7 +11,7 @@
                     $pct = $stage['total'] > 0 ? (int) round(100 * $stage['done'] / $stage['total']) : 0;
                 @endphp
                 <x-filament::section :heading="$stage['title']" :description="$stage['description']">
-                    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <div class="mk-pipeline-row" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
                         <div style="flex: 1 1 260px; min-width: 200px;">
                             <div style="height: 10px; border-radius: 999px; background: rgba(128,128,128,.2); overflow: hidden;">
                                 <div style="height: 100%; width: {{ $pct }}%; background: #6366f1;"></div>

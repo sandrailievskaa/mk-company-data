@@ -36,7 +36,7 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Сектор')
                     ->searchable()
-                    ->visibleFrom('md')
+                    ->visibleFrom('lg')
                     ->html()
                     ->formatStateUsing(function ($state): HtmlString {
                         if (! $state instanceof SectorEnum) {
@@ -54,7 +54,7 @@ class CompaniesTable
                     ->label('Град')
                     ->wrap()
                     ->searchable()
-                    ->visibleFrom('sm'),
+                    ->visibleFrom('md'),
                 Tables\Columns\TextColumn::make('address')
                     ->label('Адреса')
                     ->searchable()
@@ -111,9 +111,10 @@ class CompaniesTable
                         $v = is_numeric($state) ? (float) $state : 0.0;
                         $v = max(0.0, min(1.0, $v));
                         $pct = (int) round($v * 100);
+                        $tier = $v >= 0.6 ? 'high' : ($v >= 0.35 ? 'mid' : 'low');
 
                         return new HtmlString(
-                            '<span class="mk-activity-cell mk-activity-cell--stacked">'.
+                            '<span class="mk-activity-cell mk-activity-cell--stacked mk-activity-cell--'.$tier.'" title="'.$pct.'%">'.
                             '<span class="mk-activity-cell__track" role="presentation">'.
                             '<span class="mk-activity-cell__fill" style="width: '.$pct.'%;"></span>'.
                             '</span>'.
@@ -189,7 +190,7 @@ class CompaniesTable
                     ->label('Извор на е-пошта')
                     ->options(EmailSource::class)
                     ->native(false)
-                    ->placeholder('Извор на е-пошта')
+                    ->placeholder('Извор')
                     ->modifyFormFieldUsing(function (Select $field): void {
                         $field->hiddenLabel();
                     }),

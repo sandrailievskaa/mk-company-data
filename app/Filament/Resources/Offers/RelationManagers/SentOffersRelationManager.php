@@ -25,23 +25,29 @@ class SentOffersRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('company.name')
                     ->label('Компанија')
+                    ->wrap()
                     ->searchable(),
                 TextColumn::make('recipient_email')
                     ->label('Е-пошта')
+                    ->visibleFrom('md')
+                    ->wrap()
                     ->placeholder('—'),
                 TextColumn::make('status')
                     ->label('Статус')
                     ->badge(),
                 TextColumn::make('sent_at')
                     ->label('Испратена')
+                    ->visibleFrom('sm')
                     ->dateTime('d.m.Y H:i')
                     ->placeholder('—'),
                 TextColumn::make('opened_at')
                     ->label('Отворена')
+                    ->visibleFrom('lg')
                     ->dateTime('d.m.Y H:i')
                     ->placeholder('—'),
                 TextColumn::make('error_message')
                     ->label('Грешка')
+                    ->visibleFrom('lg')
                     ->limit(60)
                     ->tooltip(fn (SentOffer $record): ?string => $record->error_message)
                     ->placeholder('—'),

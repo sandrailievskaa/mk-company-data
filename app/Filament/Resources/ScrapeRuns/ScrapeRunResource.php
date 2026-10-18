@@ -42,7 +42,8 @@ class ScrapeRunResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Сектор')
-                    ->placeholder('—'),
+                    ->placeholder('—')
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Статус')
                     ->badge()
@@ -58,14 +59,16 @@ class ScrapeRunResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('duration_seconds')
                     ->label('Траење')
+                    ->visibleFrom('sm')
                     ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : sprintf('%d:%02d мин', intdiv($state, 60), $state % 60)),
-                Tables\Columns\TextColumn::make('pages_fetched')->label('Страници'),
-                Tables\Columns\TextColumn::make('records_seen')->label('Видени'),
-                Tables\Columns\TextColumn::make('records_created')->label('Нови'),
-                Tables\Columns\TextColumn::make('records_updated')->label('Ажурирани'),
-                Tables\Columns\TextColumn::make('emails_found')->label('Е-пошти'),
+                Tables\Columns\TextColumn::make('pages_fetched')->label('Страници')->visibleFrom('lg'),
+                Tables\Columns\TextColumn::make('records_seen')->label('Видени')->visibleFrom('md'),
+                Tables\Columns\TextColumn::make('records_created')->label('Нови')->visibleFrom('md'),
+                Tables\Columns\TextColumn::make('records_updated')->label('Ажурирани')->visibleFrom('xl'),
+                Tables\Columns\TextColumn::make('emails_found')->label('Е-пошти')->visibleFrom('xl'),
                 Tables\Columns\TextColumn::make('error_message')
                     ->label('Грешка')
+                    ->visibleFrom('lg')
                     ->limit(60)
                     ->tooltip(fn (ScrapeRun $record): ?string => $record->error_message)
                     ->placeholder('—'),
