@@ -50,5 +50,5 @@ it('filters companies by email presence and quality flag', function () {
 });
 
 it('shows offer campaign statistics on the dashboard', function () {
-    $this->get('/admin')->assertOk()->assertSee('Понуди и испраќања');
+    $this->get('/admin')->assertOk()->assertSee('Подготвени понуди');
 });

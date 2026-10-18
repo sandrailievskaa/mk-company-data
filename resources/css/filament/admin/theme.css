@@ -646,6 +646,35 @@ a:hover {
   box-shadow: 0 1px 0 var(--inset-sheen) inset;
 }
 
+/* Втор ред картички (понуди): ист формат, пониски. */
+.mk-dashboard__grid--compact {
+  margin-top: 1rem;
+}
+
+.mk-dashboard__grid--compact .mk-dashboard__card {
+  gap: 0.25rem;
+  padding: 14px 20px;
+}
+
+.mk-dashboard__grid--compact .mk-dashboard__card:first-of-type {
+  box-shadow: 0 1px 0 var(--inset-sheen) inset;
+}
+
+.mk-dashboard__grid--compact .mk-dashboard__icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.mk-dashboard__grid--compact .mk-dashboard__value {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.mk-dashboard__grid--compact .mk-dashboard__delta {
+  margin-top: 0.35rem;
+  padding: 0.25rem 0.6rem;
+}
+
 .mk-dashboard__card:first-of-type {
   box-shadow:
     0 2px 0 0 var(--accent) inset,

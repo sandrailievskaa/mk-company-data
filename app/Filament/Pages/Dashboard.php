@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use App\Filament\Widgets\DashboardInsightsRowWidget;
 use App\Filament\Widgets\DashboardOverviewWidget;
-use App\Filament\Widgets\OfferCampaignStatsWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Support\Enums\Width;
 use Filament\Widgets\Widget;
@@ -35,7 +34,6 @@ class Dashboard extends BaseDashboard
         return [
             DashboardOverviewWidget::class,
             DashboardInsightsRowWidget::class,
-            OfferCampaignStatsWidget::class,
         ];
     }
 
