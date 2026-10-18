@@ -4,11 +4,14 @@ namespace App\Services;
 
 use App\Models\Company;
 use App\Models\User;
+use App\Services\Statistics\StatisticsService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardStatsService
 {
+    public function __construct(private readonly StatisticsService $statistics) {}
+
     /**
      * Сите броеви = Company, Auth user, company_statistics config (поч. e-покривеност, ref. дупл., праг на активност).
      *
@@ -42,12 +45,12 @@ class DashboardStatsService
             ? 'neutral'
             : ($thisWeekNew >= $lastWeekNew ? 'good' : 'bad');
 
-        $withEmail = (int) Company::query()->whereNotNull('email')->count();
-        $emailCoverage = $totalCompanies > 0
-            ? round(100.0 * $withEmail / $totalCompanies, 1)
-            : 0.0;
+        $table = $this->statistics->tableTwo();
+        $withEmail = $table['with_email'];
+        $inferredEmails = $table['inferred_emails'];
+        $emailCoverage = $table['email_coverage_percent'];
 
-        $initialEmail = (float) config('company_statistics.initial_email_coverage_percent', 0.0);
+        $initialEmail = $table['initial_email_coverage_percent'];
         $initialEmailFormatted = $this->formatPercentOneDecimal($initialEmail);
         $emailDelta = round($emailCoverage - $initialEmail, 1);
         $emailCoverageFormatted = $this->formatPercentOneDecimal($emailCoverage);
@@ -70,17 +73,12 @@ class DashboardStatsService
         $activeActivityIndexThresholdFormatted = rtrim(rtrim(number_format($activeThreshold, 2, '.', ''), '0'), '.') ?: '0';
         $activeShareFormatted = $this->formatPercentOneDecimal($activeSharePct);
 
-        $dupRecords = (int) Company::query()
-            ->where('scrape_count', '>', 1)
-            ->count();
-
-        $dupRate = $totalCompanies > 0
-            ? round(100.0 * $dupRecords / $totalCompanies, 1)
-            : 0.0;
-        $dupRateFormatted = $this->formatPercentOneDecimal($dupRate);
+        // Duplicate listings merged by name normalization, measured from the scrape runs.
+        $dupRate = $table['duplicate_reduction_percent'];
+        $dupRateFormatted = $dupRate === null ? '—' : $this->formatPercentOneDecimal($dupRate);
 
         $baselineDup = config('company_statistics.baseline_duplicate_rate_percent');
-        $dupDelta = is_numeric($baselineDup)
+        $dupDelta = is_numeric($baselineDup) && $dupRate !== null
             ? round((float) $baselineDup - $dupRate, 1)
             : null;
         $dupDeltaTone = $dupDelta === null
@@ -121,6 +119,7 @@ class DashboardStatsService
             'thisWeekNew' => $thisWeekNew,
             'lastWeekNew' => $lastWeekNew,
             'withEmail' => $withEmail,
+            'inferredEmails' => $inferredEmails,
             'emailCoverage' => $emailCoverage,
             'emailDelta' => $emailDelta,
             'emailDeltaTone' => $emailDeltaTone,
@@ -130,7 +129,7 @@ class DashboardStatsService
             'dupRate' => $dupRate,
             'dupDelta' => $dupDelta,
             'dupDeltaTone' => $dupDeltaTone,
-            'dupHasBaseline' => is_numeric($baselineDup),
+            'dupHasBaseline' => is_numeric($baselineDup) && $dupRate !== null,
         ];
     }
 

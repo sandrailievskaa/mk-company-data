@@ -6,15 +6,11 @@ return [
     | Company statistics (paper Table II)
     |--------------------------------------------------------------------------
     |
-    | Some metrics referenced by the paper are not derived from the current DB
-    | schema (e.g. "Initial Email Coverage %" and scraping time per sector).
-    | Configure them here so the `app:company-statistics` command can print a
-    | complete Table II-style summary.
+    | All Table II metrics are computed from the database (see StatisticsService):
+    | initial coverage = e-mails taken from the registry listing, duplicate
+    | reduction and scraping time = from the `scrape_runs` table.
     |
     */
-
-    // Initial email coverage before enrichment (percentage 0-100).
-    'initial_email_coverage_percent' => 0.0,
 
     // «Активни» на дашборд: `activity_index` поголемо од вредноста (0.0–1.0, обично 0,5).
     'active_activity_index_threshold' => (function (): float {
@@ -31,7 +27,4 @@ return [
     'baseline_duplicate_rate_percent' => ($__dup = env('BASELINE_DUPLICATE_RATE')) === null || $__dup === ''
         ? null
         : (float) $__dup,
-
-    // Average scraping time per sector (seconds). Set to null to print "N/A".
-    'average_scraping_time_per_sector_seconds' => null,
 ];

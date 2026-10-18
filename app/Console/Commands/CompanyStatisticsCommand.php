@@ -2,58 +2,42 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Company;
+use App\Services\Statistics\StatisticsService;
 use Illuminate\Console\Command;
 
 class CompanyStatisticsCommand extends Command
 {
-    protected $signature = 'app:company-statistics';
+    protected $signature = 'app:company-statistics {--csv= : Also write the table to this CSV file}';
 
     protected $description = 'Print company statistics (Table II)';
 
-    public function handle(): int
+    public function handle(StatisticsService $statistics): int
     {
-        $totalCompanies = Company::count();
-
-        $testedSectors = Company::query()
-            ->whereNotNull('sector')
-            ->distinct()
-            ->count('sector');
-
-        $companiesWithEmailFinal = Company::query()
-            ->whereNotNull('email')
-            ->count();
-
-        $emailCoverageAfterEnrichmentPercent = $totalCompanies > 0
-            ? ($companiesWithEmailFinal / $totalCompanies) * 100
-            : 0.0;
-
-        $initialEmailCoveragePercent = (float) config('company_statistics.initial_email_coverage_percent', 0.0);
-
-        $duplicateRecordsCount = Company::query()
-            ->where('scrape_count', '>', 1)
-            ->count();
-
-        $duplicateReductionRatePercent = $totalCompanies > 0
-            ? ($duplicateRecordsCount / $totalCompanies) * 100
-            : 0.0;
-
-        $avgScrapingTimePerSectorSeconds = config('company_statistics.average_scraping_time_per_sector_seconds');
-        $avgScrapingTimePerSectorDisplay = $avgScrapingTimePerSectorSeconds === null
-            ? 'N/A'
-            : sprintf('%.2f s', (float) $avgScrapingTimePerSectorSeconds);
+        $s = $statistics->tableTwo();
 
         $rows = [
-            ['Total Collected Companies', number_format($totalCompanies)],
-            ['Tested Sectors', number_format($testedSectors)],
-            ['Initial Email Coverage %', sprintf('%.2f%%', $initialEmailCoveragePercent)],
-            ['Email Coverage After Enrichment %', sprintf('%.2f%%', $emailCoverageAfterEnrichmentPercent)],
-            ['Companies with Email (Final)', number_format($companiesWithEmailFinal)],
-            ['Duplicate Reduction Rate %', sprintf('%.2f%%', $duplicateReductionRatePercent)],
-            ['Average Scraping Time per Sector', $avgScrapingTimePerSectorDisplay],
+            ['Total Collected Companies', number_format($s['total_companies'])],
+            ['Tested Sectors', number_format($s['tested_sectors'])],
+            ['Initial Email Coverage % (registry listing)', sprintf('%.2f%%', $s['initial_email_coverage_percent'])],
+            ['Email Coverage After Enrichment %', sprintf('%.2f%%', $s['email_coverage_percent'])],
+            ['Companies with Email (Final)', number_format($s['with_email'])],
+            ['  of which discovered (website/search/registry/manual)', number_format($s['discovered_emails']).sprintf(' (%.2f%%)', $s['discovered_coverage_percent'])],
+            ['  of which inferred (pattern-generated, unverified)', number_format($s['inferred_emails'])],
+            ['Duplicate Reduction Rate %', $s['duplicate_reduction_percent'] === null ? 'N/A (no scrape runs)' : sprintf('%.2f%%', $s['duplicate_reduction_percent'])],
+            ['Average Scraping Time per Sector', $s['avg_scrape_minutes_per_sector'] === null ? 'N/A (no scrape runs)' : sprintf('%.2f min', $s['avg_scrape_minutes_per_sector'])],
         ];
 
         $this->table(['Metric', 'Value'], $rows);
+
+        if ($path = $this->option('csv')) {
+            $handle = fopen($path, 'w');
+            fputcsv($handle, ['Metric', 'Value']);
+            foreach ($rows as $row) {
+                fputcsv($handle, [trim($row[0]), $row[1]]);
+            }
+            fclose($handle);
+            $this->info("Written to {$path}");
+        }
 
         return Command::SUCCESS;
     }

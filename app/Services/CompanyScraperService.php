@@ -37,7 +37,8 @@ class CompanyScraperService
 
         $delayMicros = max(0, (int) config('scraping.delay_ms')) * 1000;
         $url = rtrim((string) config('scraping.base_url'), '/').'/'.$sector;
-        $pages = $seen = $created = $updated = $emails = 0;
+        $pages = $seen = $created = $updated = $emails = $duplicates = 0;
+        $seenInRun = [];
 
         do {
             $crawler = $this->requestWithRetry($browser, $url);
@@ -52,7 +53,13 @@ class CompanyScraperService
 
                 // Duplicate detection is done on the normalized name, so spelling,
                 // case and legal-form variants map to a single record.
-                $model = Company::query()->firstWhere('normalized_name', $this->normalizer->normalize($company['name']))
+                $normalized = $this->normalizer->normalize($company['name']);
+                if (isset($seenInRun[$normalized])) {
+                    $duplicates++;
+                }
+                $seenInRun[$normalized] = true;
+
+                $model = Company::query()->firstWhere('normalized_name', $normalized)
                     ?? new Company(['name' => $company['name']]);
 
                 $model->fill([
@@ -97,6 +104,7 @@ class CompanyScraperService
             'records_seen' => $seen,
             'records_created' => $created,
             'records_updated' => $updated,
+            'duplicates_skipped' => $duplicates,
             'emails_found' => $emails,
         ]);
 

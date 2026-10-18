@@ -66,7 +66,7 @@
                         →
                     @endif
                 </span>
-                {{ sprintf('%+.1f', $s['emailDelta']) }} п.п. од {{ $s['initialEmailFormatted'] }}%, {{ number_format($s['withEmail']) }} e-mail
+                {{ sprintf('%+.1f', $s['emailDelta']) }} п.п. од {{ $s['initialEmailFormatted'] }}%, {{ number_format($s['withEmail']) }} e-mail ({{ number_format($s['inferredEmails']) }} претпоставени)
             </p>
         </article>
 
@@ -94,7 +94,7 @@
                 </span>
             </div>
             <p class="mk-dashboard__value mk-dashboard__value--with-pct">
-                {{ $s['dupRateFormatted'] }}<span class="mk-dashboard__pct">%</span>
+                {{ $s['dupRateFormatted'] }}@if($s['dupRateFormatted'] !== '—')<span class="mk-dashboard__pct">%</span>@endif
             </p>
             @if($s['dupHasBaseline'] && $s['dupDelta'] !== null)
                 <p class="mk-dashboard__delta {{ $deltaClass($s['dupDeltaTone'] ?? 'neutral') }}">
