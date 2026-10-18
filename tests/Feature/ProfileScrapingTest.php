@@ -80,3 +80,17 @@ it('does not queue anything when nothing is pending', function () {
     expect(app(PipelineDispatcher::class)->dispatch(PipelineTask::Emails))->toBeNull();
     Bus::assertNothingBatched();
 });
+
+it('stops and leaves the company pending when CompanyWall shows its sign-up wall', function () {
+    $company = Company::create(['name' => 'Алгоритмика', 'city' => 'Скопје']);
+
+    $http = Mockery::mock(App\Services\Scraping\PoliteBrowser::class);
+    $http->shouldReceive('isAllowed')->andReturn(true);
+    $http->shouldReceive('get')->andReturn(new Crawler('<html></html>', 'https://www.companywall.com.mk/registracija'));
+    $http->shouldReceive('pause');
+
+    $scraper = new CompanyWallScraper($http, app(App\Support\CompanyNameNormalizer::class));
+
+    expect(fn () => $scraper->scrape($company))->toThrow(App\Exceptions\SourceBlockedException::class);
+    expect($company->fresh()->companywall_scraped_at)->toBeNull();
+});

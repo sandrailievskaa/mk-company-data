@@ -2,6 +2,7 @@
 
 namespace App\Services\Scraping;
 
+use App\Exceptions\SourceBlockedException;
 use App\Models\Company;
 use App\Support\CompanyNameNormalizer;
 use Carbon\Carbon;
@@ -37,6 +38,7 @@ class CompanyWallScraper
         $this->http->pause();
         $url = $this->absoluteUrl($profileUrl);
         $crawler = $this->http->get($url);
+        $this->assertNotBlocked($crawler);
 
         $company->forceFill($this->parse($crawler) + [
             'companywall_url' => $profileUrl,
@@ -58,6 +60,7 @@ class CompanyWallScraper
         }
 
         $crawler = $this->http->get($search);
+        $this->assertNotBlocked($crawler);
         $this->http->pause();
 
         $paths = array_values(array_unique($crawler->filter('a[href^="/kompanija/"]')->each(
@@ -111,6 +114,19 @@ class CompanyWallScraper
             'company_size' => $this->match('/класифицирана како (\p{L}+) бизнис/u', $text),
             'employees' => ($n = $this->match('/брои (\d+) работн/u', $text)) !== null ? (int) $n : null,
         ];
+    }
+
+    /**
+     * After a number of anonymous requests CompanyWall redirects to its registration page.
+     * That is a wall, not an empty result: stop instead of recording "no match".
+     */
+    private function assertNotBlocked(Crawler $crawler): void
+    {
+        $uri = (string) $crawler->getUri();
+
+        if (str_contains($uri, '/registracija') || str_contains($uri, '/Account/Login') || str_contains($uri, '/login')) {
+            throw new SourceBlockedException('CompanyWall requires sign-up for further lookups ('.$uri.')');
+        }
     }
 
     private function match(string $pattern, string $text): ?string

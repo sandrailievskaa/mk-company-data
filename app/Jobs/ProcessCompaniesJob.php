@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\PipelineTask;
+use App\Exceptions\SourceBlockedException;
 use App\Models\Company;
 use App\Services\EmailEnrichment\EmailEnrichmentService;
 use App\Services\Scraping\CompanyWallScraper;
@@ -51,6 +52,12 @@ class ProcessCompaniesJob implements ShouldQueue
                     PipelineTask::CompanyWall => $companyWall->scrape($company),
                     PipelineTask::Emails => $emails->enrichCompany($company),
                 };
+            } catch (SourceBlockedException $e) {
+                // The source closed its anonymous access: leave the rest pending for a later run.
+                Log::warning("{$this->task->value} stopped: ".$e->getMessage());
+                $this->batch()?->cancel();
+
+                return;
             } catch (Throwable $e) {
                 Log::warning("{$this->task->value} failed for company {$company->id}: ".$e->getMessage());
             }
