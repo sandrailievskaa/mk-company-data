@@ -720,7 +720,7 @@ a:hover {
 
 .mk-dashboard__value {
   margin: 0.25rem 0 0;
-  font-size: 2.5rem; 
+  font-size: 2rem;
   line-height: 1.05;
   font-weight: 700;
   color: var(--text-primary) !important;
@@ -3020,11 +3020,11 @@ a.mk-cv-kv__link:hover {
   }
 
   .mk-dashboard__value {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   .mk-dashboard__grid--compact .mk-dashboard__value {
-    font-size: 1.75rem;
+    font-size: 2rem;
   }
 
   /* Преглед на компанија: херо и акции едни под други. */
@@ -3106,7 +3106,7 @@ a.mk-cv-kv__link:hover {
   }
 
   .mk-dashboard__grid--compact .mk-dashboard__value {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   .mk-dashboard__delta {
@@ -3293,6 +3293,82 @@ textarea,
 .mk-cv-card__title,
 .mk-offer-card__title,
 .fi-section-header-heading {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+}
+
+/* Усогласени улоги: еден стил за истата намена на сите табови. */
+/* Заглавија на колони во табелите */
+.fi-ta-header-cell,
+.fi-ta-header-cell-sort-btn,
+.fi-ta.mk-companies-ta .fi-ta-header-cell,
+.fi-ta.mk-companies-ta .fi-ta-header-cell-sort-btn {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase;
+}
+/* Мали натписи над вредности (eyebrow) */
+.mk-dashboard__label,
+.mk-cv-card__kicker,
+.mk-cv-activity__stat-k,
+.mk-cv-kv dt,
+.fi-header-subheading,
+.mk-cv-hero__ref-pill {
+    font-size: 0.6875rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase;
+}
+/* Значки / pills */
+.mk-sector-pill,
+.mk-offer-badge,
+.mk-cv-pill,
+.mk-cv-timeline__tag {
+    font-size: 0.6875rem !important;
+    font-weight: 600 !important;
+}
+/* Копчиња */
+.mk-cv-btn,
+.mk-dashboard__cta {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+/* Пагинација */
+.fi-pagination-overview,
+.fi-pagination-item-label {
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+}
+/* Помошен текст: датуми и совети */
+.mk-offer-card__date,
+.mk-sidebar-credits-hint,
+.mk-sidebar-credits-empty,
+.mk-cv-timeline__date {
+    font-size: 0.75rem !important;
+    font-weight: 400 !important;
+}
+.mk-sidebar-credits-name {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+}
+.mk-lang-switcher__btn {
+    font-weight: 600 !important;
+}
+.fi-fo-field-label-required-mark {
+    font-size: 0.75rem !important;
+}
+/* Пајплајн: текстот во Tailwind klasite не е вклучен во темата */
+.fi-page .text-sm,
+.fi-page li.text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+.mk-pipeline-row strong {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+.mk-dashboard__pct {
     font-size: 1rem !important;
     font-weight: 600 !important;
 }
