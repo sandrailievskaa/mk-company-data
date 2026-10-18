@@ -155,3 +155,22 @@ it('checks MX records through DNS-over-HTTPS', function () {
         ->and($checker->hasMx('info@only-a.mk'))->toBeFalse()
         ->and($checker->hasMx('not-an-email'))->toBeFalse();
 });
+
+it('confirms e-mails on the company website and clears those of unknown origin', function () {
+    $confirmed = Company::create(['name' => 'A', 'website' => 'http://www.firma.mk', 'email' => 'office@firma.mk', 'email_source' => EmailSource::Observed]);
+    $guessed = Company::create(['name' => 'B', 'website' => 'http://other.mk', 'email' => 'info@guess.mk', 'email_source' => EmailSource::Inferred]);
+    $unknown = Company::create(['name' => 'C', 'email' => 'someone@gmail.com', 'email_source' => EmailSource::Observed]);
+    $manual = Company::create(['name' => 'D', 'email' => 'me@gmail.com', 'email_source' => EmailSource::Manual]);
+    $found = Company::create(['name' => 'E', 'website' => 'http://e.mk', 'email' => 'x@e.mk', 'email_source' => EmailSource::Website]);
+
+    $this->artisan('app:reconcile-emails --dry-run')->assertSuccessful();
+    expect($guessed->fresh()->email)->not->toBeNull();
+
+    $this->artisan('app:reconcile-emails')->assertSuccessful();
+
+    expect($confirmed->fresh()->email_source)->toBe(EmailSource::Website)
+        ->and($guessed->fresh()->email)->toBeNull()
+        ->and($unknown->fresh()->email)->toBeNull()
+        ->and($manual->fresh()->email)->toBe('me@gmail.com')
+        ->and($found->fresh()->email)->toBe('x@e.mk');
+});
