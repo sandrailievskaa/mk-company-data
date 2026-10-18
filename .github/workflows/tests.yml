@@ -33,8 +33,7 @@ jobs:
 
       - name: Build front-end assets
         run: |
-          (npm ci && npm run build) > build.log 2>&1 || { echo "::error::$(tail -c 1500 build.log | tr '
-' '|')"; exit 1; }
+          (npm ci && npm run build) > build.log 2>&1 || { echo "::error::$(tail -c 1500 build.log | tr -d '\n' | head -c 1500)"; exit 1; }
 
       - name: Code style (Pint)
         run: vendor/bin/pint --test
