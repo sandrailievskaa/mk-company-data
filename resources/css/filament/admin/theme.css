@@ -2919,3 +2919,15 @@ a.mk-cv-kv__link:hover {
   line-height: 1.5;
   color: var(--text-secondary) !important;
 }
+
+/* Компании: ознака „претпоставена“ до адресата во табелата. */
+.mk-companies-email__guess {
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  white-space: nowrap;
+}

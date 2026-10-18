@@ -53,22 +53,27 @@ class CompaniesTable
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
                     ->label('Адреса')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('email')
                     ->label('Е-пошта')
                     ->searchable()
                     ->html()
-                    ->formatStateUsing(function (?string $state): HtmlString {
+                    ->formatStateUsing(function (?string $state, Company $record): HtmlString {
                         if (blank($state)) {
                             return new HtmlString('<span class="mk-companies-email mk-companies-email--empty">—</span>');
                         }
 
                         $safe = e($state);
+                        $guess = $record->email_source?->isInferred()
+                            ? '<span class="mk-companies-email__guess" title="Генерирана адреса, непроверена">претпоставена</span>'
+                            : '';
 
                         return new HtmlString(
                             '<span class="mk-companies-email">'.
                             '<span class="mk-companies-email__icon" aria-hidden="true">✓</span>'.
                             '<span class="mk-companies-email__addr">'.$safe.'</span>'.
+                            $guess.
                             '</span>'
                         );
                     }),
@@ -76,15 +81,17 @@ class CompaniesTable
                     ->label('Извор на е-пошта')
                     ->badge()
                     ->placeholder('—')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('website')
                     ->label('Веб-сајт')
                     ->url(fn (Company $record): ?string => $record->website, shouldOpenInNewTab: true)
                     ->formatStateUsing(fn (?string $state): string => $state ? preg_replace('#^https?://(www\.)?#i', '', rtrim($state, '/')) : '—')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Телефон')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('edb')
                     ->label('ЕДБ')
                     ->searchable()
@@ -111,6 +118,7 @@ class CompaniesTable
                     }),
                 Tables\Columns\TextColumn::make('data_quality_flag')
                     ->label('Квалитет')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->html()
                     ->formatStateUsing(function (?string $state): HtmlString {
                         $s = $state !== null ? strtolower(trim($state)) : '';
@@ -132,6 +140,7 @@ class CompaniesTable
                     }),
                 Tables\Columns\TextColumn::make('data_quality_note')
                     ->label('Забелешка (AI)')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->html()
                     ->formatStateUsing(function (?string $state): HtmlString {
                         $text = $state !== null ? trim($state) : '';
