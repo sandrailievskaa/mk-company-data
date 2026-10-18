@@ -36,7 +36,7 @@ return [
         'example.', 'test.com', 'noreply', 'no-reply', 'donotreply', 'cdn77.org', 'zk.mk',
         'facebook.com', 'twitter.com', 'linkedin.com', 'instagram.com', 'google.com',
         'sentry.io', 'sentry.', 'w3.org', 'schema.org', 'wixpress.com', 'wix.com',
-        'godaddy.com', 'domain.com', 'yourdomain', 'email.com', 'your@', 'name@',
+        'godaddy.com', 'domainmarket.com', 'sedo.com', 'hugedomains.com', 'domain.com', 'yourdomain', 'email.com', 'your@', 'name@',
     ],
 
     'blocked_suffixes' => ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.css', '.js'],

@@ -6,6 +6,7 @@ use App\Filament\Resources\Offers\Pages\CreateOffer;
 use App\Filament\Resources\Offers\Pages\EditOffer;
 use App\Filament\Resources\Offers\Pages\ListOffers;
 use App\Filament\Resources\Offers\Pages\ViewOffer;
+use App\Filament\Resources\Offers\RelationManagers\SentOffersRelationManager;
 use App\Filament\Resources\Offers\RelationManagers\TargetsRelationManager;
 use App\Filament\Resources\Offers\Schemas\OfferForm;
 use App\Filament\Resources\Offers\Schemas\OfferInfolist;
@@ -50,6 +51,7 @@ class OfferResource extends Resource
     {
         return [
             TargetsRelationManager::class,
+            SentOffersRelationManager::class,
         ];
     }
 

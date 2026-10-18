@@ -2,10 +2,11 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 use Illuminate\Contracts\Support\Htmlable;
 
-enum OfferStatus: string implements HasLabel
+enum OfferStatus: string implements HasColor, HasLabel
 {
     case Pending = 'pending';
     case Sent = 'sent';
@@ -20,5 +21,21 @@ enum OfferStatus: string implements HasLabel
             self::Failed => 'Неуспешна',
             self::Opened => 'Отворена',
         };
+    }
+
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::Pending => 'gray',
+            self::Sent => 'success',
+            self::Failed => 'danger',
+            self::Opened => 'info',
+        };
+    }
+
+    /** Delivered to the recipient (sent, and possibly opened). */
+    public function isDelivered(): bool
+    {
+        return $this === self::Sent || $this === self::Opened;
     }
 }
