@@ -10,6 +10,9 @@
         $v = max(0.0, min(1.0, $v));
         $pct = (int) round($v * 100);
         $offers = (int) $record->offers_count;
+        $calculator = app(\App\Services\ActivityIndex\ActivityIndexCalculator::class);
+        $parts = $calculator->components($record, $calculator->frequencyScale());
+        $weights = config('activity_index.weights');
     @endphp
     <div class="mk-cv-card mk-cv-activity">
         <div class="mk-cv-card__kicker">скор</div>
@@ -54,8 +57,22 @@
                 </div>
             </div>
         </div>
+        <div class="mk-cv-activity__grid" aria-label="Составни делови на индексот">
+            <div class="mk-cv-activity__stat">
+                <div class="mk-cv-activity__stat-k">E · е-пошта (тежина {{ number_format($weights['email'], 1, ',', '') }})</div>
+                <div class="mk-cv-activity__stat-v">{{ number_format($parts['email'], 2, ',', '') }}</div>
+            </div>
+            <div class="mk-cv-activity__stat">
+                <div class="mk-cv-activity__stat-k">P · јавни извори (тежина {{ number_format($weights['presence'], 1, ',', '') }})</div>
+                <div class="mk-cv-activity__stat-v">{{ number_format($parts['presence'], 2, ',', '') }}</div>
+            </div>
+            <div class="mk-cv-activity__stat">
+                <div class="mk-cv-activity__stat-k">F · фреквенција (тежина {{ number_format($weights['frequency'], 1, ',', '') }})</div>
+                <div class="mk-cv-activity__stat-v">{{ number_format($parts['frequency'], 2, ',', '') }}</div>
+            </div>
+        </div>
         <p class="mk-cv-activity__foot">
-            Вредноста е од 0 до 1 и се нормира на 0–100 за приказ. Се ажурира при скрапирање и обработка на податоци.
+            Индекс = {{ number_format($weights['email'], 1, ',', '') }}·E + {{ number_format($weights['presence'], 1, ',', '') }}·P + {{ number_format($weights['frequency'], 1, ',', '') }}·F. Вредноста е од 0 до 1 и се нормира на 0–100 за приказ. Се ажурира при скрапирање и обработка на податоци.
         </p>
     </div>
 @endif
