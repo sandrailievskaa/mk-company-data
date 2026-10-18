@@ -2934,8 +2934,9 @@ a.mk-cv-kv__link:hover {
 
 /* Компании: потесна колона за име (се прелама во два реда) и акции една под друга. */
 .fi-ta.mk-companies-ta .mk-col-name {
-  width: 14rem;
-  max-width: 14rem;
+  width: 11rem;
+  min-width: 8rem;
+  max-width: 11rem;
 }
 
 .fi-ta.mk-companies-ta .mk-col-name,
