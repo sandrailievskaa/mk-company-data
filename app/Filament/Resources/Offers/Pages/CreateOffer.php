@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\OfferTarget;
 use App\Services\AiUsage\AiUsageLogSource;
 use App\Services\AiUsage\AiUsageRecorder;
+use App\Services\Offers\OfferPromptBuilder;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -29,7 +30,7 @@ class CreateOffer extends CreateRecord
 
         $companyId = (int) request()->query('company_id', 0);
         if ($companyId > 0 && Company::query()->whereKey($companyId)->exists()) {
-            $state = $this->form->getState();
+            $state = $this->form->getRawState();
             $state['company_id'] = $companyId;
             $this->form->fill($state);
         }
@@ -97,11 +98,12 @@ class CreateOffer extends CreateRecord
         $this->aiRecommendationSelections = [];
 
         try {
-            $state = $this->form->getState();
+            $state = $this->form->getRawState();
 
             $title = trim((string) ($state['recommendation_title'] ?? ''));
             $description = trim((string) ($state['additional_information'] ?? ''));
             $sector = $state['recommendation_sector'] ?? null;
+            $city = trim((string) ($state['recommendation_city'] ?? ''));
 
             if (empty($sector) && ! empty($state['company_id'])) {
                 $selectedCompany = Company::find($state['company_id']);
@@ -121,8 +123,11 @@ class CreateOffer extends CreateRecord
             }
 
             $candidates = Company::query()
-                ->select(['id', 'name', 'sector', 'city', 'activity_index', 'email'])
+                ->select(['id', 'name', 'sector', 'city', 'activity_index', 'email', 'email_source'])
                 ->where('sector', $sector)
+                ->when($city !== '', fn ($q) => $q->where('city', $city))
+                // Records the data-quality check flagged as duplicate/inactive are not recommended.
+                ->whereNotIn('data_quality_flag', ['duplicate', 'inactive'])
                 ->orderByDesc('activity_index')
                 ->limit(50)
                 ->get()
@@ -135,6 +140,7 @@ class CreateOffer extends CreateRecord
                         'city' => $c->city,
                         'activity_index' => (float) ($c->activity_index ?? 0),
                         'has_email' => ! empty($c->email),
+                        'email_is_inferred' => $c->email_source?->isInferred() ?? false,
                     ];
                 })
                 ->values()
@@ -222,7 +228,7 @@ class CreateOffer extends CreateRecord
     public function generateOfferContent(): void
     {
         try {
-            $state = $this->form->getState();
+            $state = $this->form->getRawState();
             $companyId = $state['company_id'] ?? null;
             $additionalInformation = trim((string) ($state['additional_information'] ?? ''));
 
@@ -237,8 +243,7 @@ class CreateOffer extends CreateRecord
             }
 
             $company = $companyId ? Company::find($companyId) : null;
-            $companyContext = $company ? "Company: {$company->name}" : '';
-            $prompt = trim("{$companyContext}\n\n{$additionalInformation}");
+            $prompt = app(OfferPromptBuilder::class)->build($company, $additionalInformation);
 
             if ($prompt === '') {
                 Notification::make()
@@ -260,7 +265,7 @@ class CreateOffer extends CreateRecord
             );
 
             $this->form->fill(array_merge(
-                $this->form->getState(),
+                $this->form->getRawState(),
                 [
                     'title' => $response['title'],
                     'content' => $response['content'],

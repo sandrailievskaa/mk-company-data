@@ -6,13 +6,18 @@ use App\Enums\EmailSource;
 use App\Enums\SectorEnum;
 use App\Filament\Resources\Companies\CompanyResource;
 use App\Models\Company;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\HtmlString;
 
 class CompaniesTable
@@ -192,7 +197,26 @@ class CompaniesTable
                 EditAction::make()
                     ->label('Уреди'),
             ])
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('markQualityOk')
+                        ->label('Означи како OK')
+                        ->icon(Heroicon::OutlinedCheckCircle)
+                        ->requiresConfirmation()
+                        ->modalDescription('Го отстранува AI-знамето за квалитет од избраните записи.')
+                        ->action(fn (Collection $records) => $records->each->update([
+                            'data_quality_flag' => 'ok',
+                            'data_quality_note' => null,
+                        ]))
+                        ->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()
+                        ->label('Отстрани избрани')
+                        ->modalHeading('Отстрани избрани компании')
+                        ->modalDescription('Записите се бришат трајно заедно со нивните таргети и испраќања. Прво прегледајте ги означените како дупликат/неактивни.')
+                        ->modalSubmitActionLabel('Отстрани')
+                        ->modalCancelActionLabel('Откажи'),
+                ])->label('Квалитет на податоци'),
+            ]);
     }
 
     /**

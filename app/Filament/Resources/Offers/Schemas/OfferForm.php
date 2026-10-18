@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Offers\Schemas;
 
 use App\Enums\OfferStatus;
 use App\Enums\SectorEnum;
+use App\Models\Company;
 use Filament\Actions\Action;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -58,7 +59,7 @@ class OfferForm
                                 ->extraAttributes(['class' => 'mk-offer-form-section mk-offer-create__card']),
 
                             Section::make('✦ AI препорачани компании')
-                                ->description('Кандидати по сектор (топ 50 по активност).')
+                                ->description('Кандидати по сектор и по избор град (топ 50 по активност).')
                                 ->icon(Heroicon::OutlinedSparkles)
                                 ->components([
                                     TextInput::make('recommendation_title')
@@ -76,6 +77,17 @@ class OfferForm
                                         ->native(false)
                                         ->columnSpanFull()
                                         ->prefixIcon(Heroicon::OutlinedBriefcase),
+                                    Select::make('recommendation_city')
+                                        ->label('Град (по избор)')
+                                        ->options(fn () => Company::query()
+                                            ->whereNotNull('city')->where('city', '!=', '')
+                                            ->distinct()->orderBy('city')->pluck('city', 'city')->all())
+                                        ->helperText('Ограничи ги кандидатите на еден град.')
+                                        ->dehydrated(false)
+                                        ->searchable()
+                                        ->native(false)
+                                        ->columnSpanFull()
+                                        ->prefixIcon(Heroicon::OutlinedMapPin),
                                     ViewField::make('ai_recommendations_view')
                                         ->dehydrated(false)
                                         ->view('filament.offers.ai-recommend-companies')

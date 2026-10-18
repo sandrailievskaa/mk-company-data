@@ -36,8 +36,9 @@ class DetectInvalidCompaniesCommand extends Command
 
         Company::query()
             ->select(['id', 'name', 'sector', 'city', 'address', 'phone', 'email'])
-            ->orderBy('id')
-            ->chunkById(20, function ($companies) use (&$processed, &$flagged) {
+            // Neighbouring names end up in the same batch, so near-duplicates can be spotted.
+            ->orderBy('sector')->orderBy('city')->orderBy('normalized_name')->orderBy('id')
+            ->chunk(20, function ($companies) use (&$processed, &$flagged) {
                 $processed += $companies->count();
 
                 $payload = $companies->map(function (Company $c) {

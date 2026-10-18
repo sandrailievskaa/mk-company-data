@@ -36,6 +36,8 @@ Rules:
 - Recommend 5 to 15 companies maximum.
 - Every company_id MUST exist in the provided candidates list.
 - Reasons must be concise and specific (mention city/sector/activity_index/email readiness when relevant).
+- Prefer companies with a real contact: has_email=true and email_is_inferred=false; an inferred address is only a guess and must not be described as a confirmed contact.
+- Write the reasons in Macedonian.
 - Do not include any extra keys. No markdown. No prose outside JSON.
 PROMPT;
     }

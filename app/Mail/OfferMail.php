@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Offer;
 use App\Models\SentOffer;
+use App\Support\OfferContentFormatter;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -25,7 +26,7 @@ class OfferMail extends Mailable
         return new Content(
             view: 'mail.offer',
             with: [
-                'paragraphs' => preg_split('/\R{2,}/', trim((string) $this->offer->content)) ?: [],
+                'bodyHtml' => app(OfferContentFormatter::class)->toHtml($this->offer->content),
                 'trackingUrl' => route('offers.track', ['token' => $this->sentOffer->token]),
             ],
         );
