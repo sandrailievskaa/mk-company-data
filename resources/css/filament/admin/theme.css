@@ -2955,3 +2955,37 @@ a.mk-cv-kv__link:hover {
   width: 1%;
   white-space: nowrap;
 }
+
+/* Компании: табелата да собира во ширина без хоризонтално лизгање. */
+.fi-ta.mk-companies-ta .fi-ta-table {
+  width: 100%;
+  min-width: 0;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-header-cell,
+.fi-ta.mk-companies-ta .fi-ta-cell {
+  padding-inline: 0.75rem !important;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-header-cell:first-child,
+.fi-ta.mk-companies-ta .fi-ta-cell:first-child {
+  padding-inline-start: 1rem !important;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-cell .fi-ta-col,
+.fi-ta.mk-companies-ta .fi-ta-cell .fi-ta-text {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.fi-ta.mk-companies-ta .mk-companies-email__addr {
+  max-width: 18rem;
+}
+
+.fi-ta.mk-companies-ta .mk-activity-cell {
+  min-width: 5.5rem;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-content {
+  overflow-x: auto;
+}

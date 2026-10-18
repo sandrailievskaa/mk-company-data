@@ -10,7 +10,6 @@ use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Icons\Heroicon;
@@ -31,9 +30,6 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('name')
                     ->label('Име на компанија')
                     ->weight(FontWeight::Bold)
-                    ->wrap()
-                    ->extraHeaderAttributes(['class' => 'mk-col-name'])
-                    ->extraCellAttributes(['class' => 'mk-col-name'])
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Сектор')
@@ -259,10 +255,11 @@ class CompaniesTable
             ->searchPlaceholder('Пребарај компании, сектори, градови...')
             ->recordUrl(fn (Company $record): string => CompanyResource::getUrl('view', ['record' => $record]))
             ->recordActions([
-                ViewAction::make()
-                    ->label('Преглед'),
+                // Редот е кликлив и води до прегледот, па остана само кратко копче „Уреди“.
                 EditAction::make()
-                    ->label('Уреди'),
+                    ->label('Уреди')
+                    ->iconButton()
+                    ->tooltip('Уреди'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
