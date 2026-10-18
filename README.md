@@ -13,30 +13,27 @@ Laravel app that pulls North Macedonia company listings from the public registry
 
 ## What it does
 
-- Scrapes companies by sector from zk.mk with pagination handled end-to-end
-- CRUD for companies and offers in Filament
-- AI agent returns a fixed JSON shape (title + body) for offers
-- Activity scoring for companies (`activity_index`) based on email presence, data completeness, and normalized scrape frequency (`scrape_count`)
-- AI-powered company recommendations when creating an offer, with a selectable target list saved per offer (`offer_targets`)
-- AI-assisted data-quality detection to flag likely duplicate / inactive / inconsistent company records
-- Table II-style statistics command for reporting (coverage, sectors, duplicate rate, etc.)
-- Artisan commands to scrape the registry, batch-enrich missing emails, and set an email on a company by name
+- Scrapes companies by sector from zk.mk (one queued job per sector, robots.txt-aware) and records per-run metrics
+- Normalizes company names (legal suffixes, Cyrillic → Latin) and merges duplicates
+- Enriches missing e-mails via the company website, a search query and pattern generation; every address stores its source and pattern-generated ones are flagged as **inferred** (unverified)
+- Ranks companies with a transparent activity index `0.5·E + 0.3·P + 0.2·F`
+- AI (OpenAI): offer text tailored to sector/city/activity, target recommendations, and data-quality flags
+- Sends offers idempotently (never twice to the same company) with `pending / sent / failed / opened` tracking; with `MAIL_MAILER=log` this is a test mode
+- Filament 4 admin panel in Macedonian: companies, offers, scrape runs, dashboard
 
-## Highlights
-
-- Scraping stays in a dedicated service (`CompanyScraperService`) instead of controllers
-- Offer drafting uses a structured-output agent so the UI always gets the same fields
-- Email enrichment runs as a console job you can cap or run across the full dataset
-- Filament companies list shows a colored badge for data-quality flags + a filter to show only flagged records
+See [docs/PAPER_ALIGNMENT.md](docs/PAPER_ALIGNMENT.md) for what is implemented, partial or planned relative to the paper.
 
 ## Useful commands
 
-- `php artisan app:scrape-companies-command` — scrape zk.mk sectors (auto-recalculates `activity_index` at the end)
-- `php artisan app:calculate-activity-index` — recompute activity index for all companies
-- `php artisan app:company-statistics` — print Table II-style metrics as an ASCII table
-- `php artisan app:detect-invalid-companies` — use OpenAI to flag problematic companies in batches of 20
-- `php artisan app:enrich-company-emails --limit=100` — enrich missing emails (multiple strategies)
-- `php artisan app:add-company-email "Name" "info@domain.mk"` — manually set a company email
+- `php artisan app:scrape-companies-command [--sync] [--sector=PROGRAMMING]` — queue (or run) sector scraping; recalculates the activity index at the end
+- `php artisan queue:work` — process queued scraping jobs
+- `php artisan app:deduplicate-companies [--dry-run]` — fill `normalized_name` and merge duplicates
+- `php artisan app:enrich-company-emails --limit=100` — find missing e-mails (slow: one company can take about a minute)
+- `php artisan app:backfill-email-source` / `app:clean-junk-emails` — classify legacy e-mails / clear tracker addresses
+- `php artisan app:calculate-activity-index` — recompute the index
+- `php artisan app:detect-invalid-companies` — AI data-quality flags (batches of 20)
+- `php artisan app:company-statistics [--csv=table2.csv]` — Table II metrics computed from the database
+- `php artisan app:add-company-email "Name" "info@domain.mk"` — set an e-mail manually
 
 ## Setup
 
