@@ -140,3 +140,18 @@ it('clears junk addresses but keeps real ones', function () {
         ->and($junk->fresh()->email_source)->toBeNull()
         ->and($real->fresh()->email)->toBe('info@real.mk');
 });
+
+it('checks MX records through DNS-over-HTTPS', function () {
+    Illuminate\Support\Facades\Http::fake([
+        '*name=with-mx.mk*' => Illuminate\Support\Facades\Http::response(['Status' => 0, 'Answer' => [['type' => 15, 'data' => '10 mail.with-mx.mk.']]]),
+        '*name=no-mx.mk*' => Illuminate\Support\Facades\Http::response(['Status' => 3]),
+        '*name=only-a.mk*' => Illuminate\Support\Facades\Http::response(['Status' => 0, 'Answer' => [['type' => 1, 'data' => '1.2.3.4']]]),
+    ]);
+
+    $checker = new EmailDomainChecker;
+
+    expect($checker->hasMx('info@with-mx.mk'))->toBeTrue()
+        ->and($checker->hasMx('info@no-mx.mk'))->toBeFalse()
+        ->and($checker->hasMx('info@only-a.mk'))->toBeFalse()
+        ->and($checker->hasMx('not-an-email'))->toBeFalse();
+});

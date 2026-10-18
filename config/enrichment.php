@@ -23,6 +23,11 @@ return [
     'inferred_enabled' => (bool) env('ENRICHMENT_INFERRED_ENABLED', false),
 
     /*
+    | DNS-over-HTTPS endpoint used for MX lookups (JSON API).
+    */
+    'doh_endpoint' => env('ENRICHMENT_DOH_ENDPOINT', 'https://cloudflare-dns.com/dns-query'),
+
+    /*
     | TLS verification for company websites. Provide a CA bundle path when the
     | PHP installation has none configured (e.g. Herd: ~/.config/herd/config/php/cacert.pem).
     */
