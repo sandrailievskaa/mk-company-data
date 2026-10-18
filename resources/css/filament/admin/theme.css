@@ -2989,3 +2989,37 @@ a.mk-cv-kv__link:hover {
 .fi-ta.mk-companies-ta .fi-ta-content {
   overflow-x: auto;
 }
+
+/* Компании: потесна табела (помали падинзи), без хоризонтално лизгање. */
+.fi-ta.mk-companies-ta .fi-ta-header-cell {
+  padding: 0.6rem 0.5rem !important;
+  font-size: 11px !important;
+  letter-spacing: 0.04em !important;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-header-cell:first-child,
+.fi-ta.mk-companies-ta .fi-ta-cell:first-child {
+  padding-inline-start: 0.75rem !important;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-cell > * {
+  padding: 0.55rem 0.5rem !important;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-cell {
+  font-size: 0.8125rem;
+}
+
+.fi-ta.mk-companies-ta .fi-ta-actions-cell,
+.fi-ta.mk-companies-ta .fi-ta-actions-header-cell {
+  padding-inline: 0.25rem !important;
+}
+
+.fi-ta.mk-companies-ta .mk-companies-email__addr {
+  display: inline-block;
+  max-width: 15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
+}

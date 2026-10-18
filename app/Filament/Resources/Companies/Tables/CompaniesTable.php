@@ -10,6 +10,7 @@ use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Icons\Heroicon;
@@ -34,6 +35,7 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('sector')
                     ->label('Сектор')
                     ->searchable()
+                    ->visibleFrom('sm')
                     ->html()
                     ->formatStateUsing(function ($state): HtmlString {
                         if (! $state instanceof SectorEnum) {
@@ -49,7 +51,8 @@ class CompaniesTable
                     }),
                 Tables\Columns\TextColumn::make('city')
                     ->label('Град')
-                    ->searchable(),
+                    ->searchable()
+                    ->visibleFrom('md'),
                 Tables\Columns\TextColumn::make('address')
                     ->label('Адреса')
                     ->searchable()
@@ -57,6 +60,7 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('email')
                     ->label('Е-пошта')
                     ->searchable()
+                    ->visibleFrom('sm')
                     ->html()
                     ->formatStateUsing(function (?string $state, Company $record): HtmlString {
                         if (blank($state)) {
@@ -99,6 +103,7 @@ class CompaniesTable
                 Tables\Columns\TextColumn::make('activity_index')
                     ->label('Индекс на активност')
                     ->sortable()
+                    ->visibleFrom('lg')
                     ->default(0)
                     ->html()
                     ->formatStateUsing(function ($state): HtmlString {
@@ -255,7 +260,11 @@ class CompaniesTable
             ->searchPlaceholder('Пребарај компании, сектори, градови...')
             ->recordUrl(fn (Company $record): string => CompanyResource::getUrl('view', ['record' => $record]))
             ->recordActions([
-                // Редот е кликлив и води до прегледот, па остана само кратко копче „Уреди“.
+                // Икони: целиот ред е веќе кликабилен кон прегледот, па текстот само троши простор.
+                ViewAction::make()
+                    ->label('Преглед')
+                    ->iconButton()
+                    ->tooltip('Преглед'),
                 EditAction::make()
                     ->label('Уреди')
                     ->iconButton()
