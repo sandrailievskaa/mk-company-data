@@ -3,42 +3,52 @@
 namespace App\Services;
 
 use App\Enums\EmailSource;
+use App\Enums\ScrapeRunStatus;
 use App\Models\Company;
+use App\Models\ScrapeRun;
 use App\Support\CompanyNameNormalizer;
+use App\Support\RobotsTxt;
+use Illuminate\Support\Facades\Log;
+use RuntimeException;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\Exception\TimeoutException;
 use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\HttpClient\HttpClient;
+use Throwable;
 
 class CompanyScraperService
 {
     public function __construct(private readonly CompanyNameNormalizer $normalizer) {}
 
-    public function scrapeCompanies(string $sector): void
+    /**
+     * Scrape one sector, paginating to the end, and record metrics on the run.
+     */
+    public function scrapeCompanies(string $sector, ?ScrapeRun $run = null): ScrapeRun
     {
-        $browser = new HttpBrowser(HttpClient::create([
-            // `timeout` is the max idle time while transferring; `max_duration` caps total request time.
-            'timeout' => 60,
-            'max_duration' => 90,
-            'connect_timeout' => 10,
-            'headers' => [
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept-Language' => 'mk-MK,mk;q=0.9,en-US;q=0.8,en;q=0.7',
-            ],
-        ]));
+        $run ??= ScrapeRun::create([
+            'sector' => $sector,
+            'status' => ScrapeRunStatus::Running,
+            'started_at' => now(),
+        ]);
 
-        $url = 'https://zk.mk/'.$sector;
+        $browser = $this->makeBrowser();
+        $this->assertAllowedByRobots($browser, $sector);
+
+        $delayMicros = max(0, (int) config('scraping.delay_ms')) * 1000;
+        $url = rtrim((string) config('scraping.base_url'), '/').'/'.$sector;
+        $pages = $seen = $created = $updated = $emails = 0;
 
         do {
             $crawler = $this->requestWithRetry($browser, $url);
-            $results = $crawler->filter('.result');
+            $pages++;
 
-            foreach ($results as $result) {
+            foreach ($crawler->filter('.result') as $result) {
                 $company = $this->parseResult($result);
                 if (blank($company['name'])) {
                     continue;
                 }
+                $seen++;
 
                 // Duplicate detection is done on the normalized name, so spelling,
                 // case and legal-form variants map to a single record.
@@ -54,7 +64,10 @@ class CompanyScraperService
 
                 // Count how often we see this company across scraping runs.
                 // This is used later to compute the normalized frequency score (F).
-                if (! $model->wasRecentlyCreated) {
+                if ($model->wasRecentlyCreated) {
+                    $created++;
+                } else {
+                    $updated++;
                     $model->increment('scrape_count');
                 }
 
@@ -66,23 +79,77 @@ class CompanyScraperService
                         'email_source' => EmailSource::Registry,
                         'email_found_at' => now(),
                     ]);
+                    $emails++;
                 }
             }
 
-            $url = $crawler->filter('.pagination a[rel="next"]')->count()
-                ? $crawler->filter('.pagination a[rel="next"]')->attr('href')
-                : null;
+            $next = $crawler->filter('.pagination a[rel="next"]');
+            $url = $next->count() ? $next->attr('href') : null;
 
             // Be polite and reduce the chance of rate limiting / connection resets.
             if ($url) {
-                usleep(250000); // 0.25s
+                usleep($delayMicros);
             }
         } while ($url);
+
+        $run->update([
+            'pages_fetched' => $pages,
+            'records_seen' => $seen,
+            'records_created' => $created,
+            'records_updated' => $updated,
+            'emails_found' => $emails,
+        ]);
+
+        return $run;
+    }
+
+    private function makeBrowser(): HttpBrowser
+    {
+        return new HttpBrowser(HttpClient::create([
+            // `timeout` is the max idle time while transferring; `max_duration` caps total request time.
+            'timeout' => config('scraping.timeout'),
+            'max_duration' => config('scraping.max_duration'),
+            'headers' => [
+                'User-Agent' => config('scraping.user_agent'),
+                'Accept-Language' => 'mk-MK,mk;q=0.9,en-US;q=0.8,en;q=0.7',
+            ],
+        ]));
+    }
+
+    private function assertAllowedByRobots(HttpBrowser $browser, string $sector): void
+    {
+        if (! config('scraping.respect_robots')) {
+            return;
+        }
+
+        $base = rtrim((string) config('scraping.base_url'), '/');
+
+        try {
+            $browser->request('GET', $base.'/robots.txt');
+            $robots = new RobotsTxt($browser->getResponse()->getContent(false));
+        } catch (Throwable $e) {
+            Log::warning('Could not read robots.txt, continuing: '.$e->getMessage());
+
+            return;
+        }
+
+        if (! $robots->isAllowed('/'.$sector)) {
+            throw new RuntimeException("robots.txt disallows scraping /{$sector}");
+        }
+
+        $crawlDelay = $robots->crawlDelaySeconds();
+        if ($crawlDelay !== null && $crawlDelay * 1000 > (int) config('scraping.delay_ms')) {
+            Log::warning(sprintf(
+                'robots.txt asks for Crawl-delay %ss but SCRAPER_DELAY_MS is %dms.',
+                $crawlDelay,
+                (int) config('scraping.delay_ms')
+            ));
+        }
     }
 
     private function requestWithRetry(HttpBrowser $browser, string $url): Crawler
     {
-        $attempts = 5;
+        $attempts = max(1, (int) config('scraping.retries'));
         $delayMs = 500;
 
         for ($i = 1; $i <= $attempts; $i++) {

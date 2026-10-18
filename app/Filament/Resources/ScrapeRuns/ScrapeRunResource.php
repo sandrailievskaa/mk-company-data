@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Filament\Resources\ScrapeRuns;
+
+use App\Enums\ScrapeRunStatus;
+use App\Filament\Resources\ScrapeRuns\Pages\ListScrapeRuns;
+use App\Models\ScrapeRun;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables;
+use Filament\Tables\Table;
+
+class ScrapeRunResource extends Resource
+{
+    protected static ?string $model = ScrapeRun::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowPath;
+
+    protected static ?string $navigationLabel = 'Скрејпања';
+
+    protected static ?string $label = 'Скрејпање';
+
+    protected static ?string $pluralLabel = 'Скрејпања';
+
+    protected static ?int $navigationSort = 30;
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->defaultSort('id', 'desc')
+            ->poll('10s')
+            ->columns([
+                Tables\Columns\TextColumn::make('started_at')
+                    ->label('Почеток')
+                    ->dateTime('d.m.Y H:i')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('sector')
+                    ->label('Сектор')
+                    ->placeholder('—'),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Статус')
+                    ->badge()
+                    ->formatStateUsing(fn (ScrapeRunStatus $state): string => match ($state) {
+                        ScrapeRunStatus::Running => 'Во тек',
+                        ScrapeRunStatus::Completed => 'Завршено',
+                        ScrapeRunStatus::Failed => 'Неуспешно',
+                    })
+                    ->color(fn (ScrapeRunStatus $state): string => match ($state) {
+                        ScrapeRunStatus::Running => 'warning',
+                        ScrapeRunStatus::Completed => 'success',
+                        ScrapeRunStatus::Failed => 'danger',
+                    }),
+                Tables\Columns\TextColumn::make('duration_seconds')
+                    ->label('Траење')
+                    ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : sprintf('%d:%02d мин', intdiv($state, 60), $state % 60)),
+                Tables\Columns\TextColumn::make('pages_fetched')->label('Страници'),
+                Tables\Columns\TextColumn::make('records_seen')->label('Видени'),
+                Tables\Columns\TextColumn::make('records_created')->label('Нови'),
+                Tables\Columns\TextColumn::make('records_updated')->label('Ажурирани'),
+                Tables\Columns\TextColumn::make('emails_found')->label('Е-пошти'),
+                Tables\Columns\TextColumn::make('error_message')
+                    ->label('Грешка')
+                    ->limit(60)
+                    ->tooltip(fn (ScrapeRun $record): ?string => $record->error_message)
+                    ->placeholder('—'),
+            ]);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListScrapeRuns::route('/'),
+        ];
+    }
+}
