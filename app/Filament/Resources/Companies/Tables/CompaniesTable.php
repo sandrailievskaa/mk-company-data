@@ -189,7 +189,10 @@ class CompaniesTable
                         false: fn ($query) => $query->whereNull('email'),
                         blank: fn ($query) => $query,
                     )
-                    ->native(false),
+                    ->native(false)
+                    ->modifyFormFieldUsing(function (Select $field): void {
+                        $field->hiddenLabel();
+                    }),
                 Tables\Filters\TernaryFilter::make('has_website')
                     ->label('Веб-сајт')
                     ->placeholder('Веб-сајт: сите')
@@ -200,7 +203,10 @@ class CompaniesTable
                         false: fn ($query) => $query->whereNull('website'),
                         blank: fn ($query) => $query,
                     )
-                    ->native(false),
+                    ->native(false)
+                    ->modifyFormFieldUsing(function (Select $field): void {
+                        $field->hiddenLabel();
+                    }),
                 Tables\Filters\SelectFilter::make('data_quality_flag')
                     ->label('Квалитет')
                     ->options([
@@ -210,7 +216,10 @@ class CompaniesTable
                         'inconsistent' => 'Неконзистентна',
                     ])
                     ->native(false)
-                    ->placeholder('Квалитет'),
+                    ->placeholder('Квалитет')
+                    ->modifyFormFieldUsing(function (Select $field): void {
+                        $field->hiddenLabel();
+                    }),
                 Tables\Filters\SelectFilter::make('city')
                     ->label('Град')
                     ->options(function () {
@@ -234,7 +243,7 @@ class CompaniesTable
             ->emptyStateDescription('Променете ги филтрите или собери нови компании од „Пајплајн“.')
             ->emptyStateIcon(Heroicon::OutlinedBuildingOffice)
             ->deferFilters(false)
-            ->filtersFormColumns(['default' => 1, 'md' => 3, 'xl' => 5])
+            ->filtersFormColumns(['default' => 2, 'lg' => 3, 'xl' => 6])
             ->searchPlaceholder('Пребарај компании, сектори, градови...')
             ->recordUrl(fn (Company $record): string => CompanyResource::getUrl('view', ['record' => $record]))
             ->recordActions([

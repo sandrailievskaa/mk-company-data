@@ -1223,60 +1223,41 @@ a:hover {
   background: var(--bg-card-hover) !important;
 }
 
-/* Наслов цел ред; под него: пребарување + филтри (иста базна линија, една доња рамка) */
+/* Заглавје на табелата: горе пребарување, под него еден ред филтри (мрежа), „Ресетирај“ горе десно. */
 .fi-ta.mk-companies-ta .fi-ta-header-ctn {
+  position: relative;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  column-gap: 0.4rem;
-  row-gap: 0;
-  padding-bottom: 0.35rem;
-  /* Една линија цела ширина под редот пребарување+филтри (не пресечен border) */
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 0.85rem;
   border-bottom: 1px solid var(--border) !important;
   margin-bottom: 0.25rem;
 }
 
 .fi-ta.mk-companies-ta .fi-ta-header {
-  flex: 1 1 100%;
   order: 0;
 }
 
-/* Ред: филтри прво, пребарување веднаш десно до нив */
-.fi-ta.mk-companies-ta .fi-ta-filters-above-content-ctn {
-  order: 1;
-  flex: 1 1 auto;
-  min-width: 0;
-  align-self: center;
-  border: none !important;
-  border-bottom: none !important;
-  padding: 0.5rem 0.15rem 0.5rem 1rem !important;
-  margin: 0 !important;
-}
-
 .fi-ta.mk-companies-ta .fi-ta-header-toolbar {
-  order: 2;
+  order: 1;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-start;
   gap: 0.5rem 0.75rem;
-  flex: 0 1 22rem;
-  min-width: 12rem;
-  max-width: 30rem;
-  border: none !important;
-  border-bottom: none !important;
-  /* без лева маргина: лепи на филтрите */
-  padding: 0.5rem 1rem 0.5rem 0.15rem !important;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  padding: 0 !important;
   margin: 0 !important;
-  align-self: center;
+  border: none !important;
 }
 
 .fi-ta.mk-companies-ta .fi-ta-search-field {
   flex: 1 1 auto;
   min-width: 0;
   width: 100%;
-  max-width: 26rem;
+  max-width: 30rem;
 }
 
 .fi-ta.mk-companies-ta .fi-ta-search-field .fi-input-wrp {
@@ -1289,88 +1270,73 @@ a:hover {
   background: transparent !important;
 }
 
+.fi-ta.mk-companies-ta .fi-ta-filters-above-content-ctn {
+  order: 2;
+  width: 100%;
+  min-width: 0;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
 .fi-ta.mk-companies-ta .fi-ta-filters-heading {
   display: none;
 }
 
-/* Клучно: .fi-ta-filters е grid gap-y-4 — мора display:flex !important, и .fi-grid да не биде 100% */
 .fi-ta.mk-companies-ta .fi-ta-filters.fi-ta-filters-above-content {
   display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: wrap !important;
-  align-items: center !important;
-  gap: 0.45rem 0.5rem !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
   width: 100% !important;
   min-width: 0 !important;
-  /* преку Filament default: grid gap-y-4 */
   grid-template-columns: unset !important;
-  row-gap: 0.45rem !important;
 }
 
+/* „Ресетирај“ стои на редот на пребарувањето, десно. */
 .fi-ta.mk-companies-ta .fi-ta-filters.fi-ta-filters-above-content > .fi-ta-filters-header {
+  position: absolute;
+  top: 1.15rem;
+  right: 1rem;
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-end !important;
+  margin: 0 !important;
+  padding: 0 !important;
   min-height: 0 !important;
-  margin: 0 !important;
-  margin-left: auto !important;
-  padding: 0 !important;
-  order: 2;
-  flex: 0 0 auto !important;
-  gap: 0.25rem;
-  /* без скриен h3, линкот „Reset“ е една линија */
-  align-self: center;
   width: auto;
 }
 
-.fi-ta.mk-companies-ta .fi-ta-filters.fi-ta-filters-above-content > *:not(.fi-ta-filters-header) {
-  min-width: 0;
-}
-
-.fi-ta.mk-companies-ta
-  .fi-ta-filters.fi-ta-filters-above-content
-  > *:not(.fi-ta-filters-header):not(.fi-ta-filters-actions-ctn) {
-  order: 1;
-  flex: 0 1 auto;
-  min-width: 0;
-  max-width: 100%;
-  display: block;
-  width: auto;
-}
-
-.fi-ta.mk-companies-ta .fi-ta-filters.fi-ta-filters-above-content > .fi-ta-filters-actions-ctn {
-  order: 3;
-  flex: 1 0 100%;
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  padding: 0 !important;
-  margin: 0 !important;
-  border: none;
-}
-
+/* Шест филтри во еден ред на широк екран; потесни екрани се прелеваат во повеќе редови. */
 .fi-ta.mk-companies-ta .fi-ta-filters-above-content .fi-grid {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: wrap !important;
-  align-items: center !important;
-  /* не full width: да не го бутка Reset на нов ред */
-  width: auto !important;
-  max-width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 0.5rem 0.75rem !important;
+  width: 100% !important;
+  max-width: none !important;
   min-width: 0 !important;
-  flex: 0 1 auto !important;
-  gap: 0.45rem 0.5rem !important;
-  row-gap: 0.4rem !important;
-  column-gap: 0.5rem !important;
-  grid-template-columns: none !important;
-  /* преку .fi-grid utility */
-  align-content: center !important;
+  align-items: center !important;
+}
+
+@media (max-width: 1400px) {
+  .fi-ta.mk-companies-ta .fi-ta-filters-above-content .fi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .fi-ta.mk-companies-ta .fi-ta-filters-above-content .fi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .fi-ta.mk-companies-ta .fi-ta-header-toolbar {
+    padding-right: 5.5rem !important;
+  }
 }
 
 .fi-ta.mk-companies-ta .fi-ta-filters-above-content .fi-grid > * {
-  flex: 0 1 8rem;
+  width: 100%;
+  max-width: none;
   min-width: 0;
-  max-width: 11.5rem;
+  flex: none;
   align-self: center;
 }
 
@@ -1389,7 +1355,7 @@ a:hover {
 }
 
 .fi-ta.mk-companies-ta .fi-ta-filters-above-content .fi-fo-field-wrp {
-  row-gap: 0.25rem;
+  row-gap: 0;
 }
 
 .fi-ta.mk-companies-ta .fi-pagination {
