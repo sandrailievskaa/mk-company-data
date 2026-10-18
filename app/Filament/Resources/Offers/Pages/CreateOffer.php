@@ -247,7 +247,7 @@ class CreateOffer extends CreateRecord
 
             if ($prompt === '') {
                 Notification::make()
-                    ->title(__('Нема влез'))
+                    ->title(__('Нема внес'))
                     ->body(__('Пополни барем едно поле за AI.'))
                     ->warning()
                     ->send();
@@ -274,13 +274,13 @@ class CreateOffer extends CreateRecord
 
             Notification::make()
                 ->title(__('Содржината е генерирана'))
-                ->body(__('Проверете го текстот и прилагодете го по потреба.'))
+                ->body(__('Провери го текстот и прилагоди го по потреба.'))
                 ->success()
                 ->send();
         } catch (Throwable) {
             Notification::make()
                 ->title(__('Генерирањето не успеа'))
-                ->body(__('Проверете ја врската / API поставките и пробајте повторно.'))
+                ->body(__('Провери ја врската / API поставките и пробај повторно.'))
                 ->danger()
                 ->send();
         }

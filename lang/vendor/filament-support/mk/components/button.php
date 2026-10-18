@@ -2,6 +2,6 @@
 
 return [
     'messages' => [
-        'uploading_file' => 'Се прикачува датотеката...',
+        'uploading_file' => 'Се прикачува датотеката…',
     ],
 ];

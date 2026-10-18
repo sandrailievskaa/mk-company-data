@@ -36,7 +36,7 @@ class ListCompanies extends ListRecords
 
                         Notification::make()
                             ->title(__('Скрејпањето е стартувано'))
-                            ->body(__(':count сектори се ставени во ред. Прогресот е под „Скрејпања“ (потребен е активен queue worker).', ['count' => $batch->totalJobs]))
+                            ->body(__(':count сектори се ставени во редица. Прогресот е под „Скрејпања“ (потребен е активен queue worker).', ['count' => $batch->totalJobs]))
                             ->success()
                             ->send();
                     } catch (Throwable $e) {

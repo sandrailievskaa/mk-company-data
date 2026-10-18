@@ -19,8 +19,8 @@
     <div class="mk-activity-distribution__plot">
         <div class="mk-activity-distribution__chart" role="img" aria-label="{{ __('Број на компании по опсег на индекс на активност') }}">
             <div class="mk-activity-distribution__y" aria-hidden="true">
-                <span>{{ number_format($maxCount) }}</span>
-                <span>{{ (int) round($maxCount / 2) }}</span>
+                <span>{{ \App\Support\Fmt::num($maxCount) }}</span>
+                <span>{{ \App\Support\Fmt::num((int) round($maxCount / 2)) }}</span>
                 <span>0</span>
             </div>
             <div class="mk-activity-distribution__bars">
@@ -30,7 +30,7 @@
                         $barPx = max(2, min($barTrackPx, $barPx));
                     @endphp
                     <div class="mk-activity-distribution__col">
-                        <div class="mk-activity-distribution__bar-outer" title="{{ __(':count компании', ['count' => number_format((int) $b['count'])]) }}" style="height: {{ $barTrackPx }}px;">
+                        <div class="mk-activity-distribution__bar-outer" title="{{ __(':count компании', ['count' => \App\Support\Fmt::num((int) $b['count'])]) }}" style="height: {{ $barTrackPx }}px;">
                             <div class="mk-activity-distribution__bar" style="height: {{ $barPx }}px;"></div>
                         </div>
                         <div class="mk-activity-distribution__xlabel">{{ $b['xlabel'] }}</div>
@@ -44,7 +44,7 @@
         @foreach($buckets as $b)
             <div class="mk-activity-distribution__stat">
                 <span class="mk-activity-distribution__tier">{{ $b['tier'] }}</span>
-                <span class="mk-activity-distribution__count">{{ number_format($b['count']) }}</span>
+                <span class="mk-activity-distribution__count">{{ \App\Support\Fmt::num($b['count']) }}</span>
             </div>
         @endforeach
     </div>

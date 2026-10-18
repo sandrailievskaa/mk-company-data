@@ -29,10 +29,10 @@
             <div class="mk-cv-activity__grid">
                 <div class="mk-cv-activity__stat">
                     <div class="mk-cv-activity__stat-k">{{ __('Нормиран индекс') }}</div>
-                    <div class="mk-cv-activity__stat-v">{{ number_format($v, 2, ',', '') }}</div>
+                    <div class="mk-cv-activity__stat-v">{{ \App\Support\Fmt::num($v, 2) }}</div>
                 </div>
                 <div class="mk-cv-activity__stat">
-                    <div class="mk-cv-activity__stat-k">{{ __('Скрапирања') }}</div>
+                    <div class="mk-cv-activity__stat-k">{{ __('Скрејпања') }}</div>
                     <div class="mk-cv-activity__stat-v">{{ (int) $record->scrape_count }}</div>
                 </div>
                 <div class="mk-cv-activity__stat">
@@ -59,20 +59,20 @@
         </div>
         <div class="mk-cv-activity__grid" aria-label="{{ __('Составни делови на индексот') }}">
             <div class="mk-cv-activity__stat">
-                <div class="mk-cv-activity__stat-k">{{ __('E · е-пошта (тежина :w)', ['w' => number_format($weights['email'], 1, ',', '')]) }}</div>
-                <div class="mk-cv-activity__stat-v">{{ number_format($parts['email'], 2, ',', '') }}</div>
+                <div class="mk-cv-activity__stat-k">{{ __('E · е-пошта (тежина :w)', ['w' => \App\Support\Fmt::num($weights['email'], 1)]) }}</div>
+                <div class="mk-cv-activity__stat-v">{{ \App\Support\Fmt::num($parts['email'], 2) }}</div>
             </div>
             <div class="mk-cv-activity__stat">
-                <div class="mk-cv-activity__stat-k">{{ __('P · јавни извори (тежина :w)', ['w' => number_format($weights['presence'], 1, ',', '')]) }}</div>
-                <div class="mk-cv-activity__stat-v">{{ number_format($parts['presence'], 2, ',', '') }}</div>
+                <div class="mk-cv-activity__stat-k">{{ __('P · јавни извори (тежина :w)', ['w' => \App\Support\Fmt::num($weights['presence'], 1)]) }}</div>
+                <div class="mk-cv-activity__stat-v">{{ \App\Support\Fmt::num($parts['presence'], 2) }}</div>
             </div>
             <div class="mk-cv-activity__stat">
-                <div class="mk-cv-activity__stat-k">{{ __('F · фреквенција (тежина :w)', ['w' => number_format($weights['frequency'], 1, ',', '')]) }}</div>
-                <div class="mk-cv-activity__stat-v">{{ number_format($parts['frequency'], 2, ',', '') }}</div>
+                <div class="mk-cv-activity__stat-k">{{ __('F · фреквенција (тежина :w)', ['w' => \App\Support\Fmt::num($weights['frequency'], 1)]) }}</div>
+                <div class="mk-cv-activity__stat-v">{{ \App\Support\Fmt::num($parts['frequency'], 2) }}</div>
             </div>
         </div>
         <p class="mk-cv-activity__foot">
-            {{ __('Индекс = :e·E + :p·P + :f·F. Вредноста е од 0 до 1 и се нормира на 0–100 за приказ. Се ажурира при скрапирање и обработка на податоци.', ['e' => number_format($weights['email'], 1, ',', ''), 'p' => number_format($weights['presence'], 1, ',', ''), 'f' => number_format($weights['frequency'], 1, ',', '')]) }}
+            {{ __('Индекс = :e·E + :p·P + :f·F. Вредноста е од 0 до 1 и се нормира на 0–100 за приказ. Се ажурира при скрејпање и обработка на податоци.', ['e' => \App\Support\Fmt::num($weights['email'], 1), 'p' => \App\Support\Fmt::num($weights['presence'], 1), 'f' => \App\Support\Fmt::num($weights['frequency'], 1)]) }}
         </p>
     </div>
 @endif

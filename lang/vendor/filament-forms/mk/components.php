@@ -11,7 +11,7 @@ return [
                             'label' => 'Креирај',
                         ],
                         'create_another' => [
-                            'label' => 'Креирај и додади друг',
+                            'label' => 'Креирај и додај друг',
                         ],
                     ],
                     'heading' => 'Креирај',
@@ -33,12 +33,12 @@ return [
             'false' => 'Не',
             'true' => 'Да',
         ],
-        'loading_message' => 'Се вчитува...',
+        'loading_message' => 'Се вчитува…',
         'max_items_message' => 'Може да се избере само :count.',
         'no_search_results_message' => 'Нема опции што одговараат на пребарувањето.',
         'placeholder' => 'Избери опција',
-        'search_prompt' => 'Почни да пишуваш за пребарување...',
-        'searching_message' => 'Се пребарува...',
+        'search_prompt' => 'Почни да пишуваш за пребарување…',
+        'searching_message' => 'Се пребарува…',
     ],
     'toggle_buttons' => [
         'boolean' => [
@@ -85,6 +85,6 @@ return [
                 ],
             ],
         ],
-        'uploading_file_message' => 'Се прикачува датотеката...',
+        'uploading_file_message' => 'Се прикачува датотеката…',
     ],
 ];

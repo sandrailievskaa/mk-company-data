@@ -16,8 +16,8 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-building-office')
                 ->color('success'),
 
-            Stat::make(__('Компании со email'), Company::whereNotNull('email')->count())
-                ->description(__('Компании со валиден email'))
+            Stat::make(__('Компании со е-пошта'), Company::whereNotNull('email')->count())
+                ->description(__('Компании со валидна е-пошта'))
                 ->descriptionIcon('heroicon-m-envelope')
                 ->color('info'),
         ];

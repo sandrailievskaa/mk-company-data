@@ -128,7 +128,7 @@ class ViewOffer extends ViewRecord
                         'inferred' => $plan->skippedInferred,
                     ])).'</p>'.
                     ($testMode
-                        ? '<p><strong>'.e(__('Тест-режим:')).'</strong> '.e(__('пораките не се доставуваат на вистински адреси (mailer: :mailer), туку се запишуваат во storage/logs/laravel.log.', ['mailer' => $mailer])).'</p>'
+                        ? '<p><strong>'.e(__('Пробен режим:')).'</strong> '.e(__('пораките не се доставуваат на вистински адреси (mailer: :mailer), туку се запишуваат во storage/logs/laravel.log.', ['mailer' => $mailer])).'</p>'
                         : '')
                 );
             })

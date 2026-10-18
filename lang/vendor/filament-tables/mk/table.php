@@ -31,11 +31,11 @@ return [
             'label' => 'Акција|Акции',
         ],
         'select' => [
-            'loading_message' => 'Се вчитува...',
+            'loading_message' => 'Се вчитува…',
             'no_search_results_message' => 'Нема опции што одговараат на пребарувањето.',
             'placeholder' => 'Избери опција',
-            'search_prompt' => 'Почни да пишуваш за пребарување...',
-            'searching_message' => 'Се пребарува...',
+            'search_prompt' => 'Почни да пишуваш за пребарување…',
+            'searching_message' => 'Се пребарува…',
         ],
         'text' => [
             'actions' => [
@@ -47,7 +47,7 @@ return [
     ],
     'default_model_label' => 'запис',
     'empty' => [
-        'description' => 'Креирајте :model за да започнете.',
+        'description' => 'Креирај :model за да започнете.',
         'heading' => 'Нема :model',
     ],
     'fields' => [

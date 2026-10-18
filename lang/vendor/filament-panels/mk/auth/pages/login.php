@@ -3,7 +3,7 @@
 return [
     'actions' => [
         'request_password_reset' => [
-            'label' => 'Ја заборавивте лозинката?',
+            'label' => 'Ја заборави лозинката?',
         ],
     ],
     'form' => [
@@ -28,7 +28,7 @@ return [
     ],
     'notifications' => [
         'throttled' => [
-            'body' => 'Обидете се повторно за :seconds секунди.',
+            'body' => 'Обиди се повторно за :seconds секунди.',
             'title' => 'Премногу обиди за најава',
         ],
     ],

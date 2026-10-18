@@ -10,14 +10,14 @@
     $sourceLabels = [
         \App\Services\AiUsage\AiUsageLogSource::RECOMMENDATION => __('AI препораки'),
         \App\Services\AiUsage\AiUsageLogSource::OFFER => __('Ген. понуди'),
-        \App\Services\AiUsage\AiUsageLogSource::VALIDATION => __('Валид. на податоци'),
+        \App\Services\AiUsage\AiUsageLogSource::VALIDATION => __('Валидација на податоци'),
     ];
 
     arsort($bySource, SORT_NUMERIC);
     $tokensPerCredit = max(1, (int) config('ai_credits.tokens_per_credit', 1000));
     $percent = $total > 0 ? min(100, max(0, (int) round(($used / $total) * 100))) : 0;
     $isOver = $used > $total;
-    $fmt = static fn (int $n): string => number_format($n, 0, ',', ' ');
+    $fmt = static fn (int $n): string => \App\Support\Fmt::num($n);
 @endphp
 
 <div class="mk-sidebar-credits" aria-label="{{ __('AI кредити') }}">

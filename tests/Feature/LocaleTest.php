@@ -82,15 +82,15 @@ it('has an English translation for every Macedonian key used in the code', funct
 });
 
 it('formats plural strings in both languages', function () {
-    expect(trans_choice('Вкупно :count процес на скрапирање/обработка за овој запис.|Вкупно :count процеси на скрапирање/обработка за овој запис.', 1))
+    expect(trans_choice('Вкупно :count процес на скрејпање/обработка за овој запис.|Вкупно :count процеси на скрејпање/обработка за овој запис.', 1))
         ->toContain('процес на')
-        ->and(trans_choice('Вкупно :count процес на скрапирање/обработка за овој запис.|Вкупно :count процеси на скрапирање/обработка за овој запис.', 3))
+        ->and(trans_choice('Вкупно :count процес на скрејпање/обработка за овој запис.|Вкупно :count процеси на скрејпање/обработка за овој запис.', 3))
         ->toContain('процеси');
 
     app()->setLocale('en');
 
-    expect(trans_choice('Вкупно :count процес на скрапирање/обработка за овој запис.|Вкупно :count процеси на скрапирање/обработка за овој запис.', 1))
+    expect(trans_choice('Вкупно :count процес на скрејпање/обработка за овој запис.|Вкупно :count процеси на скрејпање/обработка за овој запис.', 1))
         ->toBe('Scraped/processed 1 time for this record in total.')
-        ->and(trans_choice('Вкупно :count процес на скрапирање/обработка за овој запис.|Вкупно :count процеси на скрапирање/обработка за овој запис.', 3))
+        ->and(trans_choice('Вкупно :count процес на скрејпање/обработка за овој запис.|Вкупно :count процеси на скрејпање/обработка за овој запис.', 3))
         ->toBe('Scraped/processed 3 times for this record in total.');
 });

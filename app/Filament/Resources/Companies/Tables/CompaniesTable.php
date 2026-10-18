@@ -118,7 +118,7 @@ class CompaniesTable
                             '<span class="mk-activity-cell__track" role="presentation">'.
                             '<span class="mk-activity-cell__fill" style="width: '.$pct.'%;"></span>'.
                             '</span>'.
-                            '<span class="mk-activity-cell__val">'.e(number_format($v, 2, '.', '')).'</span>'.
+                            '<span class="mk-activity-cell__val">'.e(\App\Support\Fmt::num($v, 2)).'</span>'.
                             '</span>'
                         );
                     }),
@@ -255,11 +255,11 @@ class CompaniesTable
                     }),
             ], layout: FiltersLayout::AboveContent)
             ->emptyStateHeading(__('Нема компании за овие филтри'))
-            ->emptyStateDescription(__('Променете ги филтрите или собери нови компании од „Пајплајн“.'))
+            ->emptyStateDescription(__('Промени ги филтрите или собери нови компании од „Пајплајн“.'))
             ->emptyStateIcon(Heroicon::OutlinedBuildingOffice)
             ->deferFilters(false)
             ->filtersFormColumns(['default' => 2, 'lg' => 3, 'xl' => 6])
-            ->searchPlaceholder(__('Пребарај компании, сектори, градови...'))
+            ->searchPlaceholder(__('Пребарај компании, сектори, градови…'))
             ->recordUrl(fn (Company $record): string => CompanyResource::getUrl('view', ['record' => $record]))
             ->recordActions([
                 ViewAction::make()
@@ -282,7 +282,7 @@ class CompaniesTable
                     DeleteBulkAction::make()
                         ->label(__('Отстрани избрани'))
                         ->modalHeading(__('Отстрани избрани компании'))
-                        ->modalDescription(__('Записите се бришат трајно заедно со нивните таргети и испраќања. Прво прегледајте ги означените како дупликат/неактивни.'))
+                        ->modalDescription(__('Записите се бришат трајно заедно со нивните целни компании и испраќања. Прво прегледај ги означените како дупликат/неактивни.'))
                         ->modalSubmitActionLabel(__('Отстрани'))
                         ->modalCancelActionLabel(__('Откажи')),
                 ])->label(__('Квалитет на податоци')),

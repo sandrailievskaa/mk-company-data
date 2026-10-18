@@ -65,7 +65,7 @@ class SentOffersRelationManager extends RelationManager
                     }),
             ])
             ->emptyStateHeading(__('Сè уште нема испраќања'))
-            ->emptyStateDescription(__('Користете „Испрати понуда“ на страницата на понудата.'))
+            ->emptyStateDescription(__('Користи „Испрати понуда“ на страницата на понудата.'))
             ->paginated([10, 25, 50]);
     }
 

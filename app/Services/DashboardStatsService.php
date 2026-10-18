@@ -70,7 +70,7 @@ class DashboardStatsService
         $activeSharePct = $totalCompanies > 0
             ? round(100.0 * $activeCompanies / $totalCompanies, 1)
             : 0.0;
-        $activeActivityIndexThresholdFormatted = rtrim(rtrim(number_format($activeThreshold, 2, '.', ''), '0'), '.') ?: '0';
+        $activeActivityIndexThresholdFormatted = \App\Support\Fmt::num($activeThreshold, 2, true);
         $activeShareFormatted = $this->formatPercentOneDecimal($activeSharePct);
 
         // Duplicate listings merged by name normalization, measured from the scrape runs.
@@ -97,10 +97,10 @@ class DashboardStatsService
 
         $companiesPhrase = $totalCompanies === 1
             ? __('1 компанија')
-            : __(':count компании', ['count' => number_format($totalCompanies, 0, ',', ' ')]);
+            : __(':count компании', ['count' => \App\Support\Fmt::num($totalCompanies)]);
         $sectorsPhrase = $sectorCount === 1
             ? __('1 сектор')
-            : __(':count сектори', ['count' => number_format($sectorCount, 0, ',', ' ')]);
+            : __(':count сектори', ['count' => \App\Support\Fmt::num($sectorCount)]);
 
         return [
             'greeting' => $greeting,
@@ -114,7 +114,7 @@ class DashboardStatsService
             'dupRateFormatted' => $dupRateFormatted,
             'totalCompanies' => $totalCompanies,
             'companiesWeekOverWeekPct' => $companiesWeekOverWeekPct,
-            'companiesWowFormatted' => sprintf('%+.1f%%', $companiesWeekOverWeekPct),
+            'companiesWowFormatted' => \App\Support\Fmt::signed($companiesWeekOverWeekPct).'%',
             'companiesDeltaTone' => $companiesDeltaTone,
             'thisWeekNew' => $thisWeekNew,
             'lastWeekNew' => $lastWeekNew,
@@ -135,6 +135,6 @@ class DashboardStatsService
 
     private function formatPercentOneDecimal(float $v): string
     {
-        return rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.') ?: '0';
+        return \App\Support\Fmt::num($v, 1, true);
     }
 }

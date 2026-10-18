@@ -9,7 +9,7 @@ return [
                     'label' => 'Креирај',
                 ],
                 'create_another' => [
-                    'label' => 'Креирај и додади друг',
+                    'label' => 'Креирај и додај друг',
                 ],
             ],
             'heading' => 'Креирај :label',

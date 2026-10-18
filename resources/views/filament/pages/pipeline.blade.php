@@ -16,9 +16,9 @@
                                 <div style="height: 100%; width: {{ $pct }}%; background: #6366f1;"></div>
                             </div>
                         </div>
-                        <strong>{{ number_format($stage['done']) }} / {{ number_format($stage['total']) }} ({{ $pct }}%)</strong>
+                        <strong>{{ \App\Support\Fmt::num($stage['done']) }} / {{ \App\Support\Fmt::num($stage['total']) }} ({{ $pct }}%)</strong>
                         @if ($stage['pending'] !== null)
-                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('на чекање: :count', ['count' => number_format($stage['pending'])]) }}</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('на чекање: :count', ['count' => \App\Support\Fmt::num($stage['pending'])]) }}</span>
                         @endif
                     </div>
                     @if (count($stage['details']) > 0)

@@ -95,7 +95,7 @@ class DashboardActivityInsightsService
             $blurbParts = array_filter([$secLabel, $city !== '' ? $city : null]);
             $blurb = count($blurbParts) > 0
                 ? implode(' · ', $blurbParts)
-                : __('Секторска погодност · збогатете контакти');
+                : __('Секторска погодност · збогати контакти');
 
             $out[] = [
                 'id' => (int) $c->id,

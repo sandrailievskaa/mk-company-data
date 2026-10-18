@@ -33,7 +33,7 @@ class PipelineStatus
             [
                 'key' => 'scrape',
                 'title' => __('1. Собирање (zk.mk)'),
-                'description' => __('Скрејпинг по сектори; податоци: име, сектор, град, адреса, телефон.'),
+                'description' => __('Скрејпање по сектори; податоци: име, сектор, град, адреса, телефон.'),
                 'done' => $total,
                 'total' => $total,
                 'details' => [
@@ -97,7 +97,7 @@ class PipelineStatus
             [
                 'key' => 'offers',
                 'title' => __('7. Понуди'),
-                'description' => __('ВИ-генерирана понуда, препораки, идемпотентно испраќање и следење.'),
+                'description' => __('AI-генерирана понуда, препораки, идемпотентно испраќање и следење.'),
                 'done' => $sent,
                 'total' => max($sent, Offer::query()->count()),
                 'details' => [

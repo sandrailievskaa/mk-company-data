@@ -75,7 +75,7 @@ class Pipeline extends Page
                     $batch = $dispatch();
 
                     Notification::make()
-                        ->title($batch ? __('Ставено во ред') : __('Нема што да се обработи'))
+                        ->title($batch ? __('Ставено во редица') : __('Нема што да се обработи'))
                         ->body($batch ? __(':count задачи. Прогресот се освежува на оваа страница.', ['count' => $batch->totalJobs]) : null)
                         ->color($batch ? 'success' : 'gray')
                         ->send();

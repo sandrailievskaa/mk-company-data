@@ -49,7 +49,7 @@ class OffersTable
                     ->icon(Heroicon::OutlinedPencil),
             ])
             ->emptyStateHeading(__('Нема понуди'))
-            ->emptyStateDescription(__('Креирајте понуда и прегледајте ги препорачаните компании.'))
+            ->emptyStateDescription(__('Креирај понуда и прегледај ги препорачаните компании.'))
             ->defaultPaginationPageOption(10)
             ->paginated([10, 25, 50, 100])
             ->striped();

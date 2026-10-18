@@ -3,7 +3,7 @@
         <div>
             <p class="mk-dash-reco__kicker">{{ __('✦ AI препораки') }}</p>
             <h2 class="mk-dash-reco__title">{{ __('Најпогодни оваа недела') }}</h2>
-            <p class="mk-panel__sub mk-dash-reco__sub">{{ __('Оценето според вашите активни понуди.') }}</p>
+            <p class="mk-panel__sub mk-dash-reco__sub">{{ __('Оценето според твоите активни понуди.') }}</p>
         </div>
     </header>
 

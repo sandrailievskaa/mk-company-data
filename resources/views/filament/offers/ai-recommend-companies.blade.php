@@ -44,7 +44,7 @@
                             </td>
                             <td>
                                 @isset($rec['activity_index'])
-                                    {{ number_format((float) $rec['activity_index'], 4, '.', '') }}
+                                    {{ \App\Support\Fmt::num((float) $rec['activity_index'], 4) }}
                                 @else
                                     —
                                 @endisset

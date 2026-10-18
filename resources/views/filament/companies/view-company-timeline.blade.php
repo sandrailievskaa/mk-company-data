@@ -29,8 +29,8 @@
                 <div class="mk-cv-timeline__dot" aria-hidden="true"></div>
                 <div class="mk-cv-timeline__content">
                     <span class="mk-cv-timeline__date">—</span>
-                    <span class="mk-cv-timeline__tag">{{ __('СКРАП') }}</span>
-                    <p class="mk-cv-timeline__text">{{ trans_choice('Вкупно :count процес на скрапирање/обработка за овој запис.|Вкупно :count процеси на скрапирање/обработка за овој запис.', (int) $record->scrape_count) }}</p>
+                    <span class="mk-cv-timeline__tag">{{ __('СКРЕЈП') }}</span>
+                    <p class="mk-cv-timeline__text">{{ trans_choice('Вкупно :count процес на скрејпање/обработка за овој запис.|Вкупно :count процеси на скрејпање/обработка за овој запис.', (int) $record->scrape_count) }}</p>
                 </div>
             </li>
         </ol>

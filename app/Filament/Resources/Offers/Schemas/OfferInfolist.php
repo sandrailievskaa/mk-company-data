@@ -85,7 +85,7 @@ class OfferInfolist
                             ->extraAttributes(['class' => 'mk-offer-view-hero__metrics'])
                             ->schema([
                                 TextEntry::make('target_count')
-                                    ->label(__('Таргети'))
+                                    ->label(__('Целни компании'))
                                     ->state(fn (Offer $record): int => $record->targets()->count()),
                                 TextEntry::make('company.name')
                                     ->label(__('Компанија'))

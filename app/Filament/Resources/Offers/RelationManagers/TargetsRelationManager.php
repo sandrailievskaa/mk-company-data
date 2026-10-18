@@ -65,27 +65,27 @@ class TargetsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label(__('Додај таргет'))
-                    ->modalHeading(__('Додај таргет компанија'))
+                    ->label(__('Додај целна компанија'))
+                    ->modalHeading(__('Додај целна компанија'))
                     ->modalSubmitActionLabel(__('Зачувај'))
                     ->modalCancelActionLabel(__('Откажи')),
             ])
             ->actions([
                 EditAction::make()
                     ->label(__('Уреди'))
-                    ->modalHeading(__('Уреди таргет'))
+                    ->modalHeading(__('Уреди целна компанија'))
                     ->modalSubmitActionLabel(__('Зачувај промени'))
                     ->modalCancelActionLabel(__('Откажи')),
                 DeleteAction::make()
                     ->label(__('Избриши'))
-                    ->modalHeading(__('Избриши таргет'))
+                    ->modalHeading(__('Избриши целна компанија'))
                     ->modalSubmitActionLabel(__('Избриши'))
                     ->modalCancelActionLabel(__('Откажи')),
             ])
             ->bulkActions([
                 DeleteBulkAction::make()
                     ->label(__('Избриши избрани'))
-                    ->modalHeading(__('Избриши избрани таргети'))
+                    ->modalHeading(__('Избриши ги избраните целни компании'))
                     ->modalSubmitActionLabel(__('Избриши'))
                     ->modalCancelActionLabel(__('Откажи')),
             ])
@@ -96,6 +96,6 @@ class TargetsRelationManager extends RelationManager
 
     public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
     {
-        return __('Target компании');
+        return __('Целни компании');
     }
 }
