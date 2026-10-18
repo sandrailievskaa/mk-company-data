@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Companies\Tables;
 
+use App\Enums\EmailSource;
 use App\Enums\SectorEnum;
 use App\Filament\Resources\Companies\CompanyResource;
 use App\Models\Company;
@@ -65,6 +66,11 @@ class CompaniesTable
                             '</span>'
                         );
                     }),
+                Tables\Columns\TextColumn::make('email_source')
+                    ->label('Извор на е-пошта')
+                    ->badge()
+                    ->placeholder('—')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Телефон')
                     ->searchable(),
@@ -149,6 +155,14 @@ class CompaniesTable
                     ->modifyFormFieldUsing(function (Select $field): void {
                         $field->hiddenLabel();
                     }),
+                Tables\Filters\SelectFilter::make('email_source')
+                    ->label('Извор на е-пошта')
+                    ->options(EmailSource::class)
+                    ->native(false)
+                    ->placeholder('Извор на е-пошта')
+                    ->modifyFormFieldUsing(function (Select $field): void {
+                        $field->hiddenLabel();
+                    }),
                 Tables\Filters\SelectFilter::make('city')
                     ->label('Град')
                     ->options(function () {
@@ -169,7 +183,7 @@ class CompaniesTable
                     }),
             ], layout: FiltersLayout::AboveContent)
             ->deferFilters(false)
-            ->filtersFormColumns(2)
+            ->filtersFormColumns(3)
             ->searchPlaceholder('Пребарај компании, сектори, градови...')
             ->recordUrl(fn (Company $record): string => CompanyResource::getUrl('view', ['record' => $record]))
             ->recordActions([

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\EmailSource;
 use App\Models\Company;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\DomCrawler\Crawler;
@@ -50,7 +51,11 @@ class CompanyScraperService
                 // If scraping found an email, only set it when we don't already have one.
                 // This avoids overwriting enriched / manually set emails with null.
                 if (! empty($company['email']) && empty($model->email)) {
-                    $model->update(['email' => $company['email']]);
+                    $model->update([
+                        'email' => $company['email'],
+                        'email_source' => EmailSource::Registry,
+                        'email_found_at' => now(),
+                    ]);
                 }
             }
 

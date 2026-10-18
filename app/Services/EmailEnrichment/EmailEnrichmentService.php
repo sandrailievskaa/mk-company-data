@@ -2,6 +2,7 @@
 
 namespace App\Services\EmailEnrichment;
 
+use App\Enums\EmailSource;
 use App\Models\Company;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -9,6 +10,9 @@ use GuzzleHttp\Exception\GuzzleException;
 class EmailEnrichmentService
 {
     private Client $httpClient;
+
+    /** Source of the e-mail returned by the most recent findEmail() call. */
+    private ?EmailSource $lastSource = null;
 
     public function __construct()
     {
@@ -29,21 +33,29 @@ class EmailEnrichmentService
      */
     public function findEmail(Company $company): ?string
     {
+        $this->lastSource = null;
+
         // Strategy 1: Try to find and scrape from company website
         $email = $this->getEmailFromCompanyWebsite($company);
         if ($email && $this->isValidEmail($email)) {
+            $this->lastSource = EmailSource::Website;
+
             return $email;
         }
 
         // Strategy 2: Try Google search for company email
         $email = $this->getEmailFromGoogleSearch($company);
         if ($email && $this->isValidEmail($email)) {
+            $this->lastSource = EmailSource::Search;
+
             return $email;
         }
 
         // Strategy 3: Try pattern-based email generation with multiple domains
         $email = $this->generateEmailPatterns($company);
         if ($email && $this->isValidEmail($email)) {
+            $this->lastSource = EmailSource::Inferred;
+
             return $email;
         }
 
@@ -338,6 +350,42 @@ class EmailEnrichmentService
     }
 
     /**
+     * Source of the address returned by the last findEmail() call.
+     */
+    public function lastSource(): ?EmailSource
+    {
+        return $this->lastSource;
+    }
+
+    /**
+     * Whether the address equals one that pattern-based generation would produce
+     * for this company. Used to classify legacy records as inferred.
+     */
+    public function isGeneratedPattern(Company $company, string $email): bool
+    {
+        $email = strtolower(trim($email));
+        if (! str_contains($email, '@')) {
+            return false;
+        }
+
+        [$local, $domain] = explode('@', $email, 2);
+        if ($local !== 'info') {
+            return false;
+        }
+
+        return in_array($domain, $this->generatePossibleDomains($company), true);
+    }
+
+    private function storeEmail(Company $company, string $email): void
+    {
+        $company->update([
+            'email' => $email,
+            'email_source' => $this->lastSource ?? EmailSource::Observed,
+            'email_found_at' => now(),
+        ]);
+    }
+
+    /**
      * Enrich a single company with email
      */
     public function enrichCompany(Company $company): bool
@@ -349,7 +397,7 @@ class EmailEnrichmentService
         $email = $this->findEmail($company);
 
         if ($email) {
-            $company->update(['email' => $email]);
+            $this->storeEmail($company, $email);
 
             return true;
         }
@@ -387,7 +435,7 @@ class EmailEnrichmentService
                 } else {
                     $email = $this->findEmail($company);
                     if ($email) {
-                        $company->update(['email' => $email]);
+                        $this->storeEmail($company, $email);
                         $success = true;
                         $results['enriched']++;
                     } else {

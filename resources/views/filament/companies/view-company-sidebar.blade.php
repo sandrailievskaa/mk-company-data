@@ -20,6 +20,17 @@
                         @endif
                     </dd>
                 </div>
+                @if (filled($record->email) && $record->email_source)
+                    <div class="mk-cv-kv__row">
+                        <dt>Извор на е-пошта</dt>
+                        <dd>
+                            <span class="mk-cv-pill @if($record->email_source->isInferred()) mk-cv-pill--warn @else mk-cv-pill--ok @endif">{{ $record->email_source->getLabel() }}</span>
+                            @if ($record->email_source->isInferred())
+                                <span class="mk-cv-muted">непроверена</span>
+                            @endif
+                        </dd>
+                    </div>
+                @endif
                 <div class="mk-cv-kv__row">
                     <dt>Телефон</dt>
                     <dd>

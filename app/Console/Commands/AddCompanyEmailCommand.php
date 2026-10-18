@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\EmailSource;
 use App\Models\Company;
 use Illuminate\Console\Command;
 
@@ -44,7 +45,11 @@ class AddCompanyEmailCommand extends Command
             }
         }
 
-        $company->update(['email' => $email]);
+        $company->update([
+            'email' => $email,
+            'email_source' => EmailSource::Manual,
+            'email_found_at' => now(),
+        ]);
         $this->info("Successfully added email {$email} to {$company->name}");
 
         return Command::SUCCESS;

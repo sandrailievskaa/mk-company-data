@@ -25,6 +25,11 @@ class Offer extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function sentOffers(): HasMany
+    {
+        return $this->hasMany(SentOffer::class);
+    }
+
     public function targets(): HasMany
     {
         return $this->hasMany(OfferTarget::class);

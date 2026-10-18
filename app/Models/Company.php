@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EmailSource;
 use App\Enums\SectorEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,7 +14,15 @@ class Company extends Model
         'activity_index' => 'float',
         'scrape_count' => 'integer',
         'data_quality_flag' => 'string',
+        'email_source' => EmailSource::class,
+        'email_found_at' => 'datetime',
+        'sources_count' => 'integer',
     ];
+
+    public function sentOffers(): HasMany
+    {
+        return $this->hasMany(SentOffer::class);
+    }
 
     public function offers(): HasMany
     {
