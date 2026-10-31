@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\DashboardBreakdownWidget;
 use App\Filament\Widgets\DashboardInsightsRowWidget;
 use App\Filament\Widgets\DashboardOverviewWidget;
 use App\Filament\Widgets\GettingStartedWidget;
@@ -32,6 +33,7 @@ class Dashboard extends BaseDashboard
             GettingStartedWidget::class,
             DashboardOverviewWidget::class,
             DashboardInsightsRowWidget::class,
+            DashboardBreakdownWidget::class,
         ];
     }
 

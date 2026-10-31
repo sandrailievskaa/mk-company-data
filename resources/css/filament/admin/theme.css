@@ -4112,3 +4112,178 @@ html.mk-intro-lock {
     animation-delay: 0s !important;
   }
 }
+
+/* ───────── Графикони: сектори и потекло ───────── */
+.mk-breakdown {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.mk-breakdown__card {
+  min-width: 0;
+}
+.mk-breakdown__list,
+.mk-funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.mk-breakdown__row {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr) 6.5rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+.mk-breakdown__name {
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.mk-breakdown__flag {
+  color: var(--warning);
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+.mk-breakdown__bar,
+.mk-funnel__bar {
+  display: block;
+  height: 0.625rem;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+.mk-breakdown__bar i,
+.mk-funnel__bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.6s ease;
+}
+.mk-breakdown__val,
+.mk-funnel__val {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.375rem;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+.mk-breakdown__val {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+}
+.mk-breakdown__val small,
+.mk-funnel__val small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.mk-breakdown__empty {
+  margin: 1rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+.mk-funnel__step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+.mk-funnel__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.mk-funnel__label {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.mk-funnel__bar--total i {
+  background: var(--text-muted);
+}
+.mk-funnel__bar--website i {
+  background: color-mix(in srgb, var(--accent) 55%, var(--bg-secondary));
+}
+.mk-funnel__bar--email i {
+  background: var(--accent);
+}
+.mk-funnel__bar--mx i {
+  background: var(--positive);
+}
+.mk-funnel__note {
+  margin: 1rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.625rem;
+  background: var(--accent-soft);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+@media (max-width: 1024px) {
+  .mk-breakdown {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .mk-breakdown__row {
+    grid-template-columns: 5.5rem minmax(0, 1fr) 5rem;
+    gap: 0.5rem;
+  }
+}
+
+/* ───────── Најава ───────── */
+.fi-simple-layout {
+  background:
+    radial-gradient(60rem 30rem at 15% -10%, var(--accent-soft), transparent 60%),
+    radial-gradient(50rem 28rem at 100% 110%, var(--accent-soft), transparent 55%),
+    var(--bg-primary) !important;
+}
+.fi-simple-main {
+  border: 1px solid var(--border) !important;
+  border-radius: 1.25rem !important;
+  background: var(--bg-card) !important;
+  box-shadow: var(--ui-shadow-strong) !important;
+}
+.fi-simple-header-heading {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+}
+.mk-login-tagline {
+  margin: -0.25rem 0 1rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-align: center;
+}
+.mk-login-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin: 1.5rem 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--border);
+  list-style: none;
+}
+.mk-login-points li {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+}
+.mk-login-points li::before {
+  content: "";
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: var(--accent-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%237c5fff'%3E%3Cpath fill-rule='evenodd' d='M16.7 4.15a.75.75 0 0 1 .15 1.05l-8 10.5a.75.75 0 0 1-1.13.08l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.9 3.89 7.48-9.82a.75.75 0 0 1 1.04-.14Z' clip-rule='evenodd'/%3E%3C/svg%3E") center / 0.7rem no-repeat;
+}

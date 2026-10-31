@@ -40,7 +40,12 @@ class AdminPanelProvider extends PanelProvider
             ->globalSearch(false)
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
-                fn (): string => '<div style="display:flex;justify-content:flex-end;margin-bottom:.75rem">'.view('filament.components.mk-language-switcher')->render().'</div>',
+                fn (): string => '<p class="mk-login-tagline">'.e(__('Од јавни податоци до подготвена понуда.')).'</p>'
+                    .'<div style="display:flex;justify-content:flex-end;margin-bottom:.75rem">'.view('filament.components.mk-language-switcher')->render().'</div>',
+            )
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn (): string => view('filament.auth.login-points')->render(),
             )
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_NAV_END,
