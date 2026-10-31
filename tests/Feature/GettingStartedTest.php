@@ -95,3 +95,33 @@ it('completes the offer step after creating an offer and the track step after vi
 
     expect(app(GettingStarted::class)->isDone($user->fresh(), 'track'))->toBeTrue();
 });
+
+it('opens the video guide on first visit and remembers that it was seen', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Livewire::test(GettingStartedWidget::class)
+        ->assertSee('Видео упатство')
+        ->assertSee('open: true', false)
+        ->call('markIntroSeen')
+        ->assertSee('open: false', false);
+
+    expect(app(GettingStarted::class)->isIntroSeen($user->fresh()))->toBeTrue();
+});
+
+it('keeps the video guide closed for users who already saw it', function () {
+    $user = User::factory()->create();
+    app(GettingStarted::class)->markIntroSeen($user);
+    $this->actingAs($user->fresh());
+
+    Livewire::test(GettingStartedWidget::class)->assertSee('open: false', false);
+});
+
+it('narrates the video guide in English', function () {
+    $this->actingAs(User::factory()->create())->withSession(['locale' => 'en']);
+
+    $this->get('/admin')->assertOk()
+        ->assertSee('Video guide')
+        ->assertSee('From public data to a ready offer')
+        ->assertSee('At most once per company');
+});

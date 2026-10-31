@@ -1,8 +1,14 @@
+<div class="mk-guide-wrap" x-data>
+    @include('filament.widgets.intro-video')
+
 <div @class(['mk-guide', 'mk-guide--collapsed' => $dismissed])>
     @if ($dismissed)
         <div class="mk-guide__bar">
             <span class="mk-guide__bar-text">{{ __('Водич „Започни“: :done од :total чекори', ['done' => $done, 'total' => $total]) }}</span>
-            <button type="button" class="mk-guide__link" wire:click="restore">{{ __('Покажи го водичот') }}</button>
+            <span class="mk-guide__head-side">
+                <button type="button" class="mk-guide__video" @click="$dispatch('open-mk-intro')"><svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true"><path d="M6.3 2.84A1.5 1.5 0 0 0 4 4.11v11.78a1.5 1.5 0 0 0 2.3 1.27l9.344-5.891a1.5 1.5 0 0 0 0-2.538L6.3 2.841Z" /></svg> {{ __('Видео упатство') }}</button>
+                <button type="button" class="mk-guide__link" wire:click="restore">{{ __('Покажи го водичот') }}</button>
+            </span>
         </div>
     @else
         <header class="mk-guide__head">
@@ -17,6 +23,7 @@
                 </p>
             </div>
             <div class="mk-guide__head-side">
+                <button type="button" class="mk-guide__video" @click="$dispatch('open-mk-intro')"><svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true"><path d="M6.3 2.84A1.5 1.5 0 0 0 4 4.11v11.78a1.5 1.5 0 0 0 2.3 1.27l9.344-5.891a1.5 1.5 0 0 0 0-2.538L6.3 2.841Z" /></svg> {{ __('Видео упатство') }}</button>
                 <span class="mk-guide__count">{{ $done }} / {{ $total }}</span>
                 <button type="button" class="mk-guide__link" wire:click="dismiss">{{ __('Сокриј') }}</button>
             </div>
@@ -47,4 +54,5 @@
             @endforeach
         </ol>
     @endif
+</div>
 </div>

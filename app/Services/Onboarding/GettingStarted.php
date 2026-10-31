@@ -48,6 +48,16 @@ class GettingStarted
         return $user === null || (bool) $this->state($user)['dismissed'];
     }
 
+    public function isIntroSeen(?User $user): bool
+    {
+        return $user === null || (bool) $this->state($user)['intro_seen'];
+    }
+
+    public function markIntroSeen(User $user): void
+    {
+        $this->save($user, [...$this->state($user), 'intro_seen' => true]);
+    }
+
     public function dismiss(User $user): void
     {
         $this->save($user, [...$this->state($user), 'dismissed' => true]);
@@ -60,11 +70,11 @@ class GettingStarted
 
     public function reset(User $user): void
     {
-        $this->save($user, ['done' => [], 'dismissed' => false]);
+        $this->save($user, ['done' => [], 'dismissed' => false, 'intro_seen' => false]);
     }
 
     /**
-     * @return array{done: array<string, string>, dismissed: bool}
+     * @return array{done: array<string, string>, dismissed: bool, intro_seen: bool}
      */
     private function state(User $user): array
     {
@@ -73,11 +83,12 @@ class GettingStarted
         return [
             'done' => is_array($raw['done'] ?? null) ? $raw['done'] : [],
             'dismissed' => (bool) ($raw['dismissed'] ?? false),
+            'intro_seen' => (bool) ($raw['intro_seen'] ?? false),
         ];
     }
 
     /**
-     * @param  array{done: array<string, string>, dismissed: bool}  $state
+     * @param  array{done: array<string, string>, dismissed: bool, intro_seen: bool}  $state
      */
     private function save(User $user, array $state): void
     {
