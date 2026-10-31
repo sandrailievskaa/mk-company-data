@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Filament\Widgets\DashboardInsightsRowWidget;
 use App\Filament\Widgets\DashboardOverviewWidget;
+use App\Filament\Widgets\GettingStartedWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Support\Enums\Width;
 use Filament\Widgets\Widget;
@@ -28,6 +29,7 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
+            GettingStartedWidget::class,
             DashboardOverviewWidget::class,
             DashboardInsightsRowWidget::class,
         ];

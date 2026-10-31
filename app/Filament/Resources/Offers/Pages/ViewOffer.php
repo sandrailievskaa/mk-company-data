@@ -24,6 +24,15 @@ class ViewOffer extends ViewRecord
         ]);
     }
 
+    public function mount(int|string $record): void
+    {
+        parent::mount($record);
+
+        if ($this->getRecord()->sentOffers()->exists()) {
+            app(\App\Services\Onboarding\GettingStarted::class)->complete(auth()->user(), 'track');
+        }
+    }
+
     public function getTitle(): string
     {
         return (string) $this->getRecord()->title;
@@ -151,6 +160,10 @@ class ViewOffer extends ViewRecord
                     ]))
                     ->color($report->failed > 0 ? 'warning' : 'success')
                     ->send();
+
+                if ($report->sent > 0) {
+                    app(\App\Services\Onboarding\GettingStarted::class)->complete(auth()->user(), 'send');
+                }
 
                 $this->refreshFormData(['status']);
             });

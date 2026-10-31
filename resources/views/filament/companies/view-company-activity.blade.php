@@ -16,7 +16,7 @@
     @endphp
     <div class="mk-cv-card mk-cv-activity">
         <div class="mk-cv-card__kicker">{{ __('скор') }}</div>
-        <h2 class="mk-cv-card__title">{{ __('Индекс на активност') }}</h2>
+        <h2 class="mk-cv-card__title">{{ __('Индекс на активност') }}<x-mk-why :title="__('Индекс на активност')" :formula="\App\Support\Fmt::num($weights['email'], 1).'·E + '.\App\Support\Fmt::num($weights['presence'], 1).'·P + '.\App\Support\Fmt::num($weights['frequency'], 1).'·F'">{{ __('Правило, не модел за предвидување. Мери колку податоците за компанијата се комплетни и видливи во јавни извори. Секој дел е прикажан подолу.') }}</x-mk-why></h2>
         <div class="mk-cv-activity__body">
             <div class="mk-cv-activity__chart" style="--mk-p: {{ $pct }};" role="img" aria-label="{{ __('Индекс на активност :pct од 100', ['pct' => $pct]) }}">
                 <div class="mk-cv-activity__ring" aria-hidden="true"></div>
@@ -40,7 +40,7 @@
                     <div class="mk-cv-activity__stat-v">{{ $offers }}</div>
                 </div>
                 <div class="mk-cv-activity__stat">
-                    <div class="mk-cv-activity__stat-k">{{ __('Статус на запис') }}</div>
+                    <div class="mk-cv-activity__stat-k">{{ __('Статус на запис') }}<x-mk-why :title="__('Статус на запис')">{{ __('OK, или означена при проверка како дупликат, неактивна или неконзистентна. Записите се означуваат, не се бришат автоматски.') }}</x-mk-why></div>
                     <div class="mk-cv-activity__stat-v">
                         @php
                             $q = $record->data_quality_flag !== null ? strtolower(trim($record->data_quality_flag)) : '';
@@ -59,15 +59,15 @@
         </div>
         <div class="mk-cv-activity__grid" aria-label="{{ __('Составни делови на индексот') }}">
             <div class="mk-cv-activity__stat">
-                <div class="mk-cv-activity__stat-k">{{ __('E · е-пошта (тежина :w)', ['w' => \App\Support\Fmt::num($weights['email'], 1)]) }}</div>
+                <div class="mk-cv-activity__stat-k">{{ __('E · е-пошта (тежина :w)', ['w' => \App\Support\Fmt::num($weights['email'], 1)]) }}<x-mk-why :title="__('E · е-пошта')">{{ __('1 ако има пронајдена е-пошта, инаку 0. Претпоставените адреси не се бројат.') }}</x-mk-why></div>
                 <div class="mk-cv-activity__stat-v">{{ \App\Support\Fmt::num($parts['email'], 2) }}</div>
             </div>
             <div class="mk-cv-activity__stat">
-                <div class="mk-cv-activity__stat-k">{{ __('P · јавни извори (тежина :w)', ['w' => \App\Support\Fmt::num($weights['presence'], 1)]) }}</div>
+                <div class="mk-cv-activity__stat-k">{{ __('P · јавни извори (тежина :w)', ['w' => \App\Support\Fmt::num($weights['presence'], 1)]) }}<x-mk-why :title="__('P · јавни извори')">{{ __('Во колку јавни извори се појавува компанијата (zk.mk, сопствен веб-сајт, CompanyWall), поделено со 3.') }}</x-mk-why></div>
                 <div class="mk-cv-activity__stat-v">{{ \App\Support\Fmt::num($parts['presence'], 2) }}</div>
             </div>
             <div class="mk-cv-activity__stat">
-                <div class="mk-cv-activity__stat-k">{{ __('F · фреквенција (тежина :w)', ['w' => \App\Support\Fmt::num($weights['frequency'], 1)]) }}</div>
+                <div class="mk-cv-activity__stat-k">{{ __('F · фреквенција (тежина :w)', ['w' => \App\Support\Fmt::num($weights['frequency'], 1)]) }}<x-mk-why :title="__('F · фреквенција')">{{ __('Колку често е видена компанијата во листите при скрејпање, на логаритамска скала од 0 до 1.') }}</x-mk-why></div>
                 <div class="mk-cv-activity__stat-v">{{ \App\Support\Fmt::num($parts['frequency'], 2) }}</div>
             </div>
         </div>

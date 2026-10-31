@@ -288,6 +288,8 @@ class CreateOffer extends CreateRecord
 
     protected function afterCreate(): void
     {
+        app(\App\Services\Onboarding\GettingStarted::class)->complete(auth()->user(), 'offer');
+
         $selectedIds = collect($this->aiRecommendationSelections)
             ->filter(fn ($selected) => (bool) $selected)
             ->keys()

@@ -15,6 +15,13 @@ class ListCompanies extends ListRecords
 {
     protected static string $resource = CompanyResource::class;
 
+    public function mount(): void
+    {
+        parent::mount();
+
+        app(\App\Services\Onboarding\GettingStarted::class)->complete(auth()->user(), 'browse');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

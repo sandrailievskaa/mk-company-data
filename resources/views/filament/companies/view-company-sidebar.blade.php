@@ -22,7 +22,7 @@
                 </div>
                 @if (filled($record->email) && $record->email_source)
                     <div class="mk-cv-kv__row">
-                        <dt>{{ __('Извор на е-пошта') }}</dt>
+                        <dt>{{ __('Извор на е-пошта') }}<x-mk-why :title="__('Извор на е-пошта')">{{ __('Од каде е пронајдена адресата: веб-сајт, пребарување, регистар или рачно. „Претпоставена“ значи генерирана по шаблон и непотврдена.') }}</x-mk-why></dt>
                         <dd>
                             <span class="mk-cv-pill @if($record->email_source->isInferred()) mk-cv-pill--warn @else mk-cv-pill--ok @endif">{{ $record->email_source->getLabel() }}</span>
                             @if ($record->email_source->isInferred())

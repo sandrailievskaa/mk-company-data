@@ -34,6 +34,8 @@ class ViewCompany extends ViewRecord
         parent::mount($record);
 
         $this->getRecord()->loadCount('offers');
+
+        app(\App\Services\Onboarding\GettingStarted::class)->complete(auth()->user(), 'inspect');
     }
 
     /**
